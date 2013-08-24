@@ -282,7 +282,10 @@ form.form table tr {
                                             title:"Сообщение",
                                             msg:'<?=$this->blocks['request-saved']?>',
                                             buttons:Ext.MessageBox.OK,
-                                            icon:Ext.MessageBox.INFO
+                                            icon:Ext.MessageBox.INFO,
+                                            fn: function(){
+                                                window.location.reload();
+                                            }
                                         });
                                     } else {
                                         Ext.MessageBox.show({
