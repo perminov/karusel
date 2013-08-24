@@ -5,7 +5,7 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin{
      * @return string
      */
     public function getOrderForJsonRowset(){
-        return 'id';
+        return 'timeId';
     }
 
     /**

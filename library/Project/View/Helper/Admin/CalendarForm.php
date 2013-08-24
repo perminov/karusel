@@ -71,7 +71,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                     id: 'button-delete'
                 }";
             }
-            if ($actionI['alias'] == 'confirm' && $this->view->row->id && $this->view->row->manageStatus != 'confirmed') {
+            if ($actionI['alias'] == 'confirm' && $this->view->row->id && $this->view->row->manageStatus != '120#00ff00') {
                 $a[] = "{
                     text: 'Потвердить',
                     handler: function(){
@@ -124,7 +124,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                         top.window.loadContent(PRE + '/" . $this->view->section->alias . "/agreement/id/" . $this->view->row->id . "/', true);
                     },
                     id: 'button-agreement',
-                    hidden: " . ($this->view->row->manageStatus != 'confirmed' ? 'true' : 'false') . "
+                    hidden: " . ($this->view->row->manageStatus != '120#00ff00' ? 'true' : 'false') . "
                 }";
             }
         }

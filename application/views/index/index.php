@@ -42,7 +42,7 @@ form.form table tr {
                         if ($('#date').val() == '') {
                             COMBO.toggle('timeId', true);
                         } else {
-                            $.post('/auxillary/disabledTimes',
+                            $.post(STD+'/auxillary/disabledTimes',
                                 {placeId:$('#placeId').val(), date:$('#date').val()},
                                 function (disabledTimeIds) {
                                     COMBO.setDisabledOptions('timeId', disabledTimeIds);
@@ -276,7 +276,7 @@ form.form table tr {
                             }
                             if (error == false) {
                                 data.animatorsNeededCount = parseInt($('#programId').attr('animatorsCount'));
-                                $.post('/admin/client/save', data, function (response) {
+                                $.post(STD+'/admin/client/save', data, function (response) {
                                     if (response == 'ok') {
                                         Ext.MessageBox.show({
                                             title:"Сообщение",

@@ -129,7 +129,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
     var timeout, timeout2;
     var eventStore, calendarStore, eventStore1, showEditWindow, calendar;
     var myMask, formMask;
-    Ext.Loader.setConfig({enabled: true, paths: {'Ext.calendar': '/library/extjs4/examples/calendar/src'}});
+    Ext.Loader.setConfig({enabled: true, paths: {'Ext.calendar': STD+'/library/extjs4/examples/calendar/src'}});
     Ext.require([
         'Ext.calendar.util.Date',
         'Ext.calendar.CalendarPanel',
