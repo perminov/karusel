@@ -1,12 +1,12 @@
 [general]
-domain = karusel.local
+domain = empty.local
 
 [db]
 adapter = mysql
 host = localhost
-username = karusel
-password = karusel
-dbname   = karusel
+username = empty
+password = empty
+dbname   = empty
 
 [view]
 encoding = utf-8

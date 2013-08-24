@@ -1,0 +1,35 @@
+span.radio {
+    background: url(/i/admin/radio.png) no-repeat;
+}
+
+span.radio.disabled {
+    background: url(/i/admin/radio-disabled.png) no-repeat;
+}
+
+span.radio.checked {
+    background: url(/i/admin/radioChecked.png) no-repeat;
+}
+
+span.radio.checked.disabled {
+    background: url(/i/admin/radio-checked-disabled.png) no-repeat;
+}
+
+span.checkbox {
+    background: url(/i/admin/checkbox.png) no-repeat;
+}
+
+span.checkbox.disabled, table.multicheckbox.disabled span.checkbox {
+    background: url(/i/admin/checkbox-disabled.png) no-repeat;
+}
+
+span.checkbox.checked {
+    background: url(/i/admin/checkboxChecked.png) no-repeat;
+}
+
+span.checkbox.checked.disabled, table.multicheckbox.disabled span.checkbox.checked {
+    background: url(/i/admin/checkbox-checked-disabled.png) no-repeat;
+}
+
+controls.upload {
+    background: url(/i/admin/transparentBg.png);
+}
