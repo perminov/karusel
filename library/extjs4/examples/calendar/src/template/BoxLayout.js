@@ -70,17 +70,18 @@ Ext.define('Ext.calendar.template.BoxLayout', {
                     weeks[w].weekNum = this.showWeekNumbers ? Ext.Date.format(dt, 'W') : '&#160;';
                     weeks[w].weekLinkId = 'ext-cal-week-'+Ext.Date.format(dt, 'Ymd');
                 }
-                
+
+                var days = ['ВС','ПН','ВТ','СР','ЧТ','ПТ','СБ'];
                 if(showMonth){
                     if(isToday){
                         title = this.getTodayText();
                     }
                     else{
-                        title = Ext.Date.format(dt, this.dayCount == 1 ? 'l, F j, Y' : (first ? 'M j, Y' : 'M j'));
+                        title = Ext.Date.format(dt, this.dayCount == 1 ? 'l, F j, Y' : ('j M Y, '+days[parseInt(Ext.Date.format(dt, 'w'))]));
                     }
                 }
                 else{
-                    var dayFmt = (w == 0 && this.showHeader !== true) ? 'l, j' : 'j';
+                    var dayFmt = (w == 0 && this.showHeader !== true) ? ('j M Y, '+days[parseInt(Ext.Date.format(dt, 'w'))]) : 'j';
                     title = isToday ? this.getTodayText() : Ext.Date.format(dt, dayFmt);
                 }
                 

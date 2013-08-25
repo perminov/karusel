@@ -9,6 +9,9 @@ form.form table tr {
     border-top: 1px solid #C7D4FF;
     border-bottom: none;
 }
+table.x-field tr{
+    border-top: none !important;
+}
 </style>
 <form class="form row-form" action="/admin/client/save/" name="event" method="post" enctype="multipart/form-data" row-id="" style="border: 1px solid #99BCE8; visibility: hidden;">
 <table celpadding="2" cellspacing="1" border="0" width="100%">
@@ -70,6 +73,8 @@ form.form table tr {
                             //prevText: 'Предыдущий месяц',
                             //todayTip: 'Выбрать сегодняшнюю дату',
                             //startDay: 1,
+                            minDate: new Date(),
+                            maxDate: Ext.Date.add(new Date(), Ext.Date.MONTH, 1),
                             handler:function (picker, date) {
                                 var y = date.getFullYear();
                                 var m = date.getMonth() + 1;
@@ -117,11 +122,43 @@ form.form table tr {
 </tr>
 <tr class="info" id="tr-childrenCount">
     <td width="50%" id="td-left-childrenCount">Количество детей:</td>
-    <td width="50%" id="td-right-childrenCount"><input type="text" name="childrenCount" id="childrenCount" value="0"
-                                                       style="width: 50px; text-align: right;" maxlength="5"
-                                                       oninput="this.value=number(this.value);"
-                                                       onkeydown="if(event.keyCode==38||event.keyCode==40){if(event.keyCode==38)this.value=parseInt(this.value)+1;else if(event.keyCode==40)this.value=parseInt(this.value)-1;}"
-                                                       autocomplete="off"/></td>
+    <td width="50%" id="td-right-childrenCount">
+        <table cellpadding="0" cellspacing="0">
+            <tr style="border-top: none; height: 20px;">
+                <td style="padding-left: 0px;">        <input type="text" name="childrenCount" id="childrenCount" value="5"
+                                   style="width: 50px; text-align: right; margin-top: 1px;" maxlength="5"
+                                   oninput="this.value=number(this.value);" readonly="readonly"
+                                   onkeydown="if(event.keyCode==38||event.keyCode==40){if(event.keyCode==38)this.value=parseInt(this.value)+1;else if(event.keyCode==40)this.value=parseInt(this.value)-1;}"
+                                   autocomplete="off"/></td>
+                <td style="padding-right: 5px; padding-left: 5px;">1</td>
+                <td>
+                    <div id="childrenCount-slider" style="float: right; height: 20px; overflow: hidden;"></div>
+                    <script>
+                    Ext.onReady(function(){
+                        Ext.create('Ext.slider.Single', {
+                            renderTo: 'childrenCount-slider',
+                            id: 'ext-childrenCount-slider',
+                            hideLabel: true,
+                            useTips: false,
+                            width: 205,
+                            value: 5,
+                            increment: 1,
+                            minValue: 1,
+                            maxValue: 8,
+                            margin: '0 5 0 0',
+                            listeners: {
+                                change: function(obj, newv, oldv){
+                                    $('#childrenCount').val(newv);
+                                }
+                            }
+                        });
+                    });
+                    </script>
+                </td>
+                <td id="maxChildrenCount">8</td>
+            </tr>
+        </table>
+</td>
 </tr>
 <tr class="info" id="tr-childrenAge">
     <td width="50%" id="td-left-childrenAge">Возраст детей:</td>

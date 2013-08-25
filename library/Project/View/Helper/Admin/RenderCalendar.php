@@ -121,7 +121,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         if ($_SERVER['STD']) $meta = json_decode(str_replace('\/admin\/', str_replace('/', '\/', $_SERVER['STD']) . '\/admin\/', json_encode($meta)));
         if ($GLOBALS['cmsOnlyMode']) $meta = json_decode(str_replace('\/admin\/', '\/', json_encode($meta)));
         ob_start();?>
-    <link rel="stylesheet" type="text/css" href="/library/extjs4/examples/calendar/resources/css/calendar.css" />
+    <link rel="stylesheet" type="text/css" href="/library/extjs4/examples/calendar/resources/css/calendar.css?1" />
     <link rel="stylesheet" type="text/css" href="/library/extjs4/examples/calendar/resources/css/examples.css" />
     <style>.x-window-body-default{background: white !important;}</style>
     <script type="text/javascript">
@@ -323,6 +323,8 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                             this.editWin.hide();
                         }
                         if(dateInfo){
+                            Ext.getCmp(p.id+'-tb-month').setText(Ext.Date.format(dateInfo.activeDate, 'F'));
+                            //console.log(Ext.getCmp(p.id+'-tb-month'));
                             // will be null when switching to the event edit form so ignore
                             //Ext.getCmp('app-nav-picker').setValue(dateInfo.activeDate);
                             //this.updateTitle(dateInfo.viewStart, dateInfo.viewEnd);
