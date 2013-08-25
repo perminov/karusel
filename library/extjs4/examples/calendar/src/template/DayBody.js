@@ -70,8 +70,9 @@ Ext.define('Ext.calendar.template.DayBody', {
 
         // use a fixed DST-safe date so times don't get skipped on DST boundaries
         dt = Ext.Date.clearTime(new Date('5/26/1972'));
-        
-        for(i=0; i<24; i++){
+
+        dt = Ext.calendar.util.Date.add(dt, {hours: 10});
+        for(i=0; i<11; i++){
             times.push(Ext.Date.format(dt, 'H:i'));
             dt = Ext.calendar.util.Date.add(dt, {hours: 1});
         }

@@ -123,7 +123,11 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         ob_start();?>
     <link rel="stylesheet" type="text/css" href="/library/extjs4/examples/calendar/resources/css/calendar.css?1" />
     <link rel="stylesheet" type="text/css" href="/library/extjs4/examples/calendar/resources/css/examples.css" />
-    <style>.x-window-body-default{background: white !important;}</style>
+    <style>
+        .x-window-body-default{background: white !important;}
+        .ext-cal-dayview .ext-cal-body-ct .ext-cal-bg-tbl{height: 420px !important;}
+        .ext-cal-day-col-gutter {height: 420px !important; margin-top: -420px;}
+    </style>
     <script type="text/javascript">
     var json = <?=json_encode($meta)?>;
     var timeout, timeout2;
