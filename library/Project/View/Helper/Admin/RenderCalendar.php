@@ -126,7 +126,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
     <style>
         .x-window-body-default{background: white !important;}
         .ext-cal-dayview .ext-cal-body-ct .ext-cal-bg-tbl{height: 420px !important;}
-        .ext-cal-day-col-gutter {height: 420px !important; margin-top: -420px;}
+        .ext-cal-day-col-gutter {height: 420px !important; margin-top: -420px; margin-right: 0px;}
     </style>
     <script type="text/javascript">
     var json = <?=json_encode($meta)?>;
@@ -295,10 +295,10 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
             tools: [<?if(count($filterFieldAliases)){?>{
                 type: 'search',
                 handler: function(event, target, owner, tool){
-                    if (grid.getDockedComponent('search-toolbar').hidden) {
-                        grid.getDockedComponent('search-toolbar').show();
+                    if (calendar.getDockedComponent('search-toolbar').hidden) {
+                        calendar.getDockedComponent('search-toolbar').show();
                     } else {
-                        grid.getDockedComponent('search-toolbar').hide();
+                        calendar.getDockedComponent('search-toolbar').hide();
                     }
                 }
             }<?}?>],
