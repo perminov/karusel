@@ -48,7 +48,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                     id: 'button-save'
                 }";
             }
-            if ($actionI['alias'] == 'delete' && $this->view->row->id) {
+            if ($actionI['alias'] == 'delete' && $this->view->row->id && $this->view->row->manageStatus != '120#00ff00') {
                 $a[] = "{
                     text: 'Удалить',
                     handler: function(){
@@ -94,6 +94,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                                                 fn: function(){
                                                     top.window.eventStore.reload();
                                                     top.window.Ext.getCmp('button-confirm').hide();
+                                                    top.window.Ext.getCmp('button-delete').hide();
                                                     top.window.Ext.getCmp('button-agreement').show();
                                                 }
                                             });
