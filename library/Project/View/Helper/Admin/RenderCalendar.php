@@ -127,6 +127,9 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         .x-window-body-default{background: white !important;}
         .ext-cal-dayview .ext-cal-body-ct .ext-cal-bg-tbl{height: 420px !important;}
         .ext-cal-day-col-gutter {height: 420px !important; margin-top: -420px; margin-right: 0px;}
+        .ext-cal-day-col .ext-cal-evt.ext-color-1 {border: 1px solid #306da6;}
+        .ext-cal-day-col .ext-cal-evt.ext-color-2 {border: 1px solid #86a723;}
+        .ext-cal-day-col .ext-evt-bd {line-height: 10px; font-size: 10px; word-break: break-all;}
     </style>
     <script type="text/javascript">
     var json = <?=json_encode($meta)?>;
@@ -367,6 +370,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
 
         myMask = new Ext.LoadMask(calendar.getEl(), {});
         calendar.setActiveView(2);
+        mainPanel = calendar;
     });
     </script>
     </head>

@@ -448,14 +448,8 @@ Ext.define('Ext.calendar.CalendarPanel', {
 
     // private
     setActiveView: function(id){
-        var l = this.layout,
-            tb = this.getDockedItems('toolbar')[0];
-        
-        // show/hide the toolbar first so that the layout will calculate the correct item size
-        if (tb) {
-            tb[id === this.id+'-edit' ? 'hide' : 'show']();
-        }
-        
+        var l = this.layout;
+
         l.setActiveItem(id);
         this.doComponentLayout();
         this.activeView = l.getActiveItem();
