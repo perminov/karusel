@@ -140,10 +140,6 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
     Ext.require([
         'Ext.calendar.util.Date',
         'Ext.calendar.CalendarPanel',
-       /* 'Ext.calendar.data.MemoryCalendarStore',
-        'Ext.calendar.data.MemoryEventStore',
-        'Ext.calendar.data.Events',
-        'Ext.calendar.data.Calendars',*/
         'Ext.calendar.form.EventWindow'
     ]);
     Ext.onReady(function(){
@@ -177,29 +173,31 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
             eventStore.lastOptions.params.search = JSON.stringify(params);
             eventStore.proxy.extraParams = {search : JSON.stringify(params)};
             //Ext.getCmp('fast-search-keyword').setDisabled(usedFilterAliasesThatHasGridColumnRepresentedBy.length == gridColumnsAliases.length);
-            if (obj.xtype == 'combobox') {
-                if (obj.multiSelect) {
+            if (!obj.noReload) {
+                if (obj.xtype == 'combobox') {
+                    if (obj.multiSelect) {
+                        clearTimeout(timeout);
+                        timeout = setTimeout(function(){
+                            eventStore.reload();
+                        }, 1000);
+                        clearTimeout(timeout2);
+                        timeout2 = setTimeout(function(){
+                            obj.collapse();
+                        }, 2000);
+                    } else {
+                        eventStore.reload();
+                    }
+                } else if (obj.xtype == 'datefield' && (/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(obj.getRawValue()) || !obj.getRawValue().length)) {
                     clearTimeout(timeout);
                     timeout = setTimeout(function(){
                         eventStore.reload();
-                    }, 1000);
-                    clearTimeout(timeout2);
-                    timeout2 = setTimeout(function(){
-                        obj.collapse();
-                    }, 2000);
-                } else {
-                    eventStore.reload();
+                    }, 500);
+                } else if (obj.xtype != 'datefield') {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function(){
+                        eventStore.reload();
+                    }, 500);
                 }
-            } else if (obj.xtype == 'datefield' && (/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(obj.getRawValue()) || !obj.getRawValue().length)) {
-                clearTimeout(timeout);
-                timeout = setTimeout(function(){
-                    eventStore.reload();
-                }, 500);
-            } else if (obj.xtype != 'datefield') {
-                clearTimeout(timeout);
-                timeout = setTimeout(function(){
-                    eventStore.reload();
-                }, 500);
             }
         }
         eventStore = Ext.create('Ext.data.Store', {
