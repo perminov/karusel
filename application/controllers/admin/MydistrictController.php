@@ -28,9 +28,7 @@ class Admin_MydistrictController extends Project_Controller_Admin_Calendar{
                 $data[$i]['end'] = $data[$i]['calendarEnd'];
                 $data[$i]['cid'] = preg_match('/Подтвержденная/', $data[$i]['manageStatus']) ? 2 : 1;
                 list($last, $client) = explode(' ', $data[$i]['clientTitle']);
-                $title = '';
-                $title .= $data[$i]['placeId'] . ' ';
-                $title .= $client . ' ' . $data[$i]['clientPhone'] . ' ';
+                $title = $client . ' ' . $data[$i]['clientPhone'] . ' ';
                 list($manager) = explode(' ', $data[$i]['manageManagerId']);
                 $title .= '<span style="word-break: normal;">' . $data[$i]['childrenCount'] . '/' . $data[$i]['childrenAge'] . '</span>; ';
                 if ($manager) {
