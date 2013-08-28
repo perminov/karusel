@@ -120,7 +120,7 @@
     <table border="0" cellpadding="1" cellspacing="1" style="width: 100%;">
         <tbody>
         <tr valign="top">
-            <td width="50%"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><strong>Общая стоимость услуг: &nbsp;<?=$this->row->price?> рублей</strong></span></span>
+            <td width="50%"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><strong>Общая стоимость услуг: &nbsp;<?=$this->row->price + $this->row->additionalPrice?> рублей</strong></span></span>
 
                 <div style="text-align: center;"><br />
                     <span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><strong>Исполнитель</strong></span></span></div>

@@ -162,11 +162,7 @@ table.x-field tr{
 </tr>
 <tr class="info" id="tr-childrenAge">
     <td width="50%" id="td-left-childrenAge">Возраст детей:</td>
-    <td width="50%" id="td-right-childrenAge"><input type="text" name="childrenAge" id="childrenAge" value="0"
-                                                     style="width: 50px; text-align: right;" maxlength="5"
-                                                     oninput="this.value=number(this.value);"
-                                                     onkeydown="if(event.keyCode==38||event.keyCode==40){if(event.keyCode==38)this.value=parseInt(this.value)+1;else if(event.keyCode==40)this.value=parseInt(this.value)-1;}"
-                                                     autocomplete="off"/></td>
+    <td width="50%" id="td-right-childrenAge"><input type="text" name="childrenAge" id="childrenAge" value="" oninput=""style="width: 50px;" maxlength="5"/></td>
 </tr>
 <tr class="info" id="tr-details">
     <td width="50%" id="td-left-details">Примечания к заказу:</td>

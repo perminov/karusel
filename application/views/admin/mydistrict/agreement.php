@@ -63,7 +63,7 @@ if (is_array($CKconfig['contentsJs'])) {
         }
     }
 }
-
+$CKconfig['readOnly'] = true;
 ?>
 <textarea id="<?=$name?>" name="<?=$name?>"><?=str_replace(array('<','>'), array('&lt;','&gt;'), $value)?></textarea>
 <script>
