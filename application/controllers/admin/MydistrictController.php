@@ -9,6 +9,7 @@ class Admin_MydistrictController extends Project_Controller_Admin_Calendar{
             $this->row->manageStatus = '#00ff00';
             $this->row->manageDate = date('Y-m-d');
             $this->row->save();
+            $this->row->setAgreementNumber();
             $response = 'Заявка отмечена как подтвержденная';
         } else {
             $response = '<span id="msgbox-prepay"></span>';

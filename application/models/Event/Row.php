@@ -8,7 +8,7 @@ class Event_Row extends Indi_Db_Table_Row{
             $entityId = Misc::loadModel('Entity')->fetchRow('`table` = "' . $this->getTable()->info('name') . '"')->id;
 
             // Обуляем изменения, предварительно селав бакап
-            $modified = $this->_modified; $this->_modified = array(); unset($modified['price'], $modified['agreementNumber']);
+            $modified = $this->_modified; $this->_modified = array(); unset($modified['price'], $modified['clientAgreementNumber']);
 
             // Выдергиваем записи 'Было' по внешним ключам
             $was = clone $this; $was->setForeignRowsByForeignKeys(implode(',', array_keys($modified)));
@@ -107,10 +107,6 @@ class Event_Row extends Indi_Db_Table_Row{
 
         parent::save();
 
-        // Конструируем номер договора
-        $this->clientAgreementNumber = $districtR->code . str_pad($this->id, 4, '0', STR_PAD_LEFT);
-        parent::save();
-
         // Забиваем аниматоров
         $animators = explode(',', $this->animatorIds);
         $eaM = Misc::loadModel('EventAnimator');
@@ -123,5 +119,13 @@ class Event_Row extends Indi_Db_Table_Row{
                 $eaR->save();
             }
         }
+    }
+
+    public function setAgreementNumber(){
+        // Конструируем номер договора
+        $districtR = $this->getForeignRowByForeignKey('districtId');
+        $agreementsCount = $this->getTable()->getAdapter()->query('SELECT COUNT(`id`) FROM `event` WHERE `clientAgreementNumber` != ""')->fetchColumn(0);
+        $this->clientAgreementNumber = $districtR->code . str_pad($agreementsCount + 1, 4, '0', STR_PAD_LEFT);
+        parent::save();
     }
 }
