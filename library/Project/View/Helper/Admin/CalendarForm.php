@@ -48,7 +48,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                     id: 'button-save'
                 }";
             }
-            if ($actionI['alias'] == 'delete' && $this->view->row->id && $this->view->row->manageStatus != '120#00ff00') {
+            if ($actionI['alias'] == 'delete' && $this->view->row->id && ($this->view->row->manageStatus != '120#00ff00' || !$_SESSION['admin']['alternate'])) {
                 $a[] = "{
                     text: 'Удалить',
                     handler: function(){
