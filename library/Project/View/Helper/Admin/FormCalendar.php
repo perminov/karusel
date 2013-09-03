@@ -53,6 +53,10 @@ class Project_View_Helper_Admin_FormCalendar extends Indi_View_Helper_Abstract
 						//prevText: 'Предыдущий месяц',
 						//todayTip: 'Выбрать сегодняшнюю дату',
 						//startDay: 1,
+                        <?if ($name == 'date' && $this->view->trail->getItem()->model->info('name') == 'event'){?>
+                            minDate: new Date(),
+                            maxDate: Ext.Date.add(new Date(), Ext.Date.MONTH, 1),
+                        <?}?>
 						handler: function(picker, date) {
 							var y = date.getFullYear();
 							var m = date.getMonth() + 1; if (m.toString().length < 2) m = '0' + m;
