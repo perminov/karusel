@@ -6,155 +6,80 @@ class Event extends Indi_Db_Table{
     //public function disabledDates($placeId, $animatorsNeededCount, $eventId = null){
     public function disabledDates($placeId, $eventId = null){
         $disabledDates = array();
-        /**
-         * Первый тип неактивных дат - это даты, а которые полностью забито расписание
-         */
-        $maxEventsCount = $this->getAdapter()->query('SELECT COUNT(`id`) FROM `time` WHERE `placeId` = "' . $placeId . '"')->fetchColumn(0);
         $dateA = $this->getAdapter()->query('
-                SELECT
-                  `e`.`date`
-                FROM
-                  `event` `e`,
-                  `time` `t`
-                WHERE 1
-                  AND `e`.`placeId` = "' . $placeId . '"
-                  AND `t`.`id` = `e`.`timeId`
-                ' . ($eventId ? ' AND `e`.`id` != "' . $eventId . '" ' : '') . '
-                GROUP BY
-                  `e`.`date`
-                HAVING COUNT(`t`.`id`) = ' . $maxEventsCount
-        )->fetchAll();
+            SELECT
+              GROUP_CONCAT(
+                IF(`e`.`timeId` - 1 > 0, CONCAT(`e`.`timeId` - 1, ",",
+                  IF(`e`.`timeId` - 2 > 0, CONCAT(`e`.`timeId` - 2, ",",
+                    IF(`e`.`timeId` - 3 > 0, CONCAT(`e`.`timeId` - 3, ",",
+                      IF(`e`.`timeId` - 4 > 0, CONCAT(`e`.`timeId` - 4, ","), ",")
+                    ), "")
+                  ), "")
+                ), ""),
+                `e`.`timeId`,
+                IF(`e`.`timeId` + 1 < 18, CONCAT(",", `e`.`timeId` + 1,
+                  IF(`e`.`timeId` + 2 < 18, CONCAT(",", `e`.`timeId` + 2,
+                    IF(`e`.`timeId` + 3 < 18, CONCAT(",", `e`.`timeId` + 3,
+                      IF(`e`.`timeId` + 4 < 18, CONCAT(",", `e`.`timeId` + 4), "")
+                    ), "")
+                  ), "")
+                ), "")
+              ) AS `tmp`,
+              `e`.`date`
+            FROM
+              `event` `e`,
+              `time` `t`
+            WHERE 1
+              AND `e`.`timeId` = `t`.`id`
+              AND `e`.`placeId` = "' . $placeId . '"
+              ' . ($eventId ? ' AND `e`.`id` != "' . $eventId . '" ' : '') . '
+            GROUP BY `e`.`date`
+            HAVING 1
+              AND FIND_IN_SET(1, tmp) AND FIND_IN_SET(2, tmp) AND FIND_IN_SET(3, tmp) AND FIND_IN_SET(4, tmp) AND FIND_IN_SET(5, tmp)
+              AND FIND_IN_SET(6, tmp) AND FIND_IN_SET(7, tmp) AND FIND_IN_SET(8, tmp) AND FIND_IN_SET(9, tmp) AND FIND_IN_SET(10, tmp)
+              AND FIND_IN_SET(11, tmp) AND FIND_IN_SET(12, tmp) AND FIND_IN_SET(13, tmp) AND FIND_IN_SET(14, tmp) AND FIND_IN_SET(15, tmp)
+              AND FIND_IN_SET(16, tmp) AND FIND_IN_SET(17, tmp)
+        ')->fetchAll();
 
         foreach ($dateA as $dateI) $disabledDates[$dateI['date']] = true;
-
-        /**
-         * Второй тип неактивных дат - это даты, в которые вообще нет свободных аниматоров
-         */
-        /*$animatorsCount = $this->getAdapter()->query('SELECT COUNT(`id`) FROM `animator`')->fetchColumn(0);
-
-        $tmpTableName = 'animatorsAvailabilityForPlace' . $placeId;
-        $this->getAdapter()->query($sql = '
-                CREATE TEMPORARY TABLE `' . $tmpTableName . '`
-                SELECT
-                  `e`.`date`,
-                  `t`.`id`,
-                  `t`.`title` AS `start`,
-                  SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL CAST(CONCAT(`p`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5) AS `end`,
-                  "' . $animatorsCount . '" - COUNT(DISTINCT `ea`.`animatorId`) AS `available`
-                FROM
-                  `time` `t`,
-                  `place` `p`,
-                  `event` `e`,
-                  `time` `ot`,
-                  `place` `op`,
-                  `eventAnimator` `ea`
-                WHERE 1
-                  AND `t`.`placeId` = `p`.`id`
-                  AND `p`.`id` = "' . $placeId . '"
-                  AND `op`.`id` != `p`.`id`
-                  AND `e`.`placeId` = `op`.`id`
-                ' . ($eventId ? ' AND `e`.`id` != "' . $eventId . '" ' : '') . '
-                  AND `e`.`timeId` = `ot`.`id`
-                  AND `ot`.`placeId` = `op`.`id`
-                  AND `ea`.`eventId` = `e`.`id`
-                  AND (
-                      (`t`.`title` <= `ot`.`title` AND `ot`.`title` < SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL CAST(CONCAT(`p`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5)) OR
-                      (`t`.`title` < SUBSTR(DATE_ADD(TIME(`ot`.`title`), INTERVAL CAST(CONCAT(`op`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5) AND SUBSTR(DATE_ADD(TIME(`ot`.`title`), INTERVAL CAST(CONCAT(`op`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5) <= SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL CAST(CONCAT(`p`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5))
-                  )
-                GROUP BY CONCAT(`date`,`t`.`title`)
-            ');
-
-        $dateA = $this->getAdapter()->query('
-                SELECT `date`, MAX(`available`) AS `available`
-                FROM `' . $tmpTableName . '`
-                GROUP BY (`date`)
-                HAVING `available` < "' . $animatorsNeededCount . '"
-            ')->fetchAll();
-
-        foreach ($dateA as $dateI) $disabledDates[$dateI['date']] = true;
-
-        $this->getAdapter()->query('DROP TABLE `' . $tmpTableName . '`');*/
         return array_keys($disabledDates);
     }
 
     public function disabledTimes($placeId, $date, $eventId = null){
         $disabledTimes = array();
-
         $timeA = $this->getAdapter()->query('
-                SELECT
-                  `t`.`id`
-                FROM
-                  `event` `e`,
-                  `time` `t`
-                WHERE 1
-                  AND `e`.`placeId` = "' . $placeId . '"
-                  AND `e`.`date` = "' . $date . '"
-                 ' . ($eventId ? ' AND `e`.`id` != "' . $eventId . '" ' : '') . '
-                 AND `t`.`id` = `e`.`timeId`
-            ')->fetchAll();
-
-        foreach ($timeA as $timeI) $disabledTimes[$timeI['id']] = true;
-
-        /*$timeA = $this->getAdapter()->query('
-                SELECT
-                  `e`.`date`,
-                  `t`.`id`,
-                  `t`.`title` AS `start`,
-                  SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL CAST(CONCAT(`p`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5) AS `end`,
-                  "4" - COUNT(DISTINCT `ea`.`animatorId`) AS `available`
-                FROM
-                  `time` `t`,
-                  `place` `p`,
-                  `event` `e`,
-                  `time` `ot`,
-                  `place` `op`,
-                  `eventAnimator` `ea`
-                WHERE 1
-                  AND `t`.`placeId` = `p`.`id`
-                  AND `p`.`id` = "'. $placeId . '"
-                  AND `op`.`id` != `p`.`id`
-                  AND `e`.`placeId` = `op`.`id`
-                  AND `e`.`timeId` = `ot`.`id`
-                  AND `ot`.`placeId` = `op`.`id`
-                  AND `ea`.`eventId` = `e`.`id`
-                  AND `e`.`date` = "' . $date . '"
-                ' . ($eventId ? ' AND `e`.`id` != "' . $eventId . '" ' : '') . '
-                  AND (
-                      (`t`.`title` <= `ot`.`title` AND `ot`.`title` < SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL CAST(CONCAT(`p`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5)) OR
-                      (`t`.`title` < SUBSTR(DATE_ADD(TIME(`ot`.`title`), INTERVAL CAST(CONCAT(`op`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5) AND SUBSTR(DATE_ADD(TIME(`ot`.`title`), INTERVAL CAST(CONCAT(`op`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5) <= SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL CAST(CONCAT(`p`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5))
-                  )
-                GROUP BY CONCAT(`date`,`t`.`title`)
-                HAVING `available` < "'. $animatorsNeededCount . '"
-            ')->fetchAll();
-
-        foreach ($timeA as $timeI) $disabledTimes[$timeI['id']] = true;
-
-        $price = $this->getAdapter()->query('
-                SELECT
-                  CAST((IF("'. $animatorsNeededCount . '" = "1", `price1`, `price2`) -
-                  IF("'. $animatorsNeededCount . '" = "1",
-
-                    `price1` *
-                      IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $date . '") NOT IN(5,6), 1, 0) *
-                      ((CAST(`s`.`detailsString` AS DECIMAL))/100),
-
-                    `price2` *
-                      IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $date . '") NOT IN(5,6), 1, 0) *
-                      ((CAST(`s`.`detailsString` AS DECIMAL))/100)
-
-                  )) AS DECIMAL)
-                  AS `price`
-                FROM
-                  `district` `d`,
-                  `place` `p`
-                  LEFT JOIN `holiday` `h` ON (`h`.`title` = "' . $date . '")
-                  LEFT JOIN `staticblock` `s` ON (`s`.`alias` = "work-day-discount")
-                WHERE 1
-                  AND `p`.`id` = "' . $placeId . '"
-                  AND `d`.`id` = `p`.`districtId`
-            ')->fetchColumn(0);
-        return array('price' => $price, 'disabledTimeIds' => array_keys($disabledTimes));*/
-        return array_keys($disabledTimes);
+            SELECT
+              GROUP_CONCAT(
+                IF(`e`.`timeId` - 1 > 0, CONCAT(`e`.`timeId` - 1, ",",
+                  IF(`e`.`timeId` - 2 > 0, CONCAT(`e`.`timeId` - 2, ",",
+                    IF(`e`.`timeId` - 3 > 0, CONCAT(`e`.`timeId` - 3, ",",
+                      IF(`e`.`timeId` - 4 > 0, CONCAT(`e`.`timeId` - 4, ","), ",")
+                    ), "")
+                  ), "")
+                ), ""),
+                `e`.`timeId`,
+                IF(`e`.`timeId` + 1 < 18, CONCAT(",", `e`.`timeId` + 1,
+                  IF(`e`.`timeId` + 2 < 18, CONCAT(",", `e`.`timeId` + 2,
+                    IF(`e`.`timeId` + 3 < 18, CONCAT(",", `e`.`timeId` + 3,
+                      IF(`e`.`timeId` + 4 < 18, CONCAT(",", `e`.`timeId` + 4), "")
+                    ), "")
+                  ), "")
+                ), "")
+              ) AS `tmp`,
+              `e`.`date`
+            FROM
+              `event` `e`,
+              `time` `t`
+            WHERE 1
+              AND `e`.`timeId` = `t`.`id`
+              AND `e`.`placeId` = "' . $placeId . '"
+              ' . ($eventId ? ' AND `e`.`id` != "' . $eventId . '" ' : '') . '
+              AND `e`.`date` = "' . $date . '"
+            GROUP BY `e`.`date`
+        ')->fetchColumn(0);
+        $timeA = array_unique(explode(',', $timeA));
+        foreach ($timeA as $timeI) $disabledTimes[] = (int) $timeI;
+        return $disabledTimes;
     }
 
     public function disabledAnimators($placeId, $date, $timeId, $animatorsNeededCount, $eventId = null){
@@ -163,29 +88,23 @@ class Event extends Indi_Db_Table{
               `e`.`date`,
               `t`.`id` AS `timeId`,
               `t`.`title` AS `start`,
-              SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL CAST(CONCAT(`p`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5) AS `end`,
+              SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL 150 MINUTE), 1, 5) AS `end`,
               GROUP_CONCAT(DISTINCT `ea`.`animatorId`) AS `disabled`
             FROM
               `time` `t`,
-              `place` `p`,
               `event` `e`,
               `time` `ot`,
-              `place` `op`,
               `eventAnimator` `ea`
             WHERE 1
-              AND `t`.`placeId` = `p`.`id`
-              AND `p`.`id` = "' . $placeId . '"
-              AND `op`.`id` != `p`.`id`
-              AND `e`.`placeId` = `op`.`id`
-              AND `e`.`timeId` = `ot`.`id`
-              AND `ot`.`placeId` = `op`.`id`
-              AND `ea`.`eventId` = `e`.`id`
+              AND `t`.`id` = "' . $timeId  .'"
               AND `e`.`date` = "' . $date . '"
+              AND `e`.`placeId` != "' . $placeId . '"
               ' . ($eventId ? ' AND `e`.`id` != "' . $eventId . '" ' : '') . '
-              AND `t`.`id` = "' . $timeId . '"
+              AND `e`.`timeId` = `ot`.`id`
+              AND `ea`.`eventId` = `e`.`id`
               AND (
-                  (`t`.`title` <= `ot`.`title` AND `ot`.`title` < SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL CAST(CONCAT(`p`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5)) OR
-                  (`t`.`title` < SUBSTR(DATE_ADD(TIME(`ot`.`title`), INTERVAL CAST(CONCAT(`op`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5) AND SUBSTR(DATE_ADD(TIME(`ot`.`title`), INTERVAL CAST(CONCAT(`op`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5) <= SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL CAST(CONCAT(`p`.`duration`) AS UNSIGNED)+30 MINUTE), 1, 5))
+                  (`t`.`title` <= `ot`.`title` AND `ot`.`title` < SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL 150 MINUTE), 1, 5)) OR
+                  (`t`.`title` < SUBSTR(DATE_ADD(TIME(`ot`.`title`), INTERVAL 150 MINUTE), 1, 5) AND SUBSTR(DATE_ADD(TIME(`ot`.`title`), INTERVAL 150 MINUTE), 1, 5) <= SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL 150 MINUTE), 1, 5))
               )
             GROUP BY CONCAT(`date`,`t`.`title`)
         ')->fetchColumn(4);

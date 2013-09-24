@@ -339,12 +339,12 @@ table.x-field tr{
 </table>
 
 <script>
-COMBO.ready = function () {
+COMBO.ready = function(){
     if ($('#placeId').val() != "0") {
         $('#date').removeAttr('disabled');
         $('#date').parents('.calendar-div').removeClass('disabled');
     } else {
-        $('#date').attr('disabled', 'disabled');
+        $('#date').attr('disabled','disabled');
         $('#date').parents('.calendar-div').addClass('disabled');
         $('#date').val('')
     }
@@ -363,7 +363,7 @@ COMBO.ready = function () {
             hide('tr-subprogramId');
             $('#programId').attr('animatorsCount', 1);
             $('#animatorIds-table').removeClass('disabled');
-            if ($('#animatorIds-table').find('span.checkbox.checked').length < parseInt($('#programId').attr('animatorsCount'))) {
+            if($('#animatorIds-table').find('span.checkbox.checked').length < parseInt($('#programId').attr('animatorsCount'))) {
                 $('#animatorIds-table').find('span.checkbox').parents('tr').not('.disabled').show();
             } else {
                 $('#animatorIds-table').find('span.checkbox').not('.checked').parent().parent().hide();
@@ -376,7 +376,7 @@ COMBO.ready = function () {
                 var index = comboOptions['subprogramId'].ids.indexOf(parseInt($('#subprogramId').val()));
                 $('#programId').attr('animatorsCount', comboOptions['subprogramId'].data[index].attrs.animatorsCount);
                 $('#animatorIds-table').removeClass('disabled');
-                if ($('#animatorIds-table').find('span.checkbox.checked').length < parseInt($('#programId').attr('animatorsCount'))) {
+                if($('#animatorIds-table').find('span.checkbox.checked').length < parseInt($('#programId').attr('animatorsCount'))) {
                     $('#animatorIds-table').find('span.checkbox').parents('tr').not('.disabled').show();
                 } else {
                     $('#animatorIds-table').find('span.checkbox').not('.checked').parent().parent().hide();
@@ -387,5 +387,5 @@ COMBO.ready = function () {
         hide('tr-subprogramId');
     }
     $('form[name=event]').css('visibility', 'visible');
-}
+};
 </script>

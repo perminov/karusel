@@ -97,6 +97,8 @@ class Event_Row extends Indi_Db_Table_Row{
                 $this->requestBy = 'client';
                 $this->requestDate = date('Y-m-d');
             }
+        } else {
+            unset($this->_modified['requestBy'], $this->_modified['requestByManagerId'], $this->_modified['requestDate']);
         }
 
         // Формируем calendarStart и calendarEnd
