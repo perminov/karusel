@@ -92,10 +92,10 @@ class Event_Row extends Indi_Db_Table_Row{
             if ($_SESSION['admin']['alternate'] == 'manager') {
                 $this->requestBy = 'manager';
                 $this->requestByManagerId = $_SESSION['admin']['id'];
-                $this->requestDate = date('Y-m-d');
+                $this->requestDate = date('Y-m-d H:i:s');
             } else {
                 $this->requestBy = 'client';
-                $this->requestDate = date('Y-m-d');
+                $this->requestDate = date('Y-m-d H:i:s');
             }
         } else {
             unset($this->_modified['requestBy'], $this->_modified['requestByManagerId'], $this->_modified['requestDate']);
