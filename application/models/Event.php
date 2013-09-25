@@ -116,23 +116,25 @@ class Event extends Indi_Db_Table{
                   IF("'. $animatorsNeededCount . '" = "1",
 
                     `price1` *
-                      IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $date . '") NOT IN(5,6), 1, 0) *
+                      IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $date . '") NOT IN(5,6) AND `t`.`title` < "17:00", 1, 0) *
                       ((CAST(`s`.`detailsString` AS DECIMAL))/100),
 
                     `price2` *
-                      IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $date . '") NOT IN(5,6), 1, 0) *
+                      IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $date . '") NOT IN(5,6) AND `t`.`title` < "17:00", 1, 0) *
                       ((CAST(`s`.`detailsString` AS DECIMAL))/100)
 
                   )) AS DECIMAL)
                   AS `price`
                 FROM
                   `district` `d`,
-                  `place` `p`
+                  `place` `p`,
+                  `time` `t`
                   LEFT JOIN `holiday` `h` ON (`h`.`title` = "' . $date . '")
                   LEFT JOIN `staticblock` `s` ON (`s`.`alias` = "work-day-discount")
                 WHERE 1
                   AND `p`.`id` = "' . $placeId . '"
                   AND `d`.`id` = `p`.`districtId`
+                  AND `t`.`id` = "' . $timeId . '"
             ')->fetchColumn(0);
 
         return array('disabled' => (strlen($disabledA) ? explode(',', $disabledA) : array()), 'price' => $price);
