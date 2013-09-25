@@ -36,7 +36,9 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin{
      */
     public function preDispatch(){
         if ($this->params['json']) {
-            unset($this->get['limit'], $this->get['page']);
+//            unset($this->get['limit'], $this->get['page']);
+            $this->get['limit'] = 1000;
+            $this->get['page'] = 1;
         }
         parent::preDispatch();
     }
