@@ -1,5 +1,5 @@
 <?php
-class Admin_MydistrictController extends Project_Controller_Admin_Calendar{
+class Admin_ManagerCalendarMydistrictController extends Project_Controller_Admin_Calendar{
     public function confirmAction(){
         if ($this->row->manageStatus == '120#00ff00') {
             $response = 'already';

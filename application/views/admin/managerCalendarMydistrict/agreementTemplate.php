@@ -109,7 +109,7 @@
             <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><?=$this->row->foreign['placeId']->title?></span></span></td>
             <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><?=$this->row->childrenCount?></span></span></td>
             <td style="text-align: center;"><font face="arial, helvetica, sans-serif"><span style="font-size: 11px;"><?=$this->row->childrenAge?></span></font></td>
-            <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><?foreach($this->row->foreign['animatorIds'] as $animator) $a[] = $animator->title; echo implode(', ', $a);?></span></span></td>
+            <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><?$a=array();foreach($this->row->foreign['animatorIds'] as $animator) $a[] = $animator->title; echo count($a)?implode(', ', $a): '<span style="color: red;">!НЕ НАЗНАЧЕН!</span>';?></span></span></td>
             <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><?=$this->row->clientPhone?></span></span></td>
         </tr>
         </tbody>

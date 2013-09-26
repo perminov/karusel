@@ -8,7 +8,7 @@ $this->months = array(
 $this->row->setForeignRowsByForeignKeys('districtId,placeId,animatorIds,programId,timeId');
 
 $name = 'agreement';
-$value = $this->render($this->section->alias . '/agreementTemplate.php');
+$value = $this->render('managerCalendarMydistrict/agreementTemplate.php');
 $config = Indi_Registry::get('config');
 $CKconfig['language'] = $config['view']->lang;
 $customParams = array('width','height','bodyClass','style','script','sourceStripper');

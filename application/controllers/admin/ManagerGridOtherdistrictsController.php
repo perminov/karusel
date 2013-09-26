@@ -1,5 +1,5 @@
 <?php
-class Admin_OtherdistrictsController extends Project_Controller_Admin_Calendar{
+class Admin_ManagerGridOtherdistrictsController extends Project_Controller_Admin{
     public function formAction(){
         if ($this->row->districtId && $this->row->districtId != $_SESSION['admin']['districtId']) {
             if ($this->row->requestBy == 'client' || ($this->row->requestByManagerId && $this->row->requestByManagerId != $_SESSION['admin']['id'])) {
