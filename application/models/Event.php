@@ -116,12 +116,12 @@ class Event extends Indi_Db_Table{
                   IF("'. $animatorsNeededCount . '" = "1",
 
                     `price1` *
-                      IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $date . '") NOT IN(5,6) AND `t`.`title` < "17:00", 1, 0) *
-                      ((CAST(`s`.`detailsString` AS DECIMAL))/100),
+                      IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $date . '") NOT IN(5,6) AND IF(ISNULL(`s`.`detailsString`), 0, 1) AND IF(ISNULL(`s2`.`detailsString`), 1, `t`.`title` < `s2`.`detailsString`), 1, 0) *
+                      (IF(ISNULL(`s`.`detailsString`), 0, CAST(`s`.`detailsString` AS DECIMAL))/100),
 
                     `price2` *
-                      IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $date . '") NOT IN(5,6) AND `t`.`title` < "17:00", 1, 0) *
-                      ((CAST(`s`.`detailsString` AS DECIMAL))/100)
+                      IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $date . '") NOT IN(5,6) AND IF(ISNULL(`s`.`detailsString`), 0, 1) AND IF(ISNULL(`s2`.`detailsString`), 1, `t`.`title` < `s2`.`detailsString`), 1, 0) *
+                      (IF(ISNULL(`s`.`detailsString`), 0, CAST(`s`.`detailsString` AS DECIMAL))/100)
 
                   )) AS DECIMAL)
                   AS `price`
@@ -130,7 +130,8 @@ class Event extends Indi_Db_Table{
                   `place` `p`,
                   `time` `t`
                   LEFT JOIN `holiday` `h` ON (`h`.`title` = "' . $date . '")
-                  LEFT JOIN `staticblock` `s` ON (`s`.`alias` = "work-day-discount")
+                  LEFT JOIN `staticblock` `s` ON (`s`.`alias` = "work-day-discount" AND `s`.`toggle` = "y")
+                  LEFT JOIN `staticblock` `s2` ON (`s2`.`alias` = "discount-until-time" AND `s2`.`toggle` = "y")
                 WHERE 1
                   AND `p`.`id` = "' . $placeId . '"
                   AND `d`.`id` = `p`.`districtId`

@@ -202,6 +202,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         }
         eventStore = Ext.create('Ext.data.Store', {
             model: 'Ext.calendar.data.EventModel',
+            pageSize: <?=$this->view->section->rowsOnPage?>,
             proxy:  new Ext.data.proxy.Ajax({
                 url: '<?=$_SERVER['STD']?><?=$GLOBALS['cmsOnlyMode']?'':'/admin'?>/<?=$this->view->section->alias?>/index/json/1/',
                 method: 'POST',
@@ -216,23 +217,37 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
             // private - override the default logic for memory storage
             listeners: {
                 beforeload: function(store, operation, eOpts){
-                    if(calendar) {
-                        myMask.show();
-                        return true;
+                    if (calendar) {
+                        var requested;
+                        if (operation.params.start == operation.params.end) {
+                            requested = 'dayview';
+                        } else {
+                            var start = Ext.Date.parse(operation.params.start, 'm-d-Y');
+                            var end = Ext.Date.parse(operation.params.end, 'm-d-Y');
+                            if (Ext.Date.format(Ext.Date.add(start, Ext.Date.DAY, 6), 'm-d-Y') == operation.params.end) {
+                                requested = 'weekview';
+                            } else {
+                                requested = 'monthview';
+                            }
+                        }
+                        if (calendar.activeView.xtype == requested) {
+                            if (!calendar.lastFetch || Ext.Date.add(calendar.lastFetch, Ext.Date.SECOND, 3) <= new Date()) {
+                                console.log(Ext.Date.format(new Date(), 'Y-m-d H:i:s'));
+                                calendar.lastFetch = new Date();
+                                myMask.show();
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        } else {
+                            return false;
+                        }
                     } else {
                         return false;
                     }
                 },
                 load: function(){
-                    // Mark rows as disabled if such rows exist
                     myMask.hide();
-
-                    // Set up full request string (but without paging params)
-                    /*var url = calendar.eventStore.getProxy().url;
-                    var get = [];
-                    if (calendar.eventStore.getProxy().extraParams.search) get.push('search=' + encodeURIComponent(calendar.eventStore.getProxy().extraParams.search));
-                    if (calendar.eventStore.getSorters().length) get.push('sort=' + encodeURIComponent(JSON.stringify(calendar.eventStore.getSorters())));
-                    calendar.indi.request = url + (get.length ? '?' + get.join('&') : '');*/
                 }
             }
         });

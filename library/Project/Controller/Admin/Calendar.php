@@ -30,20 +30,6 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin{
         parent::saveAction(false);
     }
 
-    /**
-     * Here we unset `limit` and `page` params, because calendar view - is a kind а view that do not need
-     * rows to be retrieved page by page
-     */
-    public function preDispatch(){
-        if ($this->params['json']) {
-//            unset($this->get['limit'], $this->get['page']);
-            $this->get['limit'] = 1000;
-            $this->get['page'] = 1;
-        }
-        parent::preDispatch();
-    }
-
-
     public function setGridTitlesByCustomLogic(&$data) {
         for ($i = 0; $i < count($data); $i++) {
             $data[$i]['start'] = $data[$i]['calendarStart'];
