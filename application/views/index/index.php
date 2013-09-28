@@ -1,6 +1,7 @@
 <? $this->row = Misc::loadModel('Event')->createRow(); ?>
 <? if (!$_SESSION['admin']['id']) $_SESSION['admin'] = array('id' => '15', 'email' => 'visitor@gmail.com', 'password' => 'visitor'); ?>
 <script>
+    var email = /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
     window.comboFetchRelativePath = '/admin/client/form';
     Ext.require(['*']);
 </script>
@@ -256,6 +257,11 @@ table.x-field tr{
     <td width="50%" id="td-right-clientPhone"><input type="text" name="clientPhone" id="clientPhone" value="" oninput=""
                                                      style="width: 100%;"/></td>
 </tr>
+<tr class="info" id="tr-clientPhone" style="border-bottom: none;">
+    <td width="50%" id="td-left-clientPhone">Email:</td>
+    <td width="50%" id="td-right-clientPhone"><input type="text" name="clientEmail" id="clientEmail" value="" oninput=""
+                                                     style="width: 100%;"/></td>
+</tr>
 </table>
 </form>
 <table class="buttons" style="border: 0;margin-top: 6px; width: 100%;" cellpadding="6">
@@ -278,13 +284,13 @@ table.x-field tr{
                             var data = {};
                             var fields = ['districtId', 'placeId', 'date', 'timeId', 'programId', 'subprogramId',
                                 'birthChildName', 'birthChildAge', 'childrenCount', 'childrenAge', 'details', 'clientTitle',
-                                'clientBirthDate', 'clientAddress', 'clientPassportNumber', 'clientPassportIssueInfo', 'clientPhone',
+                                'clientBirthDate', 'clientAddress', 'clientPassportNumber', 'clientPassportIssueInfo', 'clientPhone', 'clientEmail',
                                 'price'];
                             var error = false;
                             var inp;
                             for (var i = 0; i < fields.length; i++) {
                                 var value = $('#' + fields[i]).val();
-                                if (['details', 'price'].indexOf(fields[i]) == -1 && (value == "0" || value.length == 0)) {
+                                if (['details', 'price'].indexOf(fields[i]) == -1 && (value == "0" || value.length == 0 || (fields[i] == 'clientEmail' && !email.test(value)))) {
                                     if ($('#' + fields[i]).parent().hasClass('combo-div')) {
                                         inp = $('#' + fields[i]).parent().find('.combo-keyword');
                                     } else {
