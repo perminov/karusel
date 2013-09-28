@@ -34,8 +34,18 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin{
         for ($i = 0; $i < count($data); $i++) {
             $data[$i]['start'] = $data[$i]['calendarStart'];
             $data[$i]['end'] = $data[$i]['calendarEnd'];
-            $data[$i]['cid'] = preg_match('/Подтвержденная/', $data[$i]['manageStatus']) ? 2 : 1;
+            $data[$i]['cid'] = $this->setColor($data[$i]);
             $data[$i]['title'] = $data[$i]['placeId'];
+        }
+    }
+
+    public function setColor($item) {
+        if (preg_match('/Подтвержденная/', $item['manageStatus'])) {
+            return 2;
+        } else if ($item['requestBy'] == 'Заказчиком') {
+            return 3;
+        } else {
+            return 1;
         }
     }
 }

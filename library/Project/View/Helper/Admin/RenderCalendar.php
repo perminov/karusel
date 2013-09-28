@@ -121,7 +121,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         if ($_SERVER['STD']) $meta = json_decode(str_replace('\/admin\/', str_replace('/', '\/', $_SERVER['STD']) . '\/admin\/', json_encode($meta)));
         if ($GLOBALS['cmsOnlyMode']) $meta = json_decode(str_replace('\/admin\/', '\/', json_encode($meta)));
         ob_start();?>
-    <link rel="stylesheet" type="text/css" href="/library/extjs4/examples/calendar/resources/css/calendar.css?1" />
+    <link rel="stylesheet" type="text/css" href="/library/extjs4/examples/calendar/resources/css/calendar.css?2" />
     <link rel="stylesheet" type="text/css" href="/library/extjs4/examples/calendar/resources/css/examples.css" />
     <style>
         .x-window-body-default{background: white !important;}
@@ -231,8 +231,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                             }
                         }
                         if (calendar.activeView.xtype == requested) {
-                            if (!calendar.lastFetch || Ext.Date.add(calendar.lastFetch, Ext.Date.SECOND, 3) <= new Date()) {
-                                console.log(Ext.Date.format(new Date(), 'Y-m-d H:i:s'));
+                            if (!calendar.lastFetch || Ext.Date.add(calendar.lastFetch, Ext.Date.SECOND, 2) <= new Date()) {
                                 calendar.lastFetch = new Date();
                                 myMask.show();
                                 return true;
@@ -256,10 +255,13 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
             data: {
                 "calendars":[{
                     "id":    1,
-                    "title": "Home"
+                    "title": "Предварительные"
                 },{
                     "id":    2,
-                    "title": "Work"
+                    "title": "Потвержденные"
+                },{
+                    "id":    3,
+                    "title": "Клиентские"
                 }]
             }
         });

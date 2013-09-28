@@ -27,7 +27,7 @@ class Admin_ManagerCalendarMydistrictController extends Project_Controller_Admin
             for ($i = 0; $i < count($data); $i++) {
                 $data[$i]['start'] = $data[$i]['calendarStart'];
                 $data[$i]['end'] = $data[$i]['calendarEnd'];
-                $data[$i]['cid'] = preg_match('/Подтвержденная/', $data[$i]['manageStatus']) ? 2 : 1;
+                $data[$i]['cid'] = $this->setColor($data[$i]);
                 list($last, $client) = explode(' ', $data[$i]['clientTitle']);
                 $title = $client . ' ' . $data[$i]['clientPhone'] . ' ';
                 list($manager) = explode(' ', $data[$i]['manageManagerId']);
