@@ -3,6 +3,7 @@
 <script>
     var email = /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
     window.comboFetchRelativePath = '/admin/client/form';
+    window.publicTimes = [];
     Ext.require(['*']);
 </script>
 <style>
@@ -43,6 +44,7 @@ table.x-field tr{
             <div id="dateCalendarRender" style="position: absolute; display: none; margin-top: 1px;">
                 <script>
                     $('#date').change(function () {
+                        comboOptions.timeId = deepObjCopy(comboOptions.timeIdBackup);
                         if ($('#date').val() == '') {
                             COMBO.toggle('timeId', true);
                         } else {
@@ -53,6 +55,21 @@ table.x-field tr{
                                     $('#timeId-keyword').val('');
                                     $('#timeId').val(0).change();
                                     COMBO.toggle('timeId', false);
+                                    console.log(publicTimes);
+                                    if (publicTimes.length) {
+                                        do {
+                                            for (var i in comboOptions.timeId.ids) {
+                                                if(publicTimes.indexOf(comboOptions.timeId.ids[i]) == -1) {
+                                                    comboOptions.timeId.ids.splice(i, 1);
+                                                    comboOptions.timeId.data.splice(i, 1);
+                                                    break;
+                                                }
+                                            }
+                                        } while (publicTimes.length < comboOptions.timeId.ids.length);
+                                        console.log(comboOptions.timeId.ids);
+                                        comboOptions.timeId.found = comboOptions.timeId.ids.length;
+                                        console.log(comboOptions.timeId);
+                                    }
                                 }
                                 , 'json');
                         }
@@ -393,5 +410,6 @@ COMBO.ready = function(){
         hide('tr-subprogramId');
     }
     $('form[name=event]').css('visibility', 'visible');
+    window.comboOptions.timeIdBackup = deepObjCopy(window.comboOptions.timeId);
 };
 </script>

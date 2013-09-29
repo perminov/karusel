@@ -11,17 +11,13 @@ class Event extends Indi_Db_Table{
               GROUP_CONCAT(
                 IF(`e`.`timeId` - 1 > 0, CONCAT(`e`.`timeId` - 1, ",",
                   IF(`e`.`timeId` - 2 > 0, CONCAT(`e`.`timeId` - 2, ",",
-                    IF(`e`.`timeId` - 3 > 0, CONCAT(`e`.`timeId` - 3, ",",
-                      IF(`e`.`timeId` - 4 > 0, CONCAT(`e`.`timeId` - 4, ","), ",")
-                    ), "")
+                    IF(`e`.`timeId` - 3 > 0, CONCAT(`e`.`timeId` - 3, ","), ",")
                   ), "")
                 ), ""),
                 `e`.`timeId`,
                 IF(`e`.`timeId` + 1 < 18, CONCAT(",", `e`.`timeId` + 1,
                   IF(`e`.`timeId` + 2 < 18, CONCAT(",", `e`.`timeId` + 2,
-                    IF(`e`.`timeId` + 3 < 18, CONCAT(",", `e`.`timeId` + 3,
-                      IF(`e`.`timeId` + 4 < 18, CONCAT(",", `e`.`timeId` + 4), "")
-                    ), "")
+                    IF(`e`.`timeId` + 3 < 18, CONCAT(",", `e`.`timeId` + 3), "")
                   ), "")
                 ), "")
               ) AS `tmp`,
@@ -41,8 +37,23 @@ class Event extends Indi_Db_Table{
               AND FIND_IN_SET(16, tmp) AND FIND_IN_SET(17, tmp)
         ')->fetchAll();
 
+        $publicTimes = $this->getAdapter()->query('
+            SELECT GROUP_CONCAT(DISTINCT `timeId`) FROM `publicTime` WHERE `placeId` = "' . $placeId . '"
+        ')->fetchColumn(0);
+
         foreach ($dateA as $dateI) $disabledDates[$dateI['date']] = true;
-        return array_keys($disabledDates);
+
+        if ($publicTimes) {
+            $publicTimes = explode(',', $publicTimes);
+            for ($i = 0; $i < count($publicTimes); $i++) $publicTimes[$i] = (int) $publicTimes[$i];
+        } else {
+            $publicTimes = array();
+        }
+
+        return array(
+            'disabledDates' => array_keys($disabledDates),
+            'publicTimes' => $publicTimes
+        );
     }
 
     public function disabledTimes($placeId, $date, $eventId = null){
@@ -52,17 +63,13 @@ class Event extends Indi_Db_Table{
               GROUP_CONCAT(
                 IF(`e`.`timeId` - 1 > 0, CONCAT(`e`.`timeId` - 1, ",",
                   IF(`e`.`timeId` - 2 > 0, CONCAT(`e`.`timeId` - 2, ",",
-                    IF(`e`.`timeId` - 3 > 0, CONCAT(`e`.`timeId` - 3, ",",
-                      IF(`e`.`timeId` - 4 > 0, CONCAT(`e`.`timeId` - 4, ","), ",")
-                    ), "")
+                    IF(`e`.`timeId` - 3 > 0, CONCAT(`e`.`timeId` - 3, ","), ",")
                   ), "")
                 ), ""),
                 `e`.`timeId`,
                 IF(`e`.`timeId` + 1 < 18, CONCAT(",", `e`.`timeId` + 1,
                   IF(`e`.`timeId` + 2 < 18, CONCAT(",", `e`.`timeId` + 2,
-                    IF(`e`.`timeId` + 3 < 18, CONCAT(",", `e`.`timeId` + 3,
-                      IF(`e`.`timeId` + 4 < 18, CONCAT(",", `e`.`timeId` + 4), "")
-                    ), "")
+                    IF(`e`.`timeId` + 3 < 18, CONCAT(",", `e`.`timeId` + 3), "")
                   ), "")
                 ), "")
               ) AS `tmp`,
