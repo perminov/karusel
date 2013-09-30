@@ -88,28 +88,23 @@
     <table border="1" cellpadding="1" cellspacing="0" style="width: 100%;">
         <tbody>
         <tr>
-            <td colspan="1" rowspan="2" style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Дата</span></span></td>
-            <td colspan="2" rowspan="1" style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Время</span></span></td>
-            <td colspan="1" rowspan="2" style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Место<br />
+            <td colspan="1" style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Дата</span></span></td>
+            <td colspan="1" style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Время</span></span></td>
+            <td colspan="1" style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Место<br />
 			проведения</span></span></td>
-            <td colspan="1" rowspan="2" style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Количество<br />
+            <td colspan="1" style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Количество<br />
 			детей</span></span></td>
-            <td colspan="1" rowspan="2" style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Возраст</span></span></td>
-            <td colspan="1" rowspan="2" style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Аниматор</span></span></td>
-            <td colspan="1" rowspan="2" style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Телефон Заказчика</span></span></td>
-        </tr>
-        <tr>
-            <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Аренда</span></span></td>
-            <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Анимационная программа</span></span></td>
+            <td colspan="1" style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Возраст</span></span></td>
+            <td colspan="1" style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Анимационная программа</span></span></td>
+            <td colspan="1" style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;">Телефон Заказчика</span></span></td>
         </tr>
         <tr>
             <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><?=date('d.m.Y', strtotime($this->row->date))?></span></span></td>
-            <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><?=$this->row->foreign['timeId']->title?></span></span></td>
-            <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><?=$this->row->foreign['placeId']->duration == 90 ? '1.5' : '2'?> часа, <?=$this->row->foreign['programId']->title?></span></span></td>
+            <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><?=$this->row->foreign['timeId']->title?> - <?=date('H:i', strtotime($this->row->foreign['timeId']->title) + 60 * 60 * 2)?></span></span></td>
             <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><?=$this->row->foreign['placeId']->title?></span></span></td>
             <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><?=$this->row->childrenCount?></span></span></td>
             <td style="text-align: center;"><font face="arial, helvetica, sans-serif"><span style="font-size: 11px;"><?=$this->row->childrenAge?></span></font></td>
-            <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><?$a=array();foreach($this->row->foreign['animatorIds'] as $animator) $a[] = $animator->title; echo count($a)?implode(', ', $a): '<span style="color: red;">!НЕ НАЗНАЧЕН!</span>';?></span></span></td>
+            <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><?=$this->row->foreign['programId']->title . ($this->row->foreign['subprogramId'] ? ', ' . $this->row->foreign['subprogramId']->title : '')?></span></span></td>
             <td style="text-align: center;"><span style="font-size:11px;"><span style="font-family:arial,helvetica,sans-serif;"><?=$this->row->clientPhone?></span></span></td>
         </tr>
         </tbody>
