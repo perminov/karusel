@@ -130,14 +130,32 @@ table.x-field tr{
     <td width="50%" id="td-right-birthChildName"><input type="text" name="birthChildName" id="birthChildName" value=""
                                                         oninput="" style="width: 100%;"/></td>
 </tr>
-<tr class="info" id="tr-birthChildAge">
-    <td width="50%" id="td-left-birthChildAge">Сколько лет исполняется:</td>
-    <td width="50%" id="td-right-birthChildAge"><input type="text" name="birthChildAge" id="birthChildAge" value="0"
-                                                       style="width: 50px; text-align: right;" maxlength="5"
-                                                       oninput="this.value=number(this.value);"
-                                                       onkeydown="if(event.keyCode==38||event.keyCode==40){if(event.keyCode==38)this.value=parseInt(this.value)+1;else if(event.keyCode==40)this.value=parseInt(this.value)-1;}"
-                                                       autocomplete="off"/></td>
-</tr>
+<tr class="info" id="tr-birthChildBirthDate"><td width="50%" id="td-left-birthChildBirthDate">Дата рождения:</td><td width="50%" id="td-right-birthChildBirthDate"><div style="position: relative; z-index: 98" id="calendarbirthChildBirthDateDiv" class="calendar-div"><input type="text" name="birthChildBirthDate" value="" readonly="readonly" style="width: 62px; margin-top: 1px;" id="birthChildBirthDate" class="calendar-input"> <a href="javascript:void(0);" onclick="$('#birthChildBirthDateCalendarRender').toggle();" id="birthChildBirthDateCalendarIcon" class="calendar-trigger"><img src="/i/admin/b_calendar.png" alt="Show calendar" width="14" height="18" border="0" style="vertical-align: top; margin-top: 1px; margin-left: -2px;"></a>		<div id="birthChildBirthDateCalendarRender" style="position: absolute; display: none; margin-top: 1px;">
+    <script>
+        $('#birthChildBirthDate').change(function(){
+        });
+        Ext.onReady(function() {
+            Ext.create('Ext.picker.Date', {
+                renderTo: 'birthChildBirthDateCalendarRender',
+                id: 'birthChildBirthDateCalendar',
+                width: 185,
+                disabledDatesText: 'На данную дату все уже забронировано',
+                ariaTitleDateFormat: 'Y-m-d',
+                longDayFormat: 'Y-m-d',
+                handler: function(picker, date) {
+                    var y = date.getFullYear();
+                    var m = date.getMonth() + 1; if (m.toString().length < 2) m = '0' + m;
+                    var d = date.getDate(); if (d.toString().length < 2) d = '0' + d;
+                    var selectedDate = y + '-' + m + '-' + d;
+                    $('#birthChildBirthDate').val(selectedDate);
+                    $('#birthChildBirthDateCalendarRender').toggle();
+                    $('#birthChildBirthDate').change();
+                }
+            });
+        });
+    </script>
+</div>
+</div></td></tr>
 <tr class="info" id="tr-childrenCount">
     <td width="50%" id="td-left-childrenCount">Количество детей:</td>
     <td width="50%" id="td-right-childrenCount">
@@ -199,58 +217,6 @@ table.x-field tr{
     <td width="50%" id="td-right-clientTitle"><input type="text" name="clientTitle" id="clientTitle" value="" oninput=""
                                                      style="width: 100%;"/></td>
 </tr>
-<tr class="info" id="tr-clientBirthDate">
-    <td width="50%" id="td-left-clientBirthDate">Дата рождения:</td>
-    <td width="50%" id="td-right-clientBirthDate">
-        <div style="position: relative; z-index: 97" id="calendarclientBirthDateDiv" class="calendar-div"><input
-            type="text" name="clientBirthDate" value="" style="width: 62px; margin-top: 1px; border: 1px solid #99BCE8;"
-            id="clientBirthDate" class="calendar-input" readonly="readonly"> <a href="javascript:void(0);"
-                                                            onclick="$('#clientBirthDateCalendarRender').toggle();"
-                                                            id="clientBirthDateCalendarIcon"
-                                                            class="calendar-trigger"><img src="/i/admin/b_calendar.png"
-                                                                                          alt="Show calendar" width="14"
-                                                                                          height="18" border="0"
-                                                                                          style="vertical-align: top; margin-top: 1px; margin-left: -2px;"></a>
-
-            <div id="clientBirthDateCalendarRender" style="position: absolute; display: none; margin-top: 1px;">
-                <script>
-                    $('#clientBirthDate').change(function () {
-                    });
-                    Ext.onReady(function () {
-                        //Ext.Date.monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-                        Ext.create('Ext.picker.Date', {
-                            //dayNames: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
-                            //monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
-                            renderTo:'clientBirthDateCalendarRender',
-                            id:'clientBirthDateCalendar',
-                            width:185,
-                            disabledDatesText:'На данную дату все уже забронировано',
-                            //todayText: 'Сегодня',
-                            //ariaTitle: 'Выбрать месяц и год',
-                            ariaTitleDateFormat:'Y-m-d',
-                            longDayFormat:'Y-m-d',
-                            //nextText: 'Следующий месяц',
-                            //prevText: 'Предыдущий месяц',
-                            //todayTip: 'Выбрать сегодняшнюю дату',
-                            //startDay: 1,
-                            handler:function (picker, date) {
-                                var y = date.getFullYear();
-                                var m = date.getMonth() + 1;
-                                if (m.toString().length < 2) m = '0' + m;
-                                var d = date.getDate();
-                                if (d.toString().length < 2) d = '0' + d;
-                                var selectedDate = y + '-' + m + '-' + d;
-                                $('#clientBirthDate').val(selectedDate);
-                                $('#clientBirthDateCalendarRender').toggle();
-                                $('#clientBirthDate').change();
-                            }
-                        });
-                    });
-                </script>
-            </div>
-        </div>
-    </td>
-</tr>
 <tr class="info" id="tr-clientAddress">
     <td width="50%" id="td-left-clientAddress">Адрес:</td>
     <td width="50%" id="td-right-clientAddress"><input type="text" name="clientAddress" id="clientAddress" value=""
@@ -274,9 +240,9 @@ table.x-field tr{
     <td width="50%" id="td-right-clientPhone"><input type="text" name="clientPhone" id="clientPhone" value="" oninput=""
                                                      style="width: 100%;"/></td>
 </tr>
-<tr class="info" id="tr-clientPhone" style="border-bottom: none;">
-    <td width="50%" id="td-left-clientPhone">Email:</td>
-    <td width="50%" id="td-right-clientPhone"><input type="text" name="clientEmail" id="clientEmail" value="" oninput=""
+<tr class="info" id="tr-clientEmail" style="border-bottom: none;">
+    <td width="50%" id="td-left-clientEmail">Email:</td>
+    <td width="50%" id="td-right-clientEmail"><input type="text" name="clientEmail" id="clientEmail" value="" oninput=""
                                                      style="width: 100%;"/></td>
 </tr>
 </table>
@@ -300,8 +266,8 @@ table.x-field tr{
                         handler:function () {
                             var data = {};
                             var fields = ['districtId', 'placeId', 'date', 'timeId', 'programId', 'subprogramId',
-                                'birthChildName', 'birthChildAge', 'childrenCount', 'childrenAge', 'details', 'clientTitle',
-                                'clientBirthDate', 'clientAddress', 'clientPassportNumber', 'clientPassportIssueInfo', 'clientPhone', 'clientEmail',
+                                'birthChildName', 'birthChildBirthDate', 'childrenCount', 'childrenAge', 'details', 'clientTitle',
+                                'clientAddress', 'clientPassportNumber', 'clientPassportIssueInfo', 'clientPhone', 'clientEmail',
                                 'price'];
                             var error = false;
                             var inp;

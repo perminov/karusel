@@ -231,7 +231,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                             }
                         }
                         if (calendar.activeView.xtype == requested) {
-                            if (!calendar.lastFetch || Ext.Date.add(calendar.lastFetch, Ext.Date.SECOND, 2) <= new Date()) {
+                            if (!calendar.lastFetch || Ext.Date.add(calendar.lastFetch, Ext.Date.MILLI, 500) <= new Date()) {
                                 calendar.lastFetch = new Date();
                                 myMask.show();
                                 return true;

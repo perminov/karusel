@@ -65,8 +65,8 @@ class Project_View_Helper_MailConfirmation extends Indi_View_Helper_Abstract{
 				  <tr>
 					  <td width="10"></td>
 					  <td>
-                        <font face="arial,sans-serif" color="#505050" style="font-size:12px">Сколько лет исполняется : </font>
-                        <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=$event->birthChildAge?></font>
+                        <font face="arial,sans-serif" color="#505050" style="font-size:12px">Дата рождения : </font>
+                        <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=rDate($event->birthChildBirthDate)?></font>
                       </td>
 					  <td width="10"></td>
 				  </tr>
@@ -119,15 +119,6 @@ class Project_View_Helper_MailConfirmation extends Indi_View_Helper_Abstract{
 					  <td>
                         <font face="arial,sans-serif" color="#505050" style="font-size:12px">ФИО: </font>
                         <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=$event->clientTitle?></font>
-                      </td>
-					  <td width="10"></td>
-				  </tr>
-				  <tr><td colspan="3" height="9"></td></tr>
-				  <tr>
-					  <td width="10"></td>
-					  <td>
-                        <font face="arial,sans-serif" color="#505050" style="font-size:12px">Дата рождения: </font>
-                        <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=rDate($event->clientBirthDate)?></font>
                       </td>
 					  <td width="10"></td>
 				  </tr>
