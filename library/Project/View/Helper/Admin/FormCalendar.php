@@ -55,7 +55,7 @@ class Project_View_Helper_Admin_FormCalendar extends Indi_View_Helper_Abstract
 						//startDay: 1,
                         <?if ($name == 'date' && $this->view->trail->getItem()->model->info('name') == 'event'){?>
                             minDate: new Date(),
-                            maxDate: Ext.Date.add(new Date(), Ext.Date.MONTH, 1),
+                            maxDate: Ext.Date.add(new Date(), Ext.Date.DAY, 35),
                         <?}?>
 						handler: function(picker, date) {
 							var y = date.getFullYear();

@@ -64,6 +64,15 @@ class Event_Row extends Indi_Db_Table_Row{
         $title[] = $districtR->code . ': ' . $placeR->title;
         $this->title = implode(' ', $title);
 
+        // Рассчитываем возраст именинника
+        if ($this->_modified['birthChildBirthDate']) {
+            if ($this->_modified['birthChildBirthDate'] == '0000-00-00') {
+                $this->birthChildAge = 0;
+            } else {
+                $this->birthChildAge = date('Y') - date('Y', strtotime($this->_modified['birthChildBirthDate']));
+            }
+        }
+
         // Рассчитываем стоимость
         $this->price = $this->getTable()->getAdapter()->query('
             SELECT

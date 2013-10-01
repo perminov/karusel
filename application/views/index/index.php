@@ -92,7 +92,7 @@ table.x-field tr{
                             //todayTip: 'Выбрать сегодняшнюю дату',
                             //startDay: 1,
                             minDate: new Date(),
-                            maxDate: Ext.Date.add(new Date(), Ext.Date.MONTH, 1),
+                            maxDate: Ext.Date.add(new Date(), Ext.Date.DAY, 35),
                             handler:function (picker, date) {
                                 var y = date.getFullYear();
                                 var m = date.getMonth() + 1;
