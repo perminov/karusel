@@ -72,19 +72,21 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                 }";
             }
             if ($actionI['alias'] == 'confirm' && $this->view->row->id && $this->view->row->manageStatus != '120#00ff00') {
+                $managerRs = Misc::loadModel('Manager')->fetchAll('`districtId` = "' . $this->view->row->districtId . '"');
+                $options = array(); foreach($managerRs as $managerR) $options[] = array('id' => $managerR->id, 'title' => $managerR->title);
                 $a[] = "{
-                    text: 'Потвердить',
+                    text: 'Подтвердить',
                     handler: function(){
                         Ext.MessageBox.show({
                             title: 'Подтверждение заявки',
-                            msg: '<span id=\"msgbox-prepay\"></span>',
+                            msg: '<span id=\"msgbox-prepay\"></span><span id=\"managerSelectBox\"></span><br/><br/><br/>',
                             buttons: Ext.MessageBox.OKCANCEL,
                             icon: Ext.MessageBox.INFO,
-                            width: 230,
+                            width: 300,
                             fn: function(answer, arg2){
                                 if (answer == 'ok') {
                                     $.post(PRE + '/" . $this->view->section->alias . "/confirm/id/" . $this->view->row->id . "/',
-                                        {managePrepay: Ext.getCmp('managePrepay').getValue()},
+                                        {managePrepay: Ext.getCmp('managePrepay').getValue(), manageManagerId: Ext.getCmp('manageManagerId').getValue()},
                                         function(response){
                                             Ext.MessageBox.show({
                                                 title:'Подтверждение заявки',
@@ -103,15 +105,34 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                                 }
                             }
                         });
+                        Ext.create('Ext.form.field.ComboBox',{
+                          store: Ext.create('Ext.data.Store', {
+                                fields: ['id', 'title'],
+                                data : " . json_encode($options) . "
+                          }),
+                          displayField: 'title',
+                          valueField: 'id',
+                          value: '" . $_SESSION['admin']['id'] . "',
+                          typeAhead: false,
+                          fieldLabel: 'Кем принята',
+                          labelWidth: 90,
+                          width: 210,
+                          style: 'font-size: 10px',
+                          cls: 'subsection-select',
+                          editable: false,
+                          renderTo: 'managerSelectBox',
+                          id: 'manageManagerId'
+                        });
                         Ext.create('Ext.form.field.Number',{
-                            fieldLabel: 'Предоплата',
-                            labelWidth: 80,
-                            width: 140,
-                            minValue: 0,
-                            height: 19,
-                            value: 500,
-                            id: 'managePrepay',
-                            renderTo: 'msgbox-prepay'
+                          fieldLabel: 'Предоплата',
+                          labelWidth: 90,
+                          width: 180,
+                          minValue: 0,
+                          height: 19,
+                          value: 500,
+                          id: 'managePrepay',
+                          renderTo: 'msgbox-prepay',
+                          margin: '0 0 5 0'
                         });
                     },
                     id: 'button-confirm'
