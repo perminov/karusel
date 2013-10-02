@@ -24,7 +24,7 @@ class Event_Row extends Indi_Db_Table_Row{
                 $adjustmentR->eventId = $this->id;
                 $adjustmentR->fieldId = $fieldR->id;
 
-                if (array_key_exists($fieldR->alias, $was->_original['foreign'])) {
+                if (is_array($was->_original['foreign']) && array_key_exists($fieldR->alias, $was->_original['foreign'])) {
                     if ($was->_original['foreign'][$fieldR->alias] instanceof Indi_Db_Table_Rowset) {
                         $implodedWas = array();
                         foreach ($was->_original['foreign'][$fieldR->alias] as $r) $implodedWas[] = $r->getTitle();
@@ -36,7 +36,7 @@ class Event_Row extends Indi_Db_Table_Row{
                     $adjustmentR->was = $was->{$fieldR->alias};
                 }
 
-                if (array_key_exists($fieldR->alias, $now->_original['foreign'])) {
+                if (is_array($was->_original['foreign']) && array_key_exists($fieldR->alias, $now->_original['foreign'])) {
                     if ($now->_original['foreign'][$fieldR->alias] instanceof Indi_Db_Table_Rowset) {
                         $implodedNow = array();
                         foreach ($now->_original['foreign'][$fieldR->alias] as $r) $implodedNow[] = $r->getTitle();

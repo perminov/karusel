@@ -48,6 +48,7 @@
 					text: '<?=LOGIN_SCREEN_ENTER?>',
 					margin: '4 0 0 20',
 					width: 113,
+                    id: 'login-form-submit-button',
 					handler: function(){
 						var data = {email: $('input[name=email]').val(), password: $('input[name=password]').val(), enter: true}
 						$.post('<?=$_SERVER['STD']?>'+(cmsOnlyMode?'/':'/admin/'), data, function(response){
@@ -77,7 +78,17 @@
 						$('input[name=email]').val('');
 					}
 				}
-			]
+			],
+            listeners: {
+                afterRender: function(thisForm, options){
+                    this.keyNav = Ext.create('Ext.util.KeyNav', this.el, {
+                        enter: function(){
+                            Ext.getCmp('login-form-submit-button').handler();
+                        },
+                        scope: this
+                    });
+                }
+            }
 		});
 	});
 </script>
