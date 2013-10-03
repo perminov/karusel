@@ -32,7 +32,7 @@ table.x-field tr{
     <td width="50%" id="td-right-date">
         <div style="position: relative; z-index: 99" id="calendardateDiv" class="calendar-div"><input type="text"
                                                                                                       name="date"
-                                                                                                      value="2013-08-20"
+                                                                                                      value=""
                                                                                                       style="width: 62px; margin-top: 1px;"
                                                                                                       id="date"
                                                                                                       class="calendar-input">
@@ -42,6 +42,7 @@ table.x-field tr{
                                              style="vertical-align: top; margin-top: 1px; margin-left: -2px;"></a>
 
             <div id="dateCalendarRender" style="position: absolute; display: none; margin-top: 1px;">
+                <?$params['displayFormat'] = 'd.m.Y'?>
                 <script>
                     $('#date').change(function () {
                         comboOptions.timeId = deepObjCopy(comboOptions.timeIdBackup);
@@ -49,13 +50,12 @@ table.x-field tr{
                             COMBO.toggle('timeId', true);
                         } else {
                             $.post(STD+'/auxillary/disabledTimes',
-                                {placeId:$('#placeId').val(), date:$('#date').val()},
+                                {placeId:$('#placeId').val(), date: Ext.Date.format(Ext.Date.parse($('#date').val(), Ext.getCmp('dateCalendar').longDayFormat), 'Y-m-d')},
                                 function (disabledTimeIds) {
                                     COMBO.setDisabledOptions('timeId', disabledTimeIds);
                                     $('#timeId-keyword').val('');
                                     $('#timeId').val(0).change();
                                     COMBO.toggle('timeId', false);
-                                    console.log(publicTimes);
                                     if (publicTimes.length) {
                                         do {
                                             for (var i in comboOptions.timeId.ids) {
@@ -66,9 +66,7 @@ table.x-field tr{
                                                 }
                                             }
                                         } while (publicTimes.length < comboOptions.timeId.ids.length);
-                                        console.log(comboOptions.timeId.ids);
                                         comboOptions.timeId.found = comboOptions.timeId.ids.length;
-                                        console.log(comboOptions.timeId);
                                     }
                                 }
                                 , 'json');
@@ -85,21 +83,17 @@ table.x-field tr{
                             disabledDatesText:'На данную дату все уже забронировано',
                             //todayText: 'Сегодня',
                             //ariaTitle: 'Выбрать месяц и год',
-                            ariaTitleDateFormat:'Y-m-d',
-                            longDayFormat:'Y-m-d',
+                            ariaTitleDateFormat: '<?=$params['displayFormat']?>',
+                            longDayFormat: '<?=$params['displayFormat']?>',
+                            format: '<?=$params['displayFormat']?>',
                             //nextText: 'Следующий месяц',
                             //prevText: 'Предыдущий месяц',
                             //todayTip: 'Выбрать сегодняшнюю дату',
                             //startDay: 1,
                             minDate: new Date(),
                             maxDate: Ext.Date.add(new Date(), Ext.Date.DAY, 35),
-                            handler:function (picker, date) {
-                                var y = date.getFullYear();
-                                var m = date.getMonth() + 1;
-                                if (m.toString().length < 2) m = '0' + m;
-                                var d = date.getDate();
-                                if (d.toString().length < 2) d = '0' + d;
-                                var selectedDate = y + '-' + m + '-' + d;
+                            handler: function(picker, date) {
+                                var selectedDate = Ext.Date.format(date, '<?=$params['displayFormat']?>');
                                 $('#date').val(selectedDate);
                                 $('#dateCalendarRender').toggle();
                                 $('#date').change();
@@ -140,13 +134,11 @@ table.x-field tr{
                 id: 'birthChildBirthDateCalendar',
                 width: 185,
                 disabledDatesText: 'На данную дату все уже забронировано',
-                ariaTitleDateFormat: 'Y-m-d',
-                longDayFormat: 'Y-m-d',
+                ariaTitleDateFormat: '<?=$params['displayFormat']?>',
+                longDayFormat: '<?=$params['displayFormat']?>',
+                format: '<?=$params['displayFormat']?>',
                 handler: function(picker, date) {
-                    var y = date.getFullYear();
-                    var m = date.getMonth() + 1; if (m.toString().length < 2) m = '0' + m;
-                    var d = date.getDate(); if (d.toString().length < 2) d = '0' + d;
-                    var selectedDate = y + '-' + m + '-' + d;
+                    var selectedDate = Ext.Date.format(date, '<?=$params['displayFormat']?>');
                     $('#birthChildBirthDate').val(selectedDate);
                     $('#birthChildBirthDateCalendarRender').toggle();
                     $('#birthChildBirthDate').change();

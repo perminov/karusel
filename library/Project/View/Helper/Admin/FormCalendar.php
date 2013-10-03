@@ -27,6 +27,8 @@ class Project_View_Helper_Admin_FormCalendar extends Indi_View_Helper_Abstract
         // if current value earlier than minimal date, minimal date is to be set
         // equal to value
         $minimal = $minimal > $value ? $value : $minimal;
+        $params = $field->getParams();
+        if ($params['displayFormat']) $value = date($params['displayFormat'], strtotime($value));
         $xhtml  = '<div style="position: relative; z-index: ' . (100 - $zIndex) . '" id="calendar' . $name . 'Div" class="calendar-div">';
         $xhtml .= '<input type="text" name="' . $name . '" value="' . $value . '" style="width: 62px; margin-top: 1px;" id="' . $name . '" class="calendar-input"> ';
 		$xhtml .= '<a href="javascript:void(0);" onclick="$(\'#' . $name . 'CalendarRender\').toggle();" id="' . $name . 'CalendarIcon" class="calendar-trigger"><img src="' . $p . 'b_calendar.png" alt="Show calendar" width="14" height="18" border="0" style="vertical-align: top; margin-top: 1px; margin-left: -2px;"></a>';
@@ -47,8 +49,10 @@ class Project_View_Helper_Admin_FormCalendar extends Indi_View_Helper_Abstract
                         disabledDatesText: '<?=Misc::loadModel('Staticblock')->fetchRow('`alias` = "inactive-date-tip"')->detailsString?>',
 						//todayText: 'Сегодня',
 						//ariaTitle: 'Выбрать месяц и год',
-						ariaTitleDateFormat: 'Y-m-d',
-						longDayFormat: 'Y-m-d',
+						ariaTitleDateFormat: '<?=$params['displayFormat']?>',
+						longDayFormat: '<?=$params['displayFormat']?>',
+                        format: '<?=$params['displayFormat']?>',
+                        value: Ext.Date.parse('<?=$value?>', '<?=$params['displayFormat']?>'),
 						//nextText: 'Следующий месяц',
 						//prevText: 'Предыдущий месяц',
 						//todayTip: 'Выбрать сегодняшнюю дату',
@@ -58,10 +62,7 @@ class Project_View_Helper_Admin_FormCalendar extends Indi_View_Helper_Abstract
                             maxDate: Ext.Date.add(new Date(), Ext.Date.DAY, 35),
                         <?}?>
 						handler: function(picker, date) {
-							var y = date.getFullYear();
-							var m = date.getMonth() + 1; if (m.toString().length < 2) m = '0' + m;
-							var d = date.getDate(); if (d.toString().length < 2) d = '0' + d;
-							var selectedDate = y + '-' + m + '-' + d;
+							var selectedDate = Ext.Date.format(date, '<?=$params['displayFormat']?>');
 							$('#<?=$name?>').val(selectedDate);
 							$('#<?=$name?>CalendarRender').toggle();
                             $('#<?=$name?>').change();
