@@ -50,8 +50,13 @@ class Event extends Indi_Db_Table{
             $publicTimes = array();
         }
 
+        $disabledDates = array_keys($disabledDates);
+        for($i = 0; $i < count($disabledDates); $i++) {
+            $disabledDates[$i] = date('d.m.Y', strtotime($disabledDates[$i]));
+        }
+        
         return array(
-            'disabledDates' => array_keys($disabledDates),
+            'disabledDates' => $disabledDates,
             'publicTimes' => $publicTimes
         );
     }

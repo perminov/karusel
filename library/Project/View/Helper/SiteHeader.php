@@ -1,5 +1,5 @@
 <?php
-class Indi_View_Helper_SiteHeader extends Indi_View_Helper_Abstract{
+class Project_View_Helper_SiteHeader extends Indi_View_Helper_Abstract{
 	public function siteHeader(){
 		ob_start();?>
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">

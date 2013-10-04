@@ -1,5 +1,5 @@
 <?php
-class Admin_ManagerGridMydistrictController extends Project_Controller_Admin{
+class Admin_ManagerGridMydistrictController extends Project_Controller_Admin_EventsGrid{
     public function confirmAction(){
         if ($this->row->manageStatus == '120#00ff00') {
             $response = 'already';
