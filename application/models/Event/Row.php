@@ -74,27 +74,42 @@ class Event_Row extends Indi_Db_Table_Row{
         }
 
         // Рассчитываем стоимость
+        if (!trim($this->animatorIds)) {
+            if ($this->subprogramId) {
+                $animatorsCount = $this->getForeignRowByForeignKey('subprogramId')->animatorsCount;
+            } else {
+                $animatorsCount = 1;
+            }
+        } else {
+            $animatorsCount = count(explode(',', $this->animatorIds));
+        }
         $this->price = $this->getTable()->getAdapter()->query('
-            SELECT
-                CAST((IF("'. $this->animatorsCount . '" = "1", `price1`, `price2`) -
-                    IF("'. $this->animatorsCount . '" = "1",
-                        `price1` *
-                          IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $this->date . '") NOT IN(5,6), 1, 0) *
-                          ((CAST(`s`.`detailsString` AS DECIMAL))/100),
-                        `price2` *
-                          IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $this->date . '") NOT IN(5,6), 1, 0) *
-                          ((CAST(`s`.`detailsString` AS DECIMAL))/100)
-                    )) AS DECIMAL)
-                AS `price`
-            FROM
-                `district` `d`,
-                `place` `p`
-                LEFT JOIN `holiday` `h` ON (`h`.`title` = "' . $this->date . '")
-                LEFT JOIN `staticblock` `s` ON (`s`.`alias` = "work-day-discount")
-            WHERE 1
-                AND `p`.`id` = "' . $this->placeId . '"
-                AND `d`.`id` = `p`.`districtId`
-        ')->fetchColumn(0);
+                SELECT
+                  CAST((IF("'. $animatorsCount . '" = "1", `price1`, `price2`) -
+                  IF("'. $animatorsCount . '" = "1",
+
+                    `price1` *
+                      IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $this->date . '") NOT IN(5,6) AND IF(ISNULL(`s`.`detailsString`), 0, 1) AND IF(ISNULL(`s2`.`detailsString`), 1, `t`.`title` < `s2`.`detailsString`), 1, 0) *
+                      (IF(ISNULL(`s`.`detailsString`), 0, CAST(`s`.`detailsString` AS DECIMAL))/100),
+
+                    `price2` *
+                      IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $this->date . '") NOT IN(5,6) AND IF(ISNULL(`s`.`detailsString`), 0, 1) AND IF(ISNULL(`s2`.`detailsString`), 1, `t`.`title` < `s2`.`detailsString`), 1, 0) *
+                      (IF(ISNULL(`s`.`detailsString`), 0, CAST(`s`.`detailsString` AS DECIMAL))/100)
+
+                  )) AS DECIMAL)
+                  AS `price`
+                FROM
+                  `district` `d`,
+                  `place` `p`,
+                  `time` `t`
+                  LEFT JOIN `holiday` `h` ON (`h`.`title` = "' . $this->date . '")
+                  LEFT JOIN `staticblock` `s` ON (`s`.`alias` = "work-day-discount" AND `s`.`toggle` = "y")
+                  LEFT JOIN `staticblock` `s2` ON (`s2`.`alias` = "discount-until-time" AND `s2`.`toggle` = "y")
+                WHERE 1
+                  AND `p`.`id` = "' . $this->placeId . '"
+                  AND `d`.`id` = `p`.`districtId`
+                  AND `t`.`id` = "' . $this->timeId . '"
+            ')->fetchColumn(0);
 
         // Для новых завок указываем кто их создал и когда
         if (!$this->id) {
