@@ -1,5 +1,5 @@
 <?php
-class Admin_IndexController extends Indi_Controller_Admin{
+class Admin_IndexController extends Project_Controller_Admin{
     public function homeAction() {
         $this->view->home = Misc::loadModel('Profile')->fetchRow('`id` = "' . $_SESSION['admin']['profileId'] . '"')->home;
     }
