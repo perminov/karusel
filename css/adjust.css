@@ -33,3 +33,6 @@ span.checkbox.checked.disabled, table.multicheckbox.disabled span.checkbox.check
 controls.upload {
     background: url(/i/admin/transparentBg.png);
 }
+.table_topics_outside {
+    font-size: 8pt; color: #596A8D; font-family: tahoma; background-color: #FCFFC9;  border: 1px solid #C7D4FF;
+}

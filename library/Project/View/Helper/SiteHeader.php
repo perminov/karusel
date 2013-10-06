@@ -27,11 +27,17 @@ class Project_View_Helper_SiteHeader extends Indi_View_Helper_Abstract{
         <script src="/js/jquery.scrollTo-min.js"></script>
     </head>
     <body>
-  <table class="main" width="1000" height="100%" align="center" border="0" style="background-color: white;">
-  <tr><td colspan="4" height="100"><!--header will be here--></td></tr>
+  <table class="main" width="1000" height="100%" align="center" border="0" style="background-image: url(./i/dr.png); background-repeat: no-repeat;">
+  <tr><td colspan="4" height="160"><!--header will be here--></td></tr>
   <tr>
-	<td width="200" valign="top"></td>
-	<td valign="top">
+	<td width="200" valign="top"  style="background-image: url(./i/balls-left.png); background-repeat: no-repeat;"></td>
+	
+    <td valign="top">
+    
+    Заполните форму ниже для регистрации заявки на проведение мероприятия.<br> 
+    Вы получите подтверждение регистрации заявки по электронной почте.<br>
+    Наш менеджер свяжется с Вами в течение одного дня для согласования деталей проведения мероприятия.<br><br>
+    
 	  <div>
 		
 		<?return ob_get_clean();

@@ -17,7 +17,7 @@ table.x-field tr{
 </style>
 <form class="form row-form" action="/admin/client/save/" name="event" method="post" enctype="multipart/form-data" row-id="" style="border: 1px solid #99BCE8; visibility: hidden;">
 <table celpadding="2" cellspacing="1" border="0" width="100%">
-<tr class="table_topics"><td colspan="2" align="center" class="table_topics">Информация о мероприятии</td></tr>
+<tr class="table_topics_outside"><td colspan="2" align="center" class="table_topics_outside">Информация о мероприятии</td></tr>
 <col width="50%"/><col width="50%"/>
 <tr class="info" id="tr-districtId">
     <td width="50%" id="td-left-districtId">Место проведения мероприятия:</td>
@@ -198,10 +198,10 @@ table.x-field tr{
                                                     style="width: 100%; height: 60px;"></textarea></td>
 </tr>
 <tr class="info" id="tr-client">
-    <td width="50%" id="td-left-client">Информация о заказчике:</td>
+    <td width="50%" id="td-left-client" class="table_topics_outside">Информация о заказчике:</td>
     <td width="50%" id="td-right-client">
         <script>$("#tr-client").attr("class", "info")</script>
-        <script>$("#td-left-client").attr({"colspan":"2", "align":"center", "class":"table_topics"});</script>
+        <script>$("#td-left-client").attr({"colspan":"2", "align":"center", "class":"table_topics_outside"});</script>
     </td>
 </tr>
 <tr class="info" id="tr-clientTitle">

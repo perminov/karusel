@@ -4,10 +4,13 @@ class Indi_View_Helper_SiteFooter extends Indi_View_Helper_Abstract{
 		ob_start();?>
 	  </div>
 	</td>
-	<td width="200">&nbsp;</td>
+	<td width="200" style="background-image: url(./i/balls-right.png); background-repeat: no-repeat;">&nbsp;</td>
   </tr>
-  <tr height="65">
-	<td colspan="4"><!--footer will be here--></td>
+  
+  <tr height="88">
+	<td colspan="4" style="background-image: url(./i/footer.png); background-repeat: no-repeat;">
+   
+    </td>
   </tr>
   </table>
 </body>
