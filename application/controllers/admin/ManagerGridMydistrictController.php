@@ -12,7 +12,7 @@ class Admin_ManagerGridMydistrictController extends Project_Controller_Admin_Eve
             $this->row->setAgreementNumber();
             $response = 'Заявка отмечена как подтвержденная';
         } else {
-            $managerRs = Misc::loadModel('Manager')->fetchAll('`districtId` = "' . $this->row->districtId . '"');
+            $managerRs = Misc::loadModel('Manager')->fetchAll();
             $options = array(); foreach($managerRs as $managerR) $options[] = '<option value="' . $managerR->id . '"' . ($managerR->id == $_SESSION['admin']['id'] ? ' selected="selected"' : '') .'>' . $managerR->title . '</option>';
             $response = '<span id="msgbox-prepay"></span><select id="manageManagerId">' . implode('', $options) . '</select><br/><br/><br/>';
         }

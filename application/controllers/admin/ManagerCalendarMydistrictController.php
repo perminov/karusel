@@ -48,6 +48,7 @@ class Admin_ManagerCalendarMydistrictController extends Project_Controller_Admin
                     $title .= '</span> ';
                 }
                 $title .= $data[$i]['details'];
+                if ($data[$i]['manageNotes']) $title .= $data[$i]['manageNotes'];
                 $data[$i]['title'] = $title;
             }
         } else {

@@ -72,7 +72,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                 }";
             }
             if ($actionI['alias'] == 'confirm' && $this->view->row->id && $this->view->row->manageStatus != '120#00ff00') {
-                $managerRs = Misc::loadModel('Manager')->fetchAll('`districtId` = "' . $this->view->row->districtId . '"');
+                $managerRs = Misc::loadModel('Manager')->fetchAll();
                 $options = array(); foreach($managerRs as $managerR) $options[] = array('id' => $managerR->id, 'title' => $managerR->title);
                 $a[] = "{
                     text: 'Подтвердить',

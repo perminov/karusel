@@ -72,7 +72,7 @@ Ext.define('Ext.calendar.template.DayBody', {
         dt = Ext.Date.clearTime(new Date('5/26/1972'));
 
         dt = Ext.calendar.util.Date.add(dt, {hours: 10});
-        for(i=0; i<11; i++){
+        for(i=0; i<10; i++){
             times.push(Ext.Date.format(dt, 'H:i'));
             dt = Ext.calendar.util.Date.add(dt, {hours: 1});
         }

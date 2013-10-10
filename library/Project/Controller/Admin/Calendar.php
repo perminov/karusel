@@ -1,5 +1,5 @@
 <?php
-class Project_Controller_Admin_Calendar extends Indi_Controller_Admin{
+class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
     /**
      * We set ORDER as 'id', as we do not need any other order type
      * @return string
