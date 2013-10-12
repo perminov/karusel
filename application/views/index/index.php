@@ -56,10 +56,11 @@ table.x-field tr{
                                     $('#timeId-keyword').val('');
                                     $('#timeId').val(0).change();
                                     COMBO.toggle('timeId', false);
+                                    publicTimes = $('#placeId').attr('publicTimeIds').split(',');
                                     if (publicTimes.length) {
                                         do {
                                             for (var i in comboOptions.timeId.ids) {
-                                                if(publicTimes.indexOf(comboOptions.timeId.ids[i]) == -1) {
+                                                if(publicTimes.indexOf(comboOptions.timeId.ids[i]+'') == -1) {
                                                     comboOptions.timeId.ids.splice(i, 1);
                                                     comboOptions.timeId.data.splice(i, 1);
                                                     break;

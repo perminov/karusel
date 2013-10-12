@@ -37,28 +37,14 @@ class Event extends Indi_Db_Table{
               AND FIND_IN_SET(16, tmp) AND FIND_IN_SET(17, tmp)
         ')->fetchAll();
 
-        $publicTimes = $this->getAdapter()->query('
-            SELECT GROUP_CONCAT(DISTINCT `timeId`) FROM `publicTime` WHERE `placeId` = "' . $placeId . '"
-        ')->fetchColumn(0);
-
         foreach ($dateA as $dateI) $disabledDates[$dateI['date']] = true;
-
-        if ($publicTimes) {
-            $publicTimes = explode(',', $publicTimes);
-            for ($i = 0; $i < count($publicTimes); $i++) $publicTimes[$i] = (int) $publicTimes[$i];
-        } else {
-            $publicTimes = array();
-        }
 
         $disabledDates = array_keys($disabledDates);
         for($i = 0; $i < count($disabledDates); $i++) {
             $disabledDates[$i] = date('d.m.Y', strtotime($disabledDates[$i]));
         }
         
-        return array(
-            'disabledDates' => $disabledDates,
-            'publicTimes' => $publicTimes
-        );
+        return $disabledDates;
     }
 
     public function disabledTimes($placeId, $date, $eventId = null){
