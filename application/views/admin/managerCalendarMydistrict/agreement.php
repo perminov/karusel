@@ -19,7 +19,7 @@ foreach($customParams as $customParam) {
 }
 $params['width'] = 692;
 $params['height'] = 380;
-$params['style'] = 'body{margin-right: 20px;} *{line-height: 15px !important;}';
+$params['style'] = 'body{margin-right: 20px;} *{line-height: 12px !important;}';
 // Set up styles configuration for editor contents
 if ($params['style']) $CKconfig['style'] = $params['style'];
 $CKconfig['style'] .= 'body{max-width: auto;min-width: auto;width: auto;}';

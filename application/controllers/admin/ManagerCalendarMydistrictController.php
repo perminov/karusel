@@ -47,8 +47,15 @@ class Admin_ManagerCalendarMydistrictController extends Project_Controller_Admin
                     $title .= ($data[$i]['subprogramId'] ? $data[$i]['subprogramId'] : $data[$i]['programId']) . ' ';
                     $title .= '</span> ';
                 }
+                ;
                 $title .= $data[$i]['details'];
-                if ($data[$i]['manageNotes']) $title .= $data[$i]['manageNotes'];
+                
+                if ($data[$i]['manageNotes']) {
+                $title .= '<span style="color: #8000A3;">';
+                $title .= $data[$i]['manageNotes'];
+                $title .= '</span> ';
+                }
+                
                 $data[$i]['title'] = $title;
             }
         } else {
