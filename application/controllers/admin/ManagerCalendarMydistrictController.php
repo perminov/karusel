@@ -27,7 +27,7 @@ class Admin_ManagerCalendarMydistrictController extends Project_Controller_Admin
                 $data[$i]['end'] = $data[$i]['calendarEnd'];
                 $data[$i]['cid'] = $this->setColor($data[$i]);
                 list($last, $client) = explode(' ', $data[$i]['clientTitle']);
-                $title = $client . ' ' . $data[$i]['clientPhone'] . ' ';
+                $title = $this->setExclaim($data[$i]) . $client . ' ' . $data[$i]['clientPhone'] . ' ';
                 list($manager) = explode(' ', $data[$i]['manageManagerId']);
                 $title .= '<span style="word-break: normal;">' . $data[$i]['childrenCount'] . '/' . $data[$i]['childrenAge'] . '</span>; ';
                 if ($manager) {

@@ -35,7 +35,7 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
             $data[$i]['start'] = $data[$i]['calendarStart'];
             $data[$i]['end'] = $data[$i]['calendarEnd'];
             $data[$i]['cid'] = $this->setColor($data[$i]);
-            $data[$i]['title'] = $data[$i]['placeId'];
+            $data[$i]['title'] = $this->setExclaim($data[$i]) . $data[$i]['placeId'];
         }
     }
 
@@ -47,5 +47,47 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
         } else {
             return 1;
         }
+    }
+
+    public function setExclaim($item) {
+        // Получать данные о количествах подпрограмм и необходимых аниматоров нужно только один раз
+        if (!$this->subprogramsCount) {
+
+            // Получаем данные о том, сколько подпрограмм в каждой программе
+            $programA = $this->db->query('SELECT `title`, `subprogramsCount` FROM `program`')->fetchAll();
+            foreach($programA as $programI) $this->subprogramsCount[$programI['title']] = $programI['subprogramsCount'];
+
+            // Получаем данные о том, сколько аниматоров в каждой подпрограмме
+            $subprogramA = $this->db->query('SELECT `title`, `animatorsCount` FROM `subprogram`')->fetchAll();
+            foreach($subprogramA as $subprogramI) $this->animatorsCount[$subprogramI['title']] = $subprogramI['animatorsCount'];
+        }
+
+        if ($item['cid'] == 2) {
+            if (!$item['programId']) {
+                $e = true;
+            } else {
+                if ($this->subprogramsCount[$item['programId']] > 0) {
+                    if (!$item['subprogramId']) {
+                        $e = true;
+                    } else if ($this->animatorsCount[$item['subprogramId']] > count(explode(',', $item['animatorIds']))) {
+                        $e = true;
+                    } else if (!$item['animatorIds']) {
+                        $e = true;
+                    } else {
+                        $e = false;
+                    }
+                } else {
+                    if (!$item['animatorIds']) {
+                        $e = true;
+                    } else {
+                        $e = false;
+                    }
+                }
+            }
+        } else {
+            $e = false;
+        }
+
+        return $e ? '<span style="color:red; font-weight: bold;">!</span> ' : '';
     }
 }
