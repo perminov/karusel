@@ -21,7 +21,8 @@ class Project_View_Helper_SiteHeader extends Indi_View_Helper_Abstract{
         <script type="text/javascript" src="/library/extjs4/ext-all.js"></script>
         <script type="text/javascript" src="/library/extjs4/ext-lang-ru.js"></script>
         <script type="text/javascript" src="/js/admin/index.js"></script>
-        <script type="text/javascript" src="/js/admin/combo.js?6898"></script>
+        <script type="text/javascript" src="/js/admin/indi.js?<?=rand(0, 10000)?>"></script>
+        <script type="text/javascript" src="/js/admin/indi.combo.form.js?<?=rand(0, 10000)?>"></script>
         <script src="/js/jquery-1.9.1.min.js"></script>
         <script src="/js/jquery-migrate-1.1.1.min.js"></script>
         <script src="/js/jquery.scrollTo-min.js"></script>
