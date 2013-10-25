@@ -33,8 +33,8 @@ class Admin_ManagerCalendarOtherdistrictsController extends Project_Controller_A
             $this->row->manageDate = date('Y-m-d');
             $this->row->save();
             $this->row->setAgreementNumber();
-            $response = 'Заявка отмечена как подтвержденная';
+            $response = 'пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
         }
         die($response);
-    }    
+    }
 }

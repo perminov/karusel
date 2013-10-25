@@ -6,7 +6,7 @@ class Admin_CalendarController extends Project_Controller_Admin_Calendar{
             $data[$i]['end'] = $data[$i]['calendarEnd'];
             $data[$i]['cid'] = $this->setColor($data[$i]);
             preg_match('/([А-Я]{2}: )/u', $data[$i]['title'], $m);
-            $data[$i]['title'] = $m[1] . $data[$i]['placeId'];
+            $data[$i]['title'] = $this->setExclaim($data[$i]) . $m[1] . $data[$i]['placeId'];
         }
     }
 }

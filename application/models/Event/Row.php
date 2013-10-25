@@ -150,8 +150,9 @@ class Event_Row extends Indi_Db_Table_Row{
     public function setAgreementNumber(){
         // Конструируем номер договора
         $districtR = $this->getForeignRowByForeignKey('districtId');
-        $agreementsCount = $this->getTable()->getAdapter()->query('SELECT COUNT(`id`) FROM `event` WHERE `clientAgreementNumber` != ""')->fetchColumn(0);
-        $this->clientAgreementNumber = $districtR->code . str_pad($agreementsCount + 1, 4, '0', STR_PAD_LEFT);
+        $this->clientAgreementNumber = $districtR->code . str_pad($districtR->lastAgreement + 1, 4, '0', STR_PAD_LEFT);
+        $districtR->lastAgreement++;
+        $districtR->save();
         parent::save();
     }
 }
