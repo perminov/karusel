@@ -1,6 +1,6 @@
 <?php
 class Admin_ManagerGridOtherdistrictsController extends Project_Controller_Admin_EventsGrid{
-    public function formAction(){
+    /*public function formAction(){
         if ($this->row->districtId && $this->row->districtId != $_SESSION['admin']['districtId']) {
             if ($this->row->requestBy == 'client' || ($this->row->requestByManagerId && $this->row->requestByManagerId != $_SESSION['admin']['id'])) {
                 $this->trail->items[1]->actions->exclude(3);
@@ -15,7 +15,7 @@ class Admin_ManagerGridOtherdistrictsController extends Project_Controller_Admin
                 $this->redirectToIndex();
             }
         } else parent::saveAction();
-    }
+    }*/
 
     public function confirmAction(){
         if ($this->row->manageStatus == '120#00ff00') {

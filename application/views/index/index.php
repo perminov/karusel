@@ -1,5 +1,5 @@
 <? $this->row = Misc::loadModel('Event')->createRow(); ?>
-<? if (!$_SESSION['admin']['id']) $_SESSION['admin'] = array('id' => '15', 'email' => 'visitor@gmail.com', 'password' => 'visitor'); ?>
+<? if (!$_SESSION['admin']['id']) $_SESSION['admin'] = array('id' => '15', 'email' => 'visitor@gmail.com', 'password' => 'visitor', 'profileId' => '17'); ?>
 <script>
     var email = /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
     window.comboFetchRelativePath = '/admin/client/form';

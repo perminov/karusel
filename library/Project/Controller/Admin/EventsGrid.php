@@ -10,5 +10,6 @@ class Project_Controller_Admin_EventsGrid extends Project_Controller_Admin{
             $data[$i]['title'] = str_replace($date[1], date('d.m.Y', strtotime($date[1])), $data[$i]['title']);
             $data[$i]['price'] = $mPrice[$data[$i]['id']] ? $mPrice[$data[$i]['id']] : $data[$i]['price'];
         }
+        parent::setGridTitlesByCustomLogic($data);
     }
 }
