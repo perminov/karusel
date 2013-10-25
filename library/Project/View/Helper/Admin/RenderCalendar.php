@@ -6,12 +6,14 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         $canadd = false; foreach ($actions as $action) if ($action['alias'] == 'save') {$canadd = true; break;}
         $currentPage = $_SESSION['admin']['indexParams'][$this->view->trail->getItem()->section->alias]['page'] ? $_SESSION['admin']['indexParams'][$this->view->trail->getItem()->section->alias]['page'] : 1;
         $filterFieldAliases = array();
+        $comboFilters = array();
         $icons = array('form', 'delete', 'save', 'toggle', 'up', 'down');
         foreach ($this->view->trail->getItem()->filters as $filter) {
             if (in_array($filter->foreign['fieldId']->foreign['elementId']['alias'], array('number','calendar','datetime'))) {
                 $filterFieldAliases[] = $filter->foreign['fieldId']->alias . '-gte';
                 $filterFieldAliases[] = $filter->foreign['fieldId']->alias . '-lte';
             } else {
+                if ($filter->foreign['fieldId']->relation) $comboFilters[] = $this->view->filterCombo($filter);
                 $filterFieldAliases[] = $filter->foreign['fieldId']->alias;
             }
         }
@@ -132,10 +134,12 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         .ext-cal-day-col .ext-evt-bd {line-height: 14px; font-size: 12px; word-break: break-all;}
     </style>
     <script type="text/javascript">
+    Indi.section = '<?=$this->view->trail->getItem()->section->alias?>';
     var json = <?=json_encode($meta)?>;
     var timeout, timeout2;
     var eventStore, calendarStore, eventStore1, showEditWindow, calendar;
     var myMask, formMask;
+    var filterChange;
     Ext.Loader.setConfig({enabled: true, paths: {'Ext.calendar': STD+'/library/extjs4/examples/calendar/src'}});
     Ext.require([
         'Ext.calendar.util.Date',
@@ -150,7 +154,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                 gridColumnsAliases.push(json.columns[i].dataIndex);
             }
         }
-        var filterChange = function(obj, newv, oldv){
+        filterChange = function(obj, newv, oldv){
             var params = [];
             var usedFilterAliasesThatHasGridColumnRepresentedBy = [];
             for (var i in filterAliases) {
@@ -175,18 +179,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
             //Ext.getCmp('fast-search-keyword').setDisabled(usedFilterAliasesThatHasGridColumnRepresentedBy.length == gridColumnsAliases.length);
             if (!obj.noReload) {
                 if (obj.xtype == 'combobox') {
-                    if (obj.multiSelect) {
-                        clearTimeout(timeout);
-                        timeout = setTimeout(function(){
-                            eventStore.reload();
-                        }, 1000);
-                        clearTimeout(timeout2);
-                        timeout2 = setTimeout(function(){
-                            obj.collapse();
-                        }, 2000);
-                    } else {
-                        eventStore.reload();
-                    }
+                    eventStore.reload();
                 } else if (obj.xtype == 'datefield' && (/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(obj.getRawValue()) || !obj.getRawValue().length)) {
                     clearTimeout(timeout);
                     timeout = setTimeout(function(){
@@ -353,6 +346,9 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                         }
                     },
                     scope: this
+                },
+                afterrender: function(){
+                    Indi.combo.filter = Indi.combo.filter || new Indi.proto.combo.filter(); Indi.combo.filter.run();
                 }
                 <?if($canadd){?>,'dayclick': {
                     fn: function(vw, dt, ad, el){
@@ -388,6 +384,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         mainPanel = calendar;
     });
     </script>
+    <?if (count($comboFilters)){echo '<span style="display: none">'.implode('', $comboFilters) . '</span>';}?>
     </head>
     <div style="display:none;">
         <div id="app-header-content">

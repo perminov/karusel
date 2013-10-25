@@ -45,29 +45,29 @@ table.x-field tr{
                 <?$params['displayFormat'] = 'd.m.Y'?>
                 <script>
                     $('#date').change(function () {
-                        comboOptions.timeId = deepObjCopy(comboOptions.timeIdBackup);
+                        Indi.combo.form.store.timeId = deepObjCopy(Indi.combo.form.store.timeIdBackup);
                         if ($('#date').val() == '') {
-                            COMBO.toggle('timeId', true);
+                            Indi.combo.form.toggle('timeId', true);
                         } else {
                             $.post(STD+'/auxillary/disabledTimes',
                                 {placeId:$('#placeId').val(), date: Ext.Date.format(Ext.Date.parse($('#date').val(), Ext.getCmp('dateCalendar').longDayFormat), 'Y-m-d')},
                                 function (disabledTimeIds) {
-                                    COMBO.setDisabledOptions('timeId', disabledTimeIds);
+                                    Indi.combo.form.setDisabledOptions('timeId', disabledTimeIds);
                                     $('#timeId-keyword').val('');
                                     $('#timeId').val(0).change();
-                                    COMBO.toggle('timeId', false);
+                                    Indi.combo.form.toggle('timeId', false);
                                     publicTimes = $('#placeId').attr('publicTimeIds').split(',');
                                     if (publicTimes.length) {
                                         do {
-                                            for (var i in comboOptions.timeId.ids) {
-                                                if(publicTimes.indexOf(comboOptions.timeId.ids[i]+'') == -1) {
-                                                    comboOptions.timeId.ids.splice(i, 1);
-                                                    comboOptions.timeId.data.splice(i, 1);
+                                            for (var i in Indi.combo.form.store.timeId.ids) {
+                                                if(publicTimes.indexOf(Indi.combo.form.store.timeId.ids[i]+'') == -1) {
+                                                    Indi.combo.form.store.timeId.ids.splice(i, 1);
+                                                    Indi.combo.form.store.timeId.data.splice(i, 1);
                                                     break;
                                                 }
                                             }
-                                        } while (publicTimes.length < comboOptions.timeId.ids.length);
-                                        comboOptions.timeId.found = comboOptions.timeId.ids.length;
+                                        } while (publicTimes.length < Indi.combo.form.store.timeId.ids.length);
+                                        Indi.combo.form.store.timeId.found = Indi.combo.form.store.timeId.ids.length;
                                     }
                                 }
                                 , 'json');
@@ -321,7 +321,7 @@ table.x-field tr{
 </table>
 
 <script>
-COMBO.ready = function(){
+Indi.ready(function(){
     if ($('#placeId').val() != "0") {
         $('#date').removeAttr('disabled');
         $('#date').parents('.calendar-div').removeClass('disabled');
@@ -331,18 +331,18 @@ COMBO.ready = function(){
         $('#date').val('')
     }
     if ($('#date').val()) {
-        COMBO.toggle('timeId', false);
+        Indi.combo.form.toggle('timeId', false);
     } else {
-        COMBO.toggle('timeId', true);
+        Indi.combo.form.toggle('timeId', true);
     }
     if ($('#timeId').val() != "0") {
-        COMBO.toggle('programId', false);
+        Indi.combo.form.toggle('programId', false);
     } else {
-        COMBO.toggle('programId', true);
+        Indi.combo.form.toggle('programId', true);
     }
     if (!isNaN($('#programId').attr('subprogramsCount'))) {
         if ($('#programId').attr('subprogramsCount') == '0') {
-            hide('tr-subprogramId');
+            //hide('tr-subprogramId');
             $('#programId').attr('animatorsCount', 1);
             $('#animatorIds-table').removeClass('disabled');
             if($('#animatorIds-table').find('span.checkbox.checked').length < parseInt($('#programId').attr('animatorsCount'))) {
@@ -355,8 +355,8 @@ COMBO.ready = function(){
             if ($('#subprogramId').val() == '0') {
                 $('#animatorIds-table').addClass('disabled');
             } else {
-                var index = comboOptions['subprogramId'].ids.indexOf(parseInt($('#subprogramId').val()));
-                $('#programId').attr('animatorsCount', comboOptions['subprogramId'].data[index].attrs.animatorsCount);
+                var index = Indi.combo.form.store['subprogramId'].ids.indexOf(parseInt($('#subprogramId').val()));
+                $('#programId').attr('animatorsCount', Indi.combo.form.store['subprogramId'].data[index].attrs.animatorsCount);
                 $('#animatorIds-table').removeClass('disabled');
                 if($('#animatorIds-table').find('span.checkbox.checked').length < parseInt($('#programId').attr('animatorsCount'))) {
                     $('#animatorIds-table').find('span.checkbox').parents('tr').not('.disabled').show();
@@ -366,9 +366,12 @@ COMBO.ready = function(){
             }
         }
     } else {
-        hide('tr-subprogramId');
+        //hide('tr-subprogramId');
     }
     $('form[name=event]').css('visibility', 'visible');
-    window.comboOptions.timeIdBackup = deepObjCopy(window.comboOptions.timeId);
-};
+    setTimeout(function(){
+        hide('tr-subprogramId');
+    }, 100);
+    window.Indi.combo.form.store.timeIdBackup = deepObjCopy(window.Indi.combo.form.store.timeId);
+}, 'combo.form');
 </script>
