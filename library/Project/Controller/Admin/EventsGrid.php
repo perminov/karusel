@@ -9,7 +9,12 @@ class Project_Controller_Admin_EventsGrid extends Project_Controller_Admin{
             preg_match('/([0-9]{4}\-[0-9]{2}\-[0-9]{2})/', $data[$i]['title'], $date);
             $data[$i]['title'] = str_replace($date[1], date('d.m.Y', strtotime($date[1])), $data[$i]['title']);
             $data[$i]['price'] = $mPrice[$data[$i]['id']] ? $mPrice[$data[$i]['id']] : $data[$i]['price'];
+            if($data[$i]['manageDate'] == '0000-00-00') $data[$i]['manageDate'] = '';
+            $data[$i]['requestDate'] = current(explode(' ', $data[$i]['requestDate']));
+            $data[$i]['manageStatus'] = preg_replace('/Подтвержденная|Предварительная/', '', $data[$i]['manageStatus']);
+            $data[$i]['manageStatus'] = preg_replace('/style=[\'"]/', '$0 margin-left: 10px; ', $data[$i]['manageStatus']);
         }
+
         parent::setGridTitlesByCustomLogic($data);
     }
 }
