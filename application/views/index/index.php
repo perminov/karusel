@@ -91,8 +91,8 @@ table.x-field tr{
                             //prevText: 'Предыдущий месяц',
                             //todayTip: 'Выбрать сегодняшнюю дату',
                             //startDay: 1,
-                            minDate: new Date(),
-                            maxDate: Ext.Date.add(new Date(), Ext.Date.DAY, 5),
+                            minDate: Ext.Date.add(new Date(), Ext.Date.DAY, 5),
+                            maxDate: Ext.Date.add(new Date(), Ext.Date.DAY, 35),
                             handler: function(picker, date) {
                                 var selectedDate = Ext.Date.format(date, '<?=$params['displayFormat']?>');
                                 $('#date').val(selectedDate);
