@@ -98,6 +98,17 @@ table.x-field tr{
                                 $('#date').val(selectedDate);
                                 $('#dateCalendarRender').toggle();
                                 $('#date').change();
+                            },
+                            listeners: {
+                                render: function(cal) {
+                                    $('body').bind('click', function(e) {
+                                        if($(e.target).closest('#'+cal.id).length == 0 &&
+                                            !($(e.srcElement).hasClass('calendar-trigger') || $(e.srcElement).parent().hasClass('calendar-trigger')) &&
+                                            $('#'+cal.id+'Render').css('display') != 'none') {
+                                            $('#'+cal.id+'Render').hide();
+                                        }
+                                    });
+                                }
                             }
                         });
                     });
@@ -143,6 +154,17 @@ table.x-field tr{
                     $('#birthChildBirthDate').val(selectedDate);
                     $('#birthChildBirthDateCalendarRender').toggle();
                     $('#birthChildBirthDate').change();
+                },
+                listeners: {
+                    render: function(cal) {
+                        $('body').bind('click', function(e) {
+                            if($(e.target).closest('#'+cal.id).length == 0 &&
+                                !($(e.srcElement).hasClass('calendar-trigger') || $(e.srcElement).parent().hasClass('calendar-trigger')) &&
+                                $('#'+cal.id+'Render').css('display') != 'none') {
+                                $('#'+cal.id+'Render').hide();
+                            }
+                        });
+                    }
                 }
             });
         });
