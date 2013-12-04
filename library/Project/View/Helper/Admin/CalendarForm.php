@@ -38,7 +38,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
         $actionA = $this->view->trail->getItem()->actions->toArray();
         $a = array();
         foreach ($actionA as $actionI) {
-            if ($actionI['alias'] == 'save') {
+            if ($actionI['alias'] == 'save' && ($this->view->row->manageStatus != '000#980000' || !$_SESSION['admin']['alternate'])) {
                 $a[] = "{
                     text: 'Сохранить',
                     handler: function(){
@@ -48,12 +48,12 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                     id: 'button-save'
                 }";
             }
-            if ($actionI['alias'] == 'delete' && $this->view->row->id && ($this->view->row->manageStatus != '120#00ff00' || !$_SESSION['admin']['alternate'])) {
+            if ($actionI['alias'] == 'delete' && $this->view->row->id && ($this->view->row->manageStatus == '240#0000ff' || !$_SESSION['admin']['alternate'])) {
                 $a[] = "{
                     text: 'Удалить',
                     handler: function(){
                         Ext.MessageBox.show({
-                            title: 'Уаление',
+                            title: 'Удаление',
                             msg: 'Вы уверены?',
                             buttons: Ext.MessageBox.YESNO,
                             icon: Ext.MessageBox.QUESTION,
@@ -71,7 +71,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                     id: 'button-delete'
                 }";
             }
-            if ($actionI['alias'] == 'confirm' && $this->view->row->id && $this->view->row->manageStatus != '120#00ff00') {
+            if ($actionI['alias'] == 'confirm' && $this->view->row->id && $this->view->row->manageStatus == '240#0000ff') {
                 $managerRs = Misc::loadModel('Manager')->fetchAll();
                 $options = array(); foreach($managerRs as $managerR) $options[] = array('id' => $managerR->id, 'title' => $managerR->title);
                 $a[] = "{
@@ -146,7 +146,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                         top.window.loadContent(PRE + '/" . $this->view->section->alias . "/agreement/id/" . $this->view->row->id . "/', true);
                     },
                     id: 'button-agreement',
-                    hidden: " . ($this->view->row->manageStatus != '120#00ff00' ? 'true' : 'false') . "
+                    hidden: " . ($this->view->row->manageStatus == '240#0000ff' ? 'true' : 'false') . "
                 }";
             }
         }

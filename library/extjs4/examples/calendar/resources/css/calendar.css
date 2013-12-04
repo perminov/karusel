@@ -895,3 +895,25 @@ td.ext-cal-dtitle-today div {
 .ext-dt-range .x-table-layout-cell {
     padding-right: 5px;
 }
+
+.ext-color-4,
+.x-ie .ext-color-4-ad,
+.x-opera .ext-color-4-ad {
+    color: #980000;
+}
+.ext-cal-day-col .ext-color-4,
+.ext-dd-drag-proxy .ext-color-4,
+.ext-color-4-ad,
+.ext-color-4-ad .ext-cal-evm,
+.ext-color-4 .ext-cal-picker-icon,
+.ext-color-4-x dl,
+.ext-color-4-x .ext-cal-evb {
+    border-color: #980000;
+    background: #EC3F3F;
+}
+.ext-color-4-x .ext-cal-evb,
+.ext-color-4-ad .ext-cal-evm,
+.ext-color-4-ad,
+.ext-color-4-x dl {
+    border-color: #980000;
+}

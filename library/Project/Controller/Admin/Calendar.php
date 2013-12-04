@@ -31,17 +31,58 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
     }
 
     public function setGridTitlesByCustomLogic(&$data) {
-        for ($i = 0; $i < count($data); $i++) {
-            $data[$i]['start'] = $data[$i]['calendarStart'];
-            $data[$i]['end'] = $data[$i]['calendarEnd'];
-            $data[$i]['cid'] = $this->setColor($data[$i]);
-            $data[$i]['title'] = $this->setExclaim($data[$i]) . $data[$i]['placeId'];
+        if (preg_match('/placeId/', $this->get['search']) || $this->get['start'] == $this->get['end']) {
+            for ($i = 0; $i < count($data); $i++) {
+                $data[$i]['start'] = $data[$i]['calendarStart'];
+                $data[$i]['end'] = $data[$i]['calendarEnd'];
+                $data[$i]['cid'] = $this->setColor($data[$i]);
+                list($last, $client) = explode(' ', $data[$i]['clientTitle']);
+                $title = $this->setExclaim($data[$i]) . $client . ' ' . $data[$i]['clientPhone'] . ' ';
+                list($manager) = explode(' ', $data[$i]['manageManagerId']);
+                $title .= '<span style="word-break: normal;">' . $data[$i]['childrenCount'] . '/' . $data[$i]['childrenAge'] . '</span>; ';
+                if ($manager) {
+                    $title .= '<span style="word-break: normal;">' . $data[$i]['clientAgreementNumber'] .'</span>' . ' - ' . $manager . '; ';
+                }
+                if ($data[$i]['animatorIds']) {
+                    $title .= ($data[$i]['subprogramId'] ? $data[$i]['subprogramId'] : $data[$i]['programId']) . ' ';
+                    $animators = explode(', ', $data[$i]['animatorIds']);
+                    $lastA = array();
+                    foreach ($animators as $animator) {
+                        list($lastI) = explode(' ', $animator);
+                        $lastA[] = $lastI;
+                    }
+                    $title .= '[' . implode(', ', $lastA) . '] ';
+                } else {
+                    $title .= '<span style="color: #cc0000;">';
+                    $title .= ($data[$i]['subprogramId'] ? $data[$i]['subprogramId'] : $data[$i]['programId']) . ' ';
+                    $title .= '</span> ';
+                }
+                ;
+                $title .= $data[$i]['details'];
+                
+                if ($data[$i]['manageNotes']) {
+                $title .= '<span style="color: #8000A3;">';
+                $title .= $data[$i]['manageNotes'];
+                $title .= '</span> ';
+                }
+                
+                $data[$i]['title'] = $title;
+            }
+        } else {
+            for ($i = 0; $i < count($data); $i++) {
+                $data[$i]['start'] = $data[$i]['calendarStart'];
+                $data[$i]['end'] = $data[$i]['calendarEnd'];
+                $data[$i]['cid'] = $this->setColor($data[$i]);
+                $data[$i]['title'] = $this->setExclaim($data[$i]) . $data[$i]['placeId'];
+            }
         }
     }
 
     public function setColor($item) {
         if (preg_match('/Подтвержденная/', $item['manageStatus'])) {
             return 2;
+        } else if (preg_match('/Проведенная/', $item['manageStatus'])) {
+            return 4;
         } else if ($item['requestBy'] == 'Заказчиком') {
             return 3;
         } else {
@@ -88,6 +129,31 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
             $e = false;
         }
 
-        return $e ? '<span style="color:red; font-weight: bold;">!</span> ' : '';
+        if (strtotime($this->get['end']) > strtotime($this->get['start']) + 60 * 60 * 24 * 28) 
+            $n = $item['details'] || $item['manageNotes'] ? '<span style="color:#cc00ff; font-weight: bold;">C</span> ' : '';
+            
+        return $n . ($e ? '<span style="color:red; font-weight: bold;">!</span> ' : '');
     }
+    
+    public function confirmAction(){
+        if ($this->row->manageStatus != '240#0000ff') {
+            $response = 'already';
+        } else if ($this->post['managePrepay']){
+            $this->row->managePrepay = $this->post['managePrepay'];
+            $this->row->manageManagerId = $this->post['manageManagerId'] ? $this->post['manageManagerId'] : $_SESSION['admin']['id'];
+            $this->row->manageStatus = '#00ff00';
+            $this->row->manageDate = date('Y-m-d');
+            $this->row->save();
+            $this->row->setAgreementNumber();
+            $response = 'Заявка отмечена как подтвержденная';
+        }
+        die($response);
+    }
+
+    public function agreementAction(){
+        if ($this->params['check'] && $this->row->manageStatus == '240#0000ff') {
+            die('not-confirmed');
+        }
+    }    
+    
 }

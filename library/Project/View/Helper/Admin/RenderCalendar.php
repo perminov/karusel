@@ -123,7 +123,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         if ($_SERVER['STD']) $meta = json_decode(str_replace('\/admin\/', str_replace('/', '\/', $_SERVER['STD']) . '\/admin\/', json_encode($meta)));
         if ($GLOBALS['cmsOnlyMode']) $meta = json_decode(str_replace('\/admin\/', '\/', json_encode($meta)));
         ob_start();?>
-    <link rel="stylesheet" type="text/css" href="/library/extjs4/examples/calendar/resources/css/calendar.css?2" />
+    <link rel="stylesheet" type="text/css" href="/library/extjs4/examples/calendar/resources/css/calendar.css?3" />
     <link rel="stylesheet" type="text/css" href="/library/extjs4/examples/calendar/resources/css/examples.css" />
     <style>
         .x-window-body-default{background: white !important;}
@@ -255,6 +255,9 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                 },{
                     "id":    3,
                     "title": "Клиентские"
+                },{
+                    "id":    4,
+                    "title": "Проведенные"
                 }]
             }
         });
