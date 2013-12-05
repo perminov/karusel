@@ -144,7 +144,7 @@
 
 <tr class="info" id="tr-subprogramId" style="border-top: 0px;">
     <td width="50%" id="td-left-subprogramId"></td>
-    <td width="50%" id="td-right-subprogramId" style="border-top: 1px solid #C7D4FF;"><?=$this->formCombo('subprogramId', 'event')?></td>
+    <td width="50%" id="td-right-subprogramId"><?=$this->formCombo('subprogramId', 'event')?></td>
 </tr>
 <tr class="info" id="tr-birthChildName">
     <td width="50%" id="td-left-birthChildName">Имя именинника:</td>
@@ -269,6 +269,7 @@
         $('input[type="reset"]').click(function(){
             $('#districtId').val(0).change();
             $('input[type="submit"]').removeAttr('disabled');
+            top.window.$('iframe[name="form-frame"]').height(490);
         });
         $('input[type="submit"]').click(function(){
             var data = {};
@@ -305,7 +306,7 @@
             if (error == false) {
                 data.animatorsNeededCount = parseInt($('#programId').attr('animatorsCount'));
                 $.post(STD+'/admin/client/save', data, function (response) {
-                    top.window.$('frame[name="form-frame"]').height(400);
+                    top.window.$('iframe[name="form-frame"]').height(400);
                     if (response == 'ok') {
                         Ext.MessageBox.show({
                             title:"Сообщение",
@@ -314,7 +315,7 @@
                             icon:Ext.MessageBox.INFO,
                             modal: true,
                             fn: function(){
-                                top.window.$('iframe[name="form-frame"]').height(430);
+                                top.window.$('iframe[name="form-frame"]').height(490);
                                 $('input[type="submit"]').attr('disabled', 'disabled');
                             }
                         });
@@ -327,7 +328,7 @@
                             icon:Ext.MessageBox.WARNING,
                             modal: true,
                             fn: function(){
-                                top.window.$('iframe[name="form-frame"]').height(430);
+                                top.window.$('iframe[name="form-frame"]').height(490);
                             }
                         });
                     }
