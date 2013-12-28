@@ -24,7 +24,7 @@ class Admin_ClientController extends Project_Controller_Admin{
             $eventR = $this->trail->getItem()->model->fetchRow('`id` = "' . $this->identifier . '"');
             
             // Добавляем путь к хелперам уведомлений
-            $coreH = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . $_SERVER['STD'] . '/core/library';
+            $coreH = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . STD . '/core/library';
             $wwwH  = preg_replace('/core(\/library)/', 'www$1', $coreH);
             if (is_dir($wwwH)) $this->view->addHelperPath($wwwH . '/Project/View/Helper', 'Project_View_Helper_');
             

@@ -11,29 +11,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
         }
         ?></table>
         </form>
-        <script>
-        $(document).ready(function(){
-            var parent = top.window.$('iframe[name="form-frame"]').parent();
-            parent.css('height', '100%');
-            while (parent.attr('id') != 'calendar-form-panel') {
-                parent = parent.parent();
-                parent.css('height', '100%');
-            }
-        });
-        </script>
         <script><?=$this->view->trail->getItem()->section->javascriptForm?></script><?
-        $sections = $this->view->trail->getItem()->sections->toArray();
-        if (count($sections)) {
-            $sectionsDropdown = array();
-            $maxLength = 12;
-            // $sectionsDropdown[] = array('alias' => '', 'title' => '--Выберите--');
-            for ($i = 0; $i < count($sections); $i++){
-                $sectionsDropdown[] = array('alias' => $sections[$i]['alias'], 'title' => $sections[$i]['title']);
-                $str = preg_replace('/&[a-z]+;/', '&', $sections[$i]['title']);
-                $len = mb_strlen($str, 'utf-8');
-                if ($len > $maxLength) $maxLength = $len;
-            }
-        }
         $parent = $this->view->trail->getItem(1);
         $actionA = $this->view->trail->getItem()->actions->toArray();
         $a = array();
@@ -59,7 +37,8 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                             icon: Ext.MessageBox.QUESTION,
                             fn: function(answer, arg2){
                                 if (answer == 'yes') {
-                                    $.get(PRE + '/" . $this->view->section->alias . "/delete/id/" . $this->view->row->id . "/', function(){
+                                    var aix = top.window.eventStore.getById(" . $this->view->row->id . ").index + 1;
+                                    $.get(PRE + '/" . $this->view->section->alias . "/delete/id/" . $this->view->row->id . "/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/', function(){
                                         top.window.form.close();
                                         top.window.eventStore.reload();
                                     });
@@ -85,7 +64,8 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                             width: 300,
                             fn: function(answer, arg2){
                                 if (answer == 'ok') {
-                                    $.post(PRE + '/" . $this->view->section->alias . "/confirm/id/" . $this->view->row->id . "/',
+                                    var aix = top.window.eventStore.getById(" . $this->view->row->id . ").index + 1;
+                                    $.post(PRE + '/" . $this->view->section->alias . "/confirm/id/" . $this->view->row->id . "/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/',
                                         {managePrepay: Ext.getCmp('managePrepay').getValue(), manageManagerId: Ext.getCmp('manageManagerId').getValue()},
                                         function(response){
                                             Ext.MessageBox.show({
@@ -143,56 +123,32 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                     text: 'Договор',
                     handler: function(){
                         top.window.form.close();
-                        top.window.loadContent(PRE + '/" . $this->view->section->alias . "/agreement/id/" . $this->view->row->id . "/', true);
+                        var aix = top.window.eventStore.getById(" . $this->view->row->id . ").index + 1;
+                        top.window.Indi.load(PRE + '/" . $this->view->section->alias . "/agreement/id/" . $this->view->row->id . "/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/', true);
                     },
                     id: 'button-agreement',
                     hidden: " . ($this->view->row->manageStatus == '240#0000ff' ? 'true' : 'false') . "
                 }";
             }
         }
-        if (count($a)){?><script>
+        if (count($a)){?>
+        <script>
         var toolbar = {
             xtype: 'toolbar',
             dock: 'top',
             id: 'topbar',
-            items: [<?=implode(', ', $a)?>
-                <?if ($this->view->trail->getItem()->row->id && count($sections)) {?>,
-                '->',
-                '<?=GRID_SUBSECTIONS_LABEL?>: ',
-                top.window.Ext.create('Ext.form.ComboBox', {
-                    store: top.window.Ext.create('Ext.data.Store',{
-                        fields: ['alias', 'title'],
-                        data: <?=json_encode($sectionsDropdown)?>
-                    }),
-                    valueField: 'alias',
-                    hiddenName: 'alias',
-                    displayField: 'title',
-                    typeAhead: false,
-                    width: <?=$maxLength*7+10?>,
-                    style: 'font-size: 10px',
-                    cls: 'subsection-select',
-                    id: 'subsection-select',
-                    editable: false,
-                    margin: '0 6 2 0',
-                    value: '<?=GRID_SUBSECTIONS_EMPTY_OPTION?>',
-                    listeners: {
-                        change: function(cmb, newv, oldv){
-                            if (this.getValue()) {
-                                top.window.loadContent('<?=$_SERVER['STD']?><?=$GLOBALS['cmsOnlyMode']?'':'/admin'?>/' + cmb.getValue() + '/index/id/' + <?=$this->view->row->id?> + '/');
-                            }
-                        }
-                    }
-                })<?}?>]
-            }
-            var topbar = top.window.form.getDockedComponent('topbar');
-            if (topbar) top.window.form.removeDocked(topbar);
-            top.window.form.addDocked(toolbar);
-        </script><?}
-        ?><script>
+            items: [<?=implode(', ', $a)?>]
+        }
+        var topbar = top.window.form.getDockedComponent('topbar');
+        if (topbar) top.window.form.removeDocked(topbar);
+        top.window.form.addDocked(toolbar);
+        </script>
+        <?}?>
+        <script>
         top.window.$('#calendar-form-panel').css('height', '100%');
         var height = top.window.Ext.getCmp('calendar-form-panel').getHeight();
         top.window.$('iframe[name="form-frame"]').css('height', height + 'px');
-        </script><?
-        return ob_get_clean();
+        </script>
+        <? return ob_get_clean();
     }
 }

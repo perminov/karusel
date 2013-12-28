@@ -4,10 +4,10 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         $gridFields = $this->view->trail->getItem()->gridFields->toArray();
         $actions    = $this->view->trail->getItem()->actions->toArray();
         $canadd = false; foreach ($actions as $action) if ($action['alias'] == 'save') {$canadd = true; break;}
-        $currentPage = $_SESSION['admin']['indexParams'][$this->view->trail->getItem()->section->alias]['page'] ? $_SESSION['admin']['indexParams'][$this->view->trail->getItem()->section->alias]['page'] : 1;
+        $currentPage = $this->view->getScope('page') ? $this->view->getScope('page') : 1;
         $filterFieldAliases = array();
-        $comboFilters = array();
         $icons = array('form', 'delete', 'save', 'toggle', 'up', 'down');
+        $comboFilters = array();
         foreach ($this->view->trail->getItem()->filters as $filter) {
             if (in_array($filter->foreign['fieldId']->foreign['elementId']['alias'], array('number','calendar','datetime'))) {
                 $filterFieldAliases[] = $filter->foreign['fieldId']->alias . '-gte';
@@ -36,16 +36,20 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                 iconCls: "add",
                 actionAlias: "' . $actions[$i]['alias'] . '",
                 handler: function(){
-                    loadContent(grid.indi.href + this.actionAlias + "/");
+                    loadContent(grid.indi.href + this.actionAlias + "/ph/" + Indi.trail.item().section.primaryHash + "/");
                 }
 
                 },' : '') . '{
                 text: "' . $actions[$i]['title'] . '",
                 actionAlias: "' . $actions[$i]['alias'] . '",
+                id: "action-button-' . $actions[$i]['alias'] . '",
                 '.(in_array($actions[$i]['alias'], $icons) ? 'iconCls: "' . $actions[$i]['alias'] . '",' : '').'
                 handler: function(){
                     var selection = grid.getSelectionModel().getSelection();
-                    if (selection.length) var row = selection[0].data;
+                    if (selection.length) {
+                        var row = selection[0].data;
+                        var aix = selection[0].index + 1;
+                    }
                     ' .
                 (
                 $actions[$i]['rowRequired'] == 'y' ?
@@ -91,8 +95,9 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
             {
                 xtype: 'textfield',
                 name: 'fast-search-keyword',
+                value: '" . urldecode($this->view->getScope('keyword')) . "',
                 height: 19,
-                cls: 'fast-search-keyword',
+                cls: 'i-form-text',
                 margin: '0 4 0 0',
                 placeholder: 'Искать',
                 id: 'fast-search-keyword',
@@ -100,15 +105,18 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                     change: function(obj, newValue, oldValue, eOpts){
                         clearTimeout(timeout);
                         timeout = setTimeout(function(keyword){
-                            grid.store.proxy.url = '" . $_SERVER['STD'] . ($GLOBALS['cmsOnlyMode']?'':'/admin') . "/' + json.params.section + '/index/' + (json.params.id ? 'id/' + json.params.id + '/' : '') + 'json/1/' + (keyword ? 'keyword/' + keyword + '/' : '');
-                            gridStore.load();
+                            grid.store.proxy.url = '" . STD . (COM?'':'/admin') . "/' + json.params.section + '/index/' + (json.params.id ? 'id/' + json.params.id + '/' : '') + 'json/1/' + (keyword ? 'keyword/' + keyword + '/' : '');
+                            filterChange({});
                         }, 500, newValue);
                     }
                 }
             }
         ";
         if ($sectionsDropdown) $tbarItems[] = $sectionsDropdown;
-        if ($defaultSortField = $this->view->trail->getItem()->section->getForeignRowByForeignKey('defaultSortField')){
+        if ($savedOrder = json_decode($this->view->getScope('order'))) {
+            $this->view->trail->getItem()->section->defaultSortFieldAlias = $savedOrder[0]->property;
+            $this->view->trail->getItem()->section->defaultSortDirection = $savedOrder[0]->direction;
+        } else if ($defaultSortField = $this->view->trail->getItem()->section->getForeignRowByForeignKey('defaultSortField')){
             $this->view->trail->getItem()->section->defaultSortFieldAlias = $defaultSortField->alias;
         }
         $meta = array(
@@ -120,8 +128,8 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
             'trail' => $this->view->trail(),
             'entity' => $this->view->trail->getItem()->section->getForeignRowByForeignKey('entityId')->title
         );
-        if ($_SERVER['STD']) $meta = json_decode(str_replace('\/admin\/', str_replace('/', '\/', $_SERVER['STD']) . '\/admin\/', json_encode($meta)));
-        if ($GLOBALS['cmsOnlyMode']) $meta = json_decode(str_replace('\/admin\/', '\/', json_encode($meta)));
+        if (STD) $meta = json_decode(str_replace('\/admin\/', str_replace('/', '\/', STD) . '\/admin\/', json_encode($meta)));
+        if (COM) $meta = json_decode(str_replace('\/admin\/', '\/', json_encode($meta)));
         ob_start();?>
     <link rel="stylesheet" type="text/css" href="/library/extjs4/examples/calendar/resources/css/calendar.css?3" />
     <link rel="stylesheet" type="text/css" href="/library/extjs4/examples/calendar/resources/css/examples.css" />
@@ -138,7 +146,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
     var json = <?=json_encode($meta)?>;
     var timeout, timeout2;
     var eventStore, calendarStore, eventStore1, showEditWindow, calendar;
-    var myMask, formMask;
+    var formMask;
     var filterChange;
     Ext.Loader.setConfig({enabled: true, paths: {'Ext.calendar': STD+'/library/extjs4/examples/calendar/src'}});
     Ext.require([
@@ -162,7 +170,11 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                 if (filterValue != '%' && filterValue != '' && filterValue !== null) {
                     var param = {};
                     if (Ext.getCmp('filter-'+filterAliases[i]).xtype == 'datefield') {
-                        param[filterAliases[i]] = Ext.getCmp('filter-'+filterAliases[i]).getRawValue();
+                        if(Ext.getCmp('filter-'+filterAliases[i]).format != 'Y-m-d') {
+                            param[filterAliases[i]] = Ext.Date.format(Ext.Date.parse(Ext.getCmp('filter-'+filterAliases[i]).getRawValue(), Ext.getCmp('filter-'+filterAliases[i]).format), 'Y-m-d');
+                        } else {
+                            param[filterAliases[i]] = Ext.getCmp('filter-'+filterAliases[i]).getRawValue();
+                        }
                     } else {
                         param[filterAliases[i]] = Ext.getCmp('filter-'+filterAliases[i]).getValue();
                     }
@@ -178,9 +190,12 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
             eventStore.proxy.extraParams = {search : JSON.stringify(params)};
             //Ext.getCmp('fast-search-keyword').setDisabled(usedFilterAliasesThatHasGridColumnRepresentedBy.length == gridColumnsAliases.length);
             if (!obj.noReload) {
+                eventStore.currentPage = 1;
+                eventStore.lastOptions.page = 1;
+                eventStore.lastOptions.start = 0;
                 if (obj.xtype == 'combobox') {
                     eventStore.reload();
-                } else if (obj.xtype == 'datefield' && (/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(obj.getRawValue()) || !obj.getRawValue().length)) {
+                } else if (obj.xtype == 'datefield' && (/^([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{2}\.[0-9]{2}\.[0-9]{4})$/.test(obj.getRawValue()) || !obj.getRawValue().length)) {
                     clearTimeout(timeout);
                     timeout = setTimeout(function(){
                         eventStore.reload();
@@ -193,11 +208,12 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                 }
             }
         }
+        var myMask;
         eventStore = Ext.create('Ext.data.Store', {
             model: 'Ext.calendar.data.EventModel',
             pageSize: <?=$this->view->section->rowsOnPage?>,
             proxy:  new Ext.data.proxy.Ajax({
-                url: '<?=$_SERVER['STD']?><?=$GLOBALS['cmsOnlyMode']?'':'/admin'?>/<?=$this->view->section->alias?>/index/json/1/',
+                url: '<?=PRE?>/<?=$this->view->section->alias?>/index/json/1/',
                 method: 'POST',
                 reader: {
                     type: 'json',
@@ -206,11 +222,12 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                     idProperty: 'id'
                 }
             }),
+            currentPage: <?=$currentPage?>,
 
             // private - override the default logic for memory storage
             listeners: {
                 beforeload: function(store, operation, eOpts){
-                    if (calendar) {
+                    if (Ext.getCmp('i-center-content')) {
                         var requested;
                         if (operation.params.start == operation.params.end) {
                             requested = 'dayview';
@@ -223,9 +240,9 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                                 requested = 'monthview';
                             }
                         }
-                        if (calendar.activeView.xtype == requested) {
-                            if (!calendar.lastFetch || Ext.Date.add(calendar.lastFetch, Ext.Date.MILLI, 500) <= new Date()) {
-                                calendar.lastFetch = new Date();
+                        if (Ext.getCmp('i-center-content').activeView && Ext.getCmp('i-center-content').activeView.xtype == requested) {
+                            if (!Ext.getCmp('i-center-content').lastFetch || Ext.Date.add(Ext.getCmp('i-center-content').lastFetch, Ext.Date.MILLI, 500) <= new Date()) {
+                                Ext.getCmp('i-center-content').lastFetch = new Date();
                                 myMask.show();
                                 return true;
                             } else {
@@ -266,6 +283,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         // it altogether. Because of this, it's up to the application code to tie the pieces together.
         // Note that this function is called from various event handlers in the CalendarPanel above.
         showEditWindow = function(rec, animateTarget){
+            var aix = rec.index + 1;
             if (form) form.destroy();
             form = Ext.create('widget.window', {
                 title: 'Мероприятие',
@@ -278,7 +296,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                 for: rec.internalId,
                 items: [{
                     id: 'calendar-form-panel',
-                    html: '<iframe src="<?=$_SERVER['STD']?><?=$GLOBALS['cmsOnlyMode']?'':'/admin'?>/<?=$this->view->section->alias?>/form/'+(rec.internalId ? 'id/'+rec.internalId+'/' : '')+'?width=600" width="100%" height="100%" scrolling="auto" frameborder="0" id="form-frame" name="form-frame"></iframe>',
+                    html: '<iframe src="<?=PRE?>/<?=$this->view->section->alias?>/form/'+(rec.internalId ? 'id/'+rec.internalId+'/' : '')+'ph/'+Indi.trail.item().section.primaryHash+'/aix/'+aix+'/?width=600" width="100%" height="100%" scrolling="auto" frameborder="0" id="form-frame" name="form-frame"></iframe>',
                     border: 0
                 }]
             });
@@ -289,12 +307,13 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         // CalendarPanel, but the app title bar and sidebar/navigation calendar are separate
         // pieces that are composed in app-specific layout code since they could be omitted
         // or placed elsewhere within the application.
-        calendar = Ext.create('Ext.calendar.CalendarPanel', {
+        //calendar = null;
+        Ext.create('Ext.calendar.CalendarPanel', {
             eventStore: eventStore,
             calendarStore: calendarStore,
             border: false,
             closable: true,
-            id:'<?=$this->view->section->alias?>Calendar',
+            id:'i-center-content',
             /*activeItem: 3, // month view*/
             title: '<?=$this->view->section->title?>',
             height: '100%',
@@ -309,10 +328,10 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
             tools: [<?if(count($filterFieldAliases)){?>{
                 type: 'search',
                 handler: function(event, target, owner, tool){
-                    if (calendar.getDockedComponent('search-toolbar').hidden) {
-                        calendar.getDockedComponent('search-toolbar').show();
+                    if (Ext.getCmp('i-center-content').getDockedComponent('search-toolbar').hidden) {
+                        Ext.getCmp('i-center-content').getDockedComponent('search-toolbar').show();
                     } else {
-                        calendar.getDockedComponent('search-toolbar').hide();
+                        Ext.getCmp('i-center-content').getDockedComponent('search-toolbar').hide();
                     }
                 }
             }<?}?>],
@@ -381,13 +400,25 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         $('.trail-siblings').mouseleave(function(){
             $(this).hide();
         });
-
-        myMask = new Ext.LoadMask(calendar.getEl(), {});
-        calendar.setActiveView(2);
-        mainPanel = calendar;
+        myMask = new Ext.LoadMask(Ext.getCmp('i-center-content').getEl().first('.x-panel-body'), {});
+        myMask.show();
+        filterChange({noReload: true});
+        Ext.getCmp('i-center-content').setActiveView(2);
+        mainPanel = Ext.getCmp('i-center-content');
+        currentPanelId = Ext.getCmp('i-center-content').id;
     });
     </script>
-    <?if (count($comboFilters)){echo '<span style="display: none">'.implode('', $comboFilters) . '</span>';}?>
+    <script>
+        Indi.trail.apply(<?=json_encode($this->view->trail->toArray())?>);
+        Indi.scope = <?=json_encode($this->view->getScope())?>;
+        top.Indi.scope = Indi.scope;
+    </script>
+    <?//if (count($comboFilters)){echo '<span style="display: none">'.implode('', $comboFilters) . '</span>'; }?>
+    <?if (count($comboFilters)){
+            echo '<span style="display: none">'.implode('', $comboFilters) . '</span>';
+            ?><script>Indi.combo.filter = Indi.combo.filter || new Indi.proto.combo.filter(); /*Indi.combo.filter.run();*/</script><?
+        }?>
+
     </head>
     <div style="display:none;">
         <div id="app-header-content">

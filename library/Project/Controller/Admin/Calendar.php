@@ -4,23 +4,33 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
      * We set ORDER as 'id', as we do not need any other order type
      * @return string
      */
-    public function getOrderForJsonRowset(){
+    public function finalORDER(){
         return 'timeId';
     }
 
     /**
      * Here we add a WHERE clause parts to retrieve rows related to a given period of time
-     * @param $condition
+     * @param array $where
      * @return array|string
      */
-    public function modifyRowsetCondition($condition) {
-        $condition = $condition ? explode(' AND ', $condition) : array();
+    public function adjustPrimaryWHERE($where) {
+        if (!$this->get['start']) {
+            $startDate = date('Y-m-01');
+            $startTime = strtotime($startDate);
+            $dayOfWeek = date('N', $startTime);
+            $this->get['start'] = date('m-d-Y', $startTime - 60 * 60 * 24 * ($dayOfWeek - 1));
+        }
+        if (!$this->get['end']) {
+            $endDate = date('Y-m-' . date('t'));
+            $endTime = strtotime($endDate);
+            $dayOfWeek = date('N', $endTime);
+            $this->get['end'] = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek));
+        }
         $start = explode('-', $this->get['start']);
         $end = explode('-', $this->get['end']);
-        $condition[] = '`calendarStart` >= "' . $start[2] . '-' . $start[0] . '-' . $start[1]. ' 00:00:00"';
-        $condition[] = '`calendarEnd` <= "' . $end[2] . '-' . $end[0] . '-' . $end[1]. ' 23:59:59"';
-        $condition = implode(' AND ', $condition);
-        return $condition;
+        $where[] = '`calendarStart` >= "' . $start[2] . '-' . $start[0] . '-' . $start[1]. ' 00:00:00"';
+        $where[] = '`calendarEnd` <= "' . $end[2] . '-' . $end[0] . '-' . $end[1]. ' 23:59:59"';
+        return $where;
     }
 
     /**

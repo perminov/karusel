@@ -16,11 +16,10 @@ class Project_View_Helper_SiteHeader extends Indi_View_Helper_Abstract{
         <link rel="stylesheet" type="text/css" href="/css/admin/layout.css"/>
         <link rel="stylesheet" type="text/css" href="/css/admin/index.css"/>
         <link rel="stylesheet" type="text/css" href="/css/admin/form.css"/>
-        <link rel="stylesheet" type="text/css" href="/css/admin/combo.css"/>
-        <script>var STD = '<?=$_SERVER['STD']?>';</script>
+        <link rel="stylesheet" type="text/css" href="/css/admin/indi.combo.css"/>
+        <script>var STD = '<?=STD?>';</script>
         <script type="text/javascript" src="/library/extjs4/ext-all.js"></script>
         <script type="text/javascript" src="/library/extjs4/ext-lang-ru.js"></script>
-        <script type="text/javascript" src="/js/admin/index.js"></script>
         <script type="text/javascript" src="/js/admin/indi.js?<?=rand(0, 10000)?>"></script>
         <script type="text/javascript" src="/js/admin/indi.combo.form.js?<?=rand(0, 10000)?>"></script>
         <script src="/js/jquery-1.9.1.min.js"></script>

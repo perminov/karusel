@@ -20,7 +20,7 @@ class Admin_ManagerGridMydistrictController extends Project_Controller_Admin_Eve
     }
 
     public function agreementAction(){
-        if ($this->params['check'] && $this->row->manageStatus != '120#00ff00') {
+        if ($this->params['checkConfirmed'] && $this->row->manageStatus != '120#00ff00') {
             die('not-confirmed');
         }
     }

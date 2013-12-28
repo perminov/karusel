@@ -45,11 +45,11 @@ table.x-field tr{
                 <?$params['displayFormat'] = 'd.m.Y'?>
                 <script>
                     $('#date').change(function () {
-                        Indi.combo.form.store.timeId = deepObjCopy(Indi.combo.form.store.timeIdBackup);
+                        Indi.combo.form.store.timeId = Indi.copy(Indi.combo.form.store.timeIdBackup);
                         if ($('#date').val() == '') {
                             Indi.combo.form.toggle('timeId', true);
                         } else {
-                            $.post(STD+'/auxillary/disabledTimes',
+                            $.post(STD+'/auxillary/disabledTimes/',
                                 {placeId:$('#placeId').val(), date: Ext.Date.format(Ext.Date.parse($('#date').val(), Ext.getCmp('dateCalendar').longDayFormat), 'Y-m-d')},
                                 function (disabledTimeIds) {
                                     Indi.combo.form.setDisabledOptions('timeId', disabledTimeIds);
@@ -394,6 +394,6 @@ Indi.ready(function(){
     setTimeout(function(){
         hide('tr-subprogramId');
     }, 100);
-    window.Indi.combo.form.store.timeIdBackup = deepObjCopy(window.Indi.combo.form.store.timeId);
+    window.Indi.combo.form.store.timeIdBackup = Indi.copy(window.Indi.combo.form.store.timeId);
 }, 'combo.form');
 </script>
