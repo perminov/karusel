@@ -1,10 +1,8 @@
-<link rel="stylesheet" type="text/css" href="/library/extjs4/resources/css/ext-all.css"/>
+<link rel="stylesheet" type="text/css" href="/library/extjs4iframe/resources/css/ext-all.css"/>
 <link rel="stylesheet" type="text/css" href="/css/iframed.css"/>
-<link rel="stylesheet" type="text/css" href="/css/admin/combo.css"/>
 <script>var STD = '<?=$_SERVER['STD']?>';</script>
 <script type="text/javascript" src="/library/extjs4/ext-all.js"></script>
 <script type="text/javascript" src="/library/extjs4/ext-lang-ru.js"></script>
-<script type="text/javascript" src="/js/admin/index.js"></script>
 <script type="text/javascript" src="/js/admin/indi.js?<?=rand(0, 10000)?>"></script>
 <script type="text/javascript" src="/js/admin/indi.combo.form.js?<?=rand(0, 10000)?>"></script>
 <script src="/js/jquery-1.9.1.min.js"></script>
@@ -19,52 +17,43 @@
     window.publicTimes = [];
     Ext.require(['*']);
 </script>
-<style>
-    form.form table tr {
-        border: none !important;
-    }
-    table.x-field tr{
-        border: none !important;
-    }
-</style>
-<div class="features-list" style="margin-top: 0px;">
-    <h3 class="feature-header" style="font-size: 32px;">Заявка на проведение<br>праздника</h3>
-</div>
 
-<form class="form row-form" action="/admin/client/save/" name="event" method="post" enctype="multipart/form-data" row-id="" style="">
-<table celpadding="2" cellspacing="1" border="0" width="100%">
-<col width="50%"/><col width="50%"/>
-<tr class="info" id="tr-districtId">
+<form action="/admin/client/save/" name="event" method="post" enctype="multipart/form-data" row-id="" style="">
+<table celpadding=0 cellspacing=0 border="0" width="100%">
+
+<tr id="tr-districtId">
     <td width="50%" id="td-left-districtId">Место проведения мероприятия:</td>
     <td width="50%" id="td-right-districtId"><?=$this->formCombo('districtId', 'event')?></td>
-</tr>
-<tr class="info" id="tr-placeId" style="border-top: 0px;">
+    
+    
+    </tr>
+<tr id="tr-placeId" style="border-top: 0px;">
     <td width="50%" id="td-left-placeId"></td>
     <td width="50%" id="td-right-placeId"><?=$this->formCombo('placeId', 'event')?></td>
 </tr>
-<tr class="info" id="tr-date">
+
+
+
+<tr id="tr-date">
     <td width="50%" id="td-left-date">Дата:</td>
     <td width="50%" id="td-right-date">
-        <div style="position: relative; z-index: 99" id="calendardateDiv" class="calendar-div"><input type="text"
-                                                                                                      name="date"
-                                                                                                      value=""
-                                                                                                      style="width: 62px; margin-top: 1px;"
-                                                                                                      id="date"
-                                                                                                      class="calendar-input">
+    <!-- ext-all -->
+        <div style="position: relative; z-index: 99" id="calendardateDiv" class="calendar-div">
+        <input type="text"name="date" value="" id="date" class="calendar-input">
             <a href="javascript:void(0);" onclick="$('#dateCalendarRender').toggle();" id="dateCalendarIcon"
-               class="calendar-trigger"><img src="/i/admin/b_calendar.png" alt="Show calendar" width="14" height="18"
+               class="calendar-trigger"><img src="/i/admin/b_calendar1.png" alt="Show calendar" width="34" height="34"
                                              border="0"
-                                             style="vertical-align: top; margin-top: 1px; margin-left: -2px;"></a>
+                                             style="vertical-align: top; margin-top: 8px; margin-left: 4px;"></a>
 
             <div id="dateCalendarRender" style="position: absolute; display: none; margin-top: 1px;">
                 <?$params['displayFormat'] = 'd.m.Y'?>
                 <script>
                     $('#date').change(function () {
-                        Indi.combo.form.store.timeId = deepObjCopy(Indi.combo.form.store.timeIdBackup);
+                        Indi.combo.form.store.timeId = Indi.copy(Indi.combo.form.store.timeIdBackup);
                         if ($('#date').val() == '') {
                             Indi.combo.form.toggle('timeId', true);
                         } else {
-                            $.post(STD+'/auxillary/disabledTimes',
+                            $.post(STD+'/auxillary/disabledTimes/',
                                 {placeId:$('#placeId').val(), date: Ext.Date.format(Ext.Date.parse($('#date').val(), Ext.getCmp('dateCalendar').longDayFormat), 'Y-m-d')},
                                 function (disabledTimeIds) {
                                     Indi.combo.form.setDisabledOptions('timeId', disabledTimeIds);
@@ -95,7 +84,7 @@
                             //monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
                             renderTo:'dateCalendarRender',
                             id:'dateCalendar',
-                            width:185,
+                            width:288,
                             disabledDatesText:'На данную дату все уже забронировано',
                             //todayText: 'Сегодня',
                             //ariaTitle: 'Выбрать месяц и год',
@@ -118,7 +107,7 @@
                                 render: function(cal) {
                                     $('body').bind('click', function(e) {
                                         if($(e.target).closest('#'+cal.id).length == 0 &&
-                                            !($(e.srcElement).hasClass('calendar-trigger') || $(e.srcElement).parent().hasClass('calendar-trigger')) &&
+                                            !($(e.srcElement || e.target).hasClass('calendar-trigger') || $(e.srcElement || e.target).parent().hasClass('calendar-trigger')) &&
                                             $('#'+cal.id+'Render').css('display') != 'none') {
                                             $('#'+cal.id+'Render').hide();
                                         }
@@ -148,10 +137,19 @@
 </tr>
 <tr class="info" id="tr-birthChildName">
     <td width="50%" id="td-left-birthChildName">Имя именинника:</td>
-    <td width="50%" id="td-right-birthChildName"><input type="text" name="birthChildName" id="birthChildName" value=""
-                                                        oninput="" style="width: 100%;"/></td>
+    <td width="50%" id="td-right-birthChildName">
+    <div class="i-combo-single">
+    <input class="i-combo-keyword" type="text" name="birthChildName" id="birthChildName" value="" oninput="" style="width: 99%;"/>
+    </div>
+    </td>
 </tr>
-<tr class="info" id="tr-birthChildBirthDate"><td width="50%" id="td-left-birthChildBirthDate">Дата рождения:</td><td width="50%" id="td-right-birthChildBirthDate"><div style="position: relative; z-index: 98" id="calendarbirthChildBirthDateDiv" class="calendar-div"><input type="text" name="birthChildBirthDate" value="" readonly="readonly" style="width: 62px; margin-top: 1px;" id="birthChildBirthDate" class="calendar-input"> <a href="javascript:void(0);" onclick="$('#birthChildBirthDateCalendarRender').toggle();" id="birthChildBirthDateCalendarIcon" class="calendar-trigger"><img src="/i/admin/b_calendar.png" alt="Show calendar" width="14" height="18" border="0" style="vertical-align: top; margin-top: 1px; margin-left: -2px;"></a>		<div id="birthChildBirthDateCalendarRender" style="position: absolute; display: none; margin-top: 1px;">
+<tr class="info" id="tr-birthChildBirthDate"><td width="50%" id="td-left-birthChildBirthDate">Дата рождения:</td>
+<td width="50%" id="td-right-birthChildBirthDate"><div style="position: relative; z-index: 98" id="calendarbirthChildBirthDateDiv" class="calendar-div">
+<input type="text" name="birthChildBirthDate" value="" readonly="readonly" id="birthChildBirthDate" class="calendar-input"> 
+    <a href="javascript:void(0);" onclick="$('#birthChildBirthDateCalendarRender').toggle();" id="birthChildBirthDateCalendarIcon" class="calendar-trigger">
+        <img src="/i/admin/b_calendar1.png" alt="Календарь" width="34" height="34" border="0" style="vertical-align: top; margin-top: 8px; margin-left: 4px;">
+    </a>		
+<div id="birthChildBirthDateCalendarRender" style="position: absolute; display: none; margin-top: 1px;">
     <script>
         $('#birthChildBirthDate').change(function(){
         });
@@ -159,7 +157,7 @@
             Ext.create('Ext.picker.Date', {
                 renderTo: 'birthChildBirthDateCalendarRender',
                 id: 'birthChildBirthDateCalendar',
-                width: 185,
+                width: 288,
                 disabledDatesText: 'На данную дату все уже забронировано',
                 ariaTitleDateFormat: '<?=$params['displayFormat']?>',
                 longDayFormat: '<?=$params['displayFormat']?>',
@@ -174,7 +172,7 @@
                     render: function(cal) {
                         $('body').bind('click', function(e) {
                             if($(e.target).closest('#'+cal.id).length == 0 &&
-                                !($(e.srcElement).hasClass('calendar-trigger') || $(e.srcElement).parent().hasClass('calendar-trigger')) &&
+                                !($(e.srcElement || e.target).hasClass('calendar-trigger') || $(e.srcElement || e.target).parent().hasClass('calendar-trigger')) &&
                                 $('#'+cal.id+'Render').css('display') != 'none') {
                                 $('#'+cal.id+'Render').hide();
                             }
@@ -196,9 +194,9 @@
                                                               oninput="this.value=number(this.value);" readonly="readonly"
                                                               onkeydown="if(event.keyCode==38||event.keyCode==40){if(event.keyCode==38)this.value=parseInt(this.value)+1;else if(event.keyCode==40)this.value=parseInt(this.value)-1;}"
                                                               autocomplete="off"/></td>
-                <td style="padding-right: 5px; padding-left: 5px; padding-top: 3px;">1</td>
-                <td>
-                    <div id="childrenCount-slider" style="float: right; height: 21px; overflow: hidden;"></div>
+                <td style="padding-right: 5px; padding-left: 5px; padding-top: 8px;">1</td>
+                <td style="padding-top: 10px;">
+                    <div id="childrenCount-slider" style="float: right; height: 35px; overflow: hidden;"></div>
                     <script>
                         Ext.onReady(function(){
                             Ext.create('Ext.slider.Single', {
@@ -206,7 +204,7 @@
                                 id: 'ext-childrenCount-slider',
                                 hideLabel: true,
                                 useTips: false,
-                                width: 160,
+                                width: 199,
                                 value: 5,
                                 increment: 1,
                                 minValue: 1,
@@ -221,7 +219,7 @@
                         });
                     </script>
                 </td>
-                <td id="maxChildrenCount" style="padding-top: 3px;">8</td>
+                <td id="maxChildrenCount" style="padding-top: 8px;">8</td>
             </tr>
         </table>
     </td>
@@ -233,33 +231,50 @@
 <tr class="info" id="tr-clientTitle">
     <td width="50%" id="td-left-clientTitle">Ваше имя:</td>
     <td width="50%" id="td-right-clientTitle"><input type="text" name="clientTitle" id="clientTitle" value="" oninput=""
-                                                     style="width: 100%;"/></td>
+                                                     style="width: 99%;"/></td>
 </tr>
 <tr class="info" id="tr-clientPhone" style="border-bottom: none;">
     <td width="50%" id="td-left-clientPhone">Контактный телефон:</td>
     <td width="50%" id="td-right-clientPhone"><input type="text" name="clientPhone" id="clientPhone" value="" oninput=""
-                                                     style="width: 100%;"/></td>
+                                                     style="width: 99%;"/></td>
 </tr>
 <tr class="info" id="tr-clientEmail" style="border-bottom: none;">
     <td width="50%" id="td-left-clientEmail">Email:</td>
     <td width="50%" id="td-right-clientEmail"><input type="text" name="clientEmail" id="clientEmail" value="" oninput=""
-                                                     style="width: 100%;"/></td>
+                                                     style="width: 99%;"/></td>
 </tr>
 </table>
-<table class="buttons" style="border: 0; width: 100%;" cellpadding="6" id="iframe-form-buttons">
-    <tr style="border: 0;">
-        <td align="center" type="save" width="50%" align="left" style="vertical-align: top; font-size: 12pt; font-family: 'Cuprum', sans-serif">
-            Стоимость:
-            <input type="text" name="price" id="price" value="0" style="width: 50px; text-align: right;" maxlength="5"
-                   readonly autocomplete="off"/>
-            рублей
+<table class="buttons" style=" solid; width: 100%;" cellpadding="0" id="iframe-form-buttons">
+    <tr>
+        
+        <td type="save" width="50%">
+            Стоимость, руб:
+                        
         </td>
-        <td class="contacts-section">
-            <div class="button-container" style="margin-top: 0;">
-                <span class="button" style="display: initial; padding-left: 0;"><input type="reset" value="очистить" style="width: auto;"></span>
-                <span class="button" style="display: initial;"><input type="submit" value="отправить" style="width: auto;"></span>
+        
+         <td type="save" width="50%">
+            
+            <input class="price-input" type="text" name="price" id="price" value="0" maxlength="5"
+                   readonly autocomplete="off"/>
+            
+        </td>
+        
+        </tr>
+        <tr>
+        
+        <td>
+            <div class="button-container">
+                <span class="button">
+                <input type="reset" value="очистить"></span>
+            </div>   
+        </td>        
+        <td>        
+            <div class="button-container">    
+                <span class="button">
+                <input type="submit" value="отправить"></span>
             </div>
         </td>
+        
     </tr>
 </table>
 </form>
@@ -269,7 +284,7 @@
         $('input[type="reset"]').click(function(){
             $('#districtId').val(0).change();
             $('input[type="submit"]').removeAttr('disabled');
-            top.window.$('iframe[name="form-frame"]').height(490);
+            top.window.$('iframe[name="form-frame"]').height(704);
         });
         $('input[type="submit"]').click(function(){
             var data = {};
@@ -305,8 +320,8 @@
             }
             if (error == false) {
                 data.animatorsNeededCount = parseInt($('#programId').attr('animatorsCount'));
-                $.post(STD+'/admin/client/save', data, function (response) {
-                    top.window.$('iframe[name="form-frame"]').height(400);
+                $.post(STD+'/admin/client/save/', data, function (response) {
+                    top.window.$('iframe[name="form-frame"]').height(664);
                     if (response == 'ok') {
                         Ext.MessageBox.show({
                             title:"Сообщение",
@@ -315,7 +330,7 @@
                             icon:Ext.MessageBox.INFO,
                             modal: true,
                             fn: function(){
-                                top.window.$('iframe[name="form-frame"]').height(490);
+                                top.window.$('iframe[name="form-frame"]').height(704);
                                 $('input[type="submit"]').attr('disabled', 'disabled');
                             }
                         });
@@ -323,12 +338,12 @@
                         Ext.MessageBox.show({
                             title:"Сообщение",
                             msg:'<?=$this->blocks['request-expired']?>',
-                            maxWidth: 500,
+                            maxWidth: 300,
                             buttons:Ext.MessageBox.OK,
                             icon:Ext.MessageBox.WARNING,
                             modal: true,
                             fn: function(){
-                                top.window.$('iframe[name="form-frame"]').height(490);
+                                top.window.$('iframe[name="form-frame"]').height(704);
                             }
                         });
                     }
@@ -386,6 +401,6 @@
         setTimeout(function(){
             hide('tr-subprogramId');
         }, 100);
-        window.Indi.combo.form.store.timeIdBackup = deepObjCopy(window.Indi.combo.form.store.timeId);
+        window.Indi.combo.form.store.timeIdBackup = Indi.copy(window.Indi.combo.form.store.timeId);
     }, 'combo.form');
 </script>

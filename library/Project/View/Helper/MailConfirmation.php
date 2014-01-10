@@ -100,16 +100,6 @@ class Project_View_Helper_MailConfirmation extends Indi_View_Helper_Abstract{
 				  <tr><td colspan="3" height="9"></td></tr>
 				  <tr>
 					  <td width="10"></td>
-					  <td><font face="arial,sans-serif" color="#505050" style="font-size:12px">Примечания к заказу: </font>
-                        <font face="arial,sans-serif" color="#000000" style="font-size:12px">
-                            <?=trim($event->details, "\r\n\t") && false ? nl2br(trim($event->details, "\r\n\t")) : 'отсутствуют'?>
-                        </font>
-                      </td>
-					  <td width="10"></td>
-				  </tr>
-				  <tr><td colspan="3" height="9"></td></tr>
-				  <tr>
-					  <td width="10"></td>
 					  <td><font face="arial,sans-serif" color="#505050" style="font-size:12px; font-weight: bold;">Указанные вами личные сведения:</font></td>
 					  <td width="10"></td>
 				  </tr>
@@ -117,35 +107,8 @@ class Project_View_Helper_MailConfirmation extends Indi_View_Helper_Abstract{
 				  <tr>
 					  <td width="10"></td>
 					  <td>
-                        <font face="arial,sans-serif" color="#505050" style="font-size:12px">ФИО: </font>
+                        <font face="arial,sans-serif" color="#505050" style="font-size:12px">Ваше имя: </font>
                         <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=$event->clientTitle?></font>
-                      </td>
-					  <td width="10"></td>
-				  </tr>
-				  <tr><td colspan="3" height="9"></td></tr>
-				  <tr>
-					  <td width="10"></td>
-					  <td>
-                        <font face="arial,sans-serif" color="#505050" style="font-size:12px">Адрес: </font>
-                        <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=$event->clientAddress?></font>
-                      </td>
-					  <td width="10"></td>
-				  </tr>
-				  <tr><td colspan="3" height="9"></td></tr>
-				  <tr>
-					  <td width="10"></td>
-					  <td>
-                        <font face="arial,sans-serif" color="#505050" style="font-size:12px">Серия и номер паспорта: </font>
-                        <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=$event->clientPassportNumber?></font>
-                      </td>
-					  <td width="10"></td>
-				  </tr>
-				  <tr><td colspan="3" height="9"></td></tr>
-				  <tr>
-					  <td width="10"></td>
-					  <td>
-                        <font face="arial,sans-serif" color="#505050" style="font-size:12px">Кем и когда выдан: </font>
-                        <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=$event->clientPassportIssueInfo?></font>
                       </td>
 					  <td width="10"></td>
 				  </tr>
