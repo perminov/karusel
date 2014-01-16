@@ -256,6 +256,10 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                     }
                 },
                 load: function(){
+					var autoForm = $.cookie('last-row-id');
+					if (autoForm && eventStore.getById(parseInt(autoForm))) 
+						showEditWindow(eventStore.getById(parseInt(autoForm)), $('.i-center-content-month-evt-'+autoForm)[0] || $('#i-center-content-month')[0]);
+					$.removeCookie('last-row-id', {path: '/'});
                     myMask.hide();
                 }
             }

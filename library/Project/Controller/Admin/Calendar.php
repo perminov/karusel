@@ -67,7 +67,6 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
                     $title .= ($data[$i]['subprogramId'] ? $data[$i]['subprogramId'] : $data[$i]['programId']) . ' ';
                     $title .= '</span> ';
                 }
-                ;
                 $title .= $data[$i]['details'];
                 
                 if ($data[$i]['manageNotes']) {
@@ -78,7 +77,29 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
                 
                 $data[$i]['title'] = $title;
             }
-        } else {
+		} else if ($_SESSION['admin']['profileId'] == 15) {
+            for ($i = 0; $i < count($data); $i++) {
+                $data[$i]['start'] = $data[$i]['calendarStart'];
+                $data[$i]['end'] = $data[$i]['calendarEnd'];
+                $data[$i]['cid'] = $this->setColor($data[$i]);
+                $title = $this->setExclaim($data[$i]) . $data[$i]['placeId'] . ' ';
+                if ($data[$i]['animatorIds']) {
+                    $title .= ($data[$i]['subprogramId'] ? $data[$i]['subprogramId'] : $data[$i]['programId']) . ' ';
+                    $animators = explode(', ', $data[$i]['animatorIds']);
+                    $lastA = array();
+                    foreach ($animators as $animator) {
+                        list($lastI) = explode(' ', $animator);
+                        $lastA[] = $lastI;
+                    }
+                    $title .= '[' . implode(', ', $lastA) . '] ';
+                } else {
+                    $title .= '<span style="color: #cc0000;">';
+                    $title .= ($data[$i]['subprogramId'] ? $data[$i]['subprogramId'] : $data[$i]['programId']) . ' ';
+                    $title .= '</span> ';
+                }
+				$data[$i]['title'] = $title;
+            }
+		} else {
             for ($i = 0; $i < count($data); $i++) {
                 $data[$i]['start'] = $data[$i]['calendarStart'];
                 $data[$i]['end'] = $data[$i]['calendarEnd'];

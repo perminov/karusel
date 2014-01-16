@@ -74,6 +74,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                                                 buttons: Ext.MessageBox.OK,
                                                 icon: Ext.MessageBox.INFO,
                                                 fn: function(){
+													$('form[name=" . $this->view->entity->table . "]').submit();
                                                     top.window.eventStore.reload();
                                                     top.window.Ext.getCmp('button-confirm').hide();
                                                     top.window.Ext.getCmp('button-delete').hide();

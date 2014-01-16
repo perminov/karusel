@@ -110,6 +110,7 @@ $xhtml .= '</form>';
 ob_start();?>
 <script>
     Ext.onReady(function(){
+		$.cookie('last-row-id', <?=$this->row->id?>, {path: '/'});
         top.window.Ext.getCmp('i-action-form-topbar-button-save').disable();
         top.window.Ext.getCmp('i-action-form-topbar-button-add').disable();
     });

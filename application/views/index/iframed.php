@@ -323,17 +323,31 @@
                 $.post(STD+'/admin/client/save/', data, function (response) {
                     top.window.$('iframe[name="form-frame"]').height(664);
                     if (response == 'ok') {
-                        Ext.MessageBox.show({
-                            title:"Сообщение",
-                            msg:'<?=$this->blocks['request-saved']?>',
-                            buttons:Ext.MessageBox.OK,
-                            icon:Ext.MessageBox.INFO,
-                            modal: true,
-                            fn: function(){
-                                top.window.$('iframe[name="form-frame"]').height(704);
-                                $('input[type="submit"]').attr('disabled', 'disabled');
-                            }
-                        });
+						$('form[name=event]').hide();
+						Ext.MessageBox.show({
+							title:"Сообщение",
+							msg:'<?=$this->blocks['request-saved']?>',
+							buttons:Ext.MessageBox.YESNO,
+							icon:Ext.MessageBox.INFO,
+							modal: true,
+							fn: function(btn){
+								if (btn == 'yes') {
+									$('input[type="reset"]').click();
+									$('form[name=event]').show();
+									top.window.$.scrollTo('.feature-item-4', 500, {offset: {top: -100}});
+								} else {
+									top.window.$('.eight.columns').hide();
+									top.window.$('.four.columns').last().width('100%');
+									top.window.$('#celebrate-list div li').width(306).css('display', 'inline-table');
+									top.window.$('.four.columns .feature-item-4').height('auto');
+									top.window.$('.four.columns .feature-item-4 h3').html(top.window.$('.four.columns .feature-item-4 h3').html().replace(/<br>/ig, ' '));
+									top.window.$('#celebrate-list div li').width(306);
+									top.window.$.scrollTo('.feature-item-4', 500, {offset: {top: -200}});
+								}
+								//top.window.$('iframe[name="form-frame"]').height(704);
+								//$('input[type="submit"]').attr('disabled', 'disabled');
+							}
+						});
                     } else {
                         Ext.MessageBox.show({
                             title:"Сообщение",
