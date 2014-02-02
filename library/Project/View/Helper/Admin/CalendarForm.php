@@ -79,6 +79,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                                                     top.window.Ext.getCmp('button-confirm').hide();
                                                     top.window.Ext.getCmp('button-delete').hide();
                                                     top.window.Ext.getCmp('button-agreement').show();
+//													top.window.Indi.load(top.window.Indi.pre + '/' + Indi.trail.item().section.alias + '/agreement/id/' + Indi.trail.item().row.id + '/');
                                                 }
                                             });
                                         }

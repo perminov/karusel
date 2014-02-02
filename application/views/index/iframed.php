@@ -39,7 +39,7 @@
     <td width="50%" id="td-right-date">
     <!-- ext-all -->
         <div style="position: relative; z-index: 99" id="calendardateDiv" class="calendar-div">
-        <input type="text"name="date" value="" id="date" class="calendar-input">
+        <input type="text"name="date" value="" id="date" class="calendar-input" readonly="readonly">
             <a href="javascript:void(0);" onclick="$('#dateCalendarRender').toggle();" id="dateCalendarIcon"
                class="calendar-trigger"><img src="/i/admin/b_calendar1.png" alt="Show calendar" width="34" height="34"
                                              border="0"
@@ -416,5 +416,19 @@
             hide('tr-subprogramId');
         }, 100);
         window.Indi.combo.form.store.timeIdBackup = Indi.copy(window.Indi.combo.form.store.timeId);
+		if (top.window.location.search == '?test') {
+			Ext.onReady(function(){
+				Ext.MessageBox.show({
+					title:"Сообщение",
+					msg:'<?=$this->blocks['request-saved']?>',
+					buttons:Ext.MessageBox.YESNO,
+					icon:Ext.MessageBox.INFO,
+					modal: true,
+					fn: function(btn){
+					}
+				});
+			
+			});
+		}
     }, 'combo.form');
 </script>
