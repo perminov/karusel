@@ -93,6 +93,8 @@ Ext.define('Ext.calendar.CalendarPanel', {
         this.tbar = {
             cls: 'ext-cal-toolbar',
             border: true,
+            //height: 27,
+            //padding: '0 3 0 2',
             items: ['->',{
                 id: this.id + '-tb-prev',
                 handler: this.onPrevClick,
@@ -146,9 +148,9 @@ Ext.define('Ext.calendar.CalendarPanel', {
         var idx = this.viewCount - 1;
         this.activeItem = this.activeItem === undefined ? idx: (this.activeItem > idx ? idx: this.activeItem);
 
-        if (this.showNavBar === false) {
+        if (this.showNavBar === false || true) {
             delete this.tbar;
-            this.addCls('x-calendar-nonav');
+//            this.addCls('x-calendar-nonav');
         }
 
         this.callParent();

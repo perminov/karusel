@@ -441,7 +441,7 @@ controls{
 .filter-field .color .x-slider-horz .x-slider-inner .x-slider-thumb:last-child {
     background-image: url(/i/admin/filter-slider-thumb-last.png);
 }
-.color-box{
+.i-color-box{
     width: 14px;
     display: inline-block;
     height: 11px;
