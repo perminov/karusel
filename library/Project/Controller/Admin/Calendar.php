@@ -38,6 +38,10 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
      */
     public function saveAction(){
         parent::saveAction(false);
+        i($this->post);
+        if (array_key_exists('confirm', $this->get)) {
+            die(json_encode(array('id' => $this->identifier)));
+        }
     }
 
     public function setGridTitlesByCustomLogic(&$data) {

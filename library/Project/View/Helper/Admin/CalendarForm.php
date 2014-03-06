@@ -120,6 +120,86 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                     id: 'button-confirm'
                 }";
             }
+            if ($actionI['alias'] == 'confirm' && !$this->view->row->id) {
+                $managerRs = Misc::loadModel('Manager')->fetchAll();
+                $options = array(); foreach($managerRs as $managerR) $options[] = array('id' => $managerR->id, 'title' => $managerR->title);
+                $a[] = "{
+                    text: 'Подтвердить',
+                    handler: function(){
+                        Ext.MessageBox.show({
+                            title: 'Подтверждение заявки',
+                            msg: '<span id=\"msgbox-prepay\"></span><span id=\"managerSelectBox\"></span><br/><br/><br/>',
+                            buttons: Ext.MessageBox.OKCANCEL,
+                            icon: Ext.MessageBox.INFO,
+                            width: 300,
+                            fn: function(answer, arg2){
+                                if (answer == 'ok') {
+                                    var data = {};
+                                    $('input, textarea').each(function(){data[$(this).attr('name')] = $(this).val();});
+                                    $.post($('form[name=" . $this->view->entity->table . "]').attr('action') + '?confirm', data, function(response){
+                                        var lastOptions = top.window.eventStore.lastOptions;
+                                        var eventsStore = top.window.eventStore;
+                                        Ext.apply(lastOptions, {
+                                            callback: function(records, options) {
+                                                var aix = eventsStore.getById(parseInt(response.id)).index + 1;
+                                                $.post(PRE + '/" . $this->view->section->alias . "/confirm/id/'+response.id+'/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/',
+                                                    {managePrepay: Ext.getCmp('managePrepay').getValue(), manageManagerId: Ext.getCmp('manageManagerId').getValue()},
+                                                    function(){
+                                                        Ext.MessageBox.show({
+                                                            title:'Подтверждение заявки',
+                                                            msg: 'Заявка подтверждена',
+                                                            buttons: Ext.MessageBox.OK,
+                                                            icon: Ext.MessageBox.INFO,
+                                                            fn: function(){
+                                                                top.window.form.close();
+                                                                top.window.Indi.load(top.window.Indi.pre + '/' + 
+                                                                    Indi.trail.item().section.alias + 
+                                                                    '/agreement/id/' + response.id + 
+                                                                    '/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/', true);
+                                                            }
+                                                        });
+                                                    }
+                                                )
+                                            }
+                                        });                                        
+                                        top.window.eventStore.reload(lastOptions);
+                                    }, 'json');
+                                }
+                            }
+                        });
+                        Ext.create('Ext.form.field.ComboBox',{
+                          store: Ext.create('Ext.data.Store', {
+                                fields: ['id', 'title'],
+                                data : " . json_encode($options) . "
+                          }),
+                          displayField: 'title',
+                          valueField: 'id',
+                          value: '" . $_SESSION['admin']['id'] . "',
+                          typeAhead: false,
+                          fieldLabel: 'Кем принята',
+                          labelWidth: 90,
+                          width: 210,
+                          style: 'font-size: 10px',
+                          cls: 'subsection-select',
+                          editable: false,
+                          renderTo: 'managerSelectBox',
+                          id: 'manageManagerId'
+                        });
+                        Ext.create('Ext.form.field.Number',{
+                          fieldLabel: 'Предоплата',
+                          labelWidth: 90,
+                          width: 180,
+                          minValue: 0,
+                          height: 19,
+                          value: 500,
+                          id: 'managePrepay',
+                          renderTo: 'msgbox-prepay',
+                          margin: '0 0 5 0'
+                        });
+                    },
+                    id: 'button-confirm'
+                }";
+            }
             if ($actionI['alias'] == 'agreement' && $this->view->row->id) {
                 $a[] = "{
                     text: 'Договор',

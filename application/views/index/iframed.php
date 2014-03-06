@@ -39,7 +39,7 @@
     <td width="50%" id="td-right-date">
     <!-- ext-all -->
         <div style="position: relative; z-index: 99" id="calendardateDiv" class="calendar-div">
-        <input type="text"name="date" value="" id="date" class="calendar-input" readonly="readonly">
+        <input type="text"name="date" value="" id="date" class="calendar-input" readonly="readonly" onclick="$('#dateCalendarRender').toggle()">
             <a href="javascript:void(0);" onclick="$('#dateCalendarRender').toggle();" id="dateCalendarIcon"
                class="calendar-trigger"><img src="/i/admin/b_calendar1.png" alt="Show calendar" width="34" height="34"
                                              border="0"
@@ -107,7 +107,10 @@
                                 render: function(cal) {
                                     $('body').bind('click', function(e) {
                                         if($(e.target).closest('#'+cal.id).length == 0 &&
-                                            !($(e.srcElement || e.target).hasClass('calendar-trigger') || $(e.srcElement || e.target).parent().hasClass('calendar-trigger')) &&
+                                            !($(e.srcElement || e.target).hasClass('calendar-trigger') ||
+                                             $(e.srcElement || e.target).parent().hasClass('calendar-trigger') ||
+                                             $(e.srcElement || e.target).hasClass('calendar-input')
+                                            ) &&
                                             $('#'+cal.id+'Render').css('display') != 'none') {
                                             $('#'+cal.id+'Render').hide();
                                         }
@@ -145,7 +148,7 @@
 </tr>
 <tr class="info" id="tr-birthChildBirthDate"><td width="50%" id="td-left-birthChildBirthDate">Дата рождения:</td>
 <td width="50%" id="td-right-birthChildBirthDate"><div style="position: relative; z-index: 98" id="calendarbirthChildBirthDateDiv" class="calendar-div">
-<input type="text" name="birthChildBirthDate" value="" readonly="readonly" id="birthChildBirthDate" class="calendar-input"> 
+<input type="text" name="birthChildBirthDate" value="" readonly="readonly" id="birthChildBirthDate" class="calendar-input" onclick="$('#birthChildBirthDateCalendarRender').toggle()"> 
     <a href="javascript:void(0);" onclick="$('#birthChildBirthDateCalendarRender').toggle();" id="birthChildBirthDateCalendarIcon" class="calendar-trigger">
         <img src="/i/admin/b_calendar1.png" alt="Календарь" width="34" height="34" border="0" style="vertical-align: top; margin-top: 8px; margin-left: 4px;">
     </a>		
@@ -172,7 +175,10 @@
                     render: function(cal) {
                         $('body').bind('click', function(e) {
                             if($(e.target).closest('#'+cal.id).length == 0 &&
-                                !($(e.srcElement || e.target).hasClass('calendar-trigger') || $(e.srcElement || e.target).parent().hasClass('calendar-trigger')) &&
+                                !($(e.srcElement || e.target).hasClass('calendar-trigger') ||
+                                 $(e.srcElement || e.target).parent().hasClass('calendar-trigger') ||
+                                 $(e.srcElement || e.target).hasClass('calendar-input')
+                                ) &&
                                 $('#'+cal.id+'Render').css('display') != 'none') {
                                 $('#'+cal.id+'Render').hide();
                             }
@@ -280,6 +286,11 @@
 </form>
 
 <script>
+$(document).ready(function(){
+    $(window).blur(function(){
+        $('div[id$="CalendarRender"]').hide();
+    });
+});
     Indi.ready(function(){
         $('input[type="reset"]').click(function(){
             $('#districtId').val(0).change();
