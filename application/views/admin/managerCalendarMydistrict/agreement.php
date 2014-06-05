@@ -110,7 +110,15 @@ $xhtml .= '</form>';
 ob_start();?>
 <script>
     Ext.onReady(function(){
-		$.cookie('last-row-id', <?=$this->row->id?>, {path: '/'});
+        Ext.util.Cookies.set(
+            'last-row-id',
+            <?=$this->row->id?>,
+
+            // We set cookie expire date as 1 month
+            Ext.Date.add(new Date(), Ext.Date.MONTH, 1),
+            Indi.pre + '/'
+        )
+		//$.cookie('last-row-id', <?=$this->row->id?>, {path: '/'});
         top.window.Ext.getCmp('i-action-form-topbar-button-save').disable();
         top.window.Ext.getCmp('i-action-form-topbar-button-add').disable();
     });
