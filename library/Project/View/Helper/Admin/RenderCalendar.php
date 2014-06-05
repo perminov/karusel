@@ -139,6 +139,11 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         .ext-cal-day-col-gutter {height: 420px !important; margin-top: -420px; margin-right: 0px;}
         .ext-cal-day-col .ext-cal-evt.ext-color-1 {border: 1px solid #306da6;}
         .ext-cal-day-col .ext-cal-evt.ext-color-2 {border: 1px solid #86a723;}
+        .ext-cal-day-col .ext-cal-evt.ext-color-5 {border: 1px solid #cc7a00;}
+		.ext-color-5, .x-ie .ext-color-5-ad, .x-opera .ext-color-5-ad{color: #ff9900;}
+		.ext-cal-day-col .ext-color-5, .ext-dd-drag-proxy .ext-color-5, .ext-color-5-ad, .ext-color-5-ad .ext-cal-evm, .ext-color-5 .ext-cal-picker-icon, .ext-color-5-x dl, .ext-color-5-x .ext-cal-evb {
+		background: #ff9900;
+		}		
         .ext-cal-day-col .ext-evt-bd {line-height: 14px; font-size: 12px; word-break: break-all;}
     </style>
     <script type="text/javascript">
@@ -279,7 +284,10 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                 },{
                     "id":    4,
                     "title": "Проведенные"
-                }]
+                }, {
+					"id":    5,
+					"title": "Отмененные"
+				}]
             }
         });
         // The edit popup window is not part of the CalendarPanel itself -- it is a separate component.

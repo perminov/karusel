@@ -118,6 +118,8 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
             return 2;
         } else if (preg_match('/Проведенная/', $item['manageStatus'])) {
             return 4;
+        } else if (preg_match('/Отмененная/', $item['manageStatus'])) {
+            return 5;
         } else if ($item['requestBy'] == 'Заказчиком') {
             return 3;
         } else {
@@ -191,4 +193,14 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
         }
     }    
     
+	public function cancelAction(){
+		if ($this->row->manageStatus != '120#00ff00') {
+			$response = 'forbidden';
+		} else {
+			$this->row->manageStatus = '#ff9900';
+			$this->row->save();
+			$response = 'ok';
+		}
+		die($response);
+	}
 }

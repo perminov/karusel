@@ -212,6 +212,31 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                     hidden: " . ($this->view->row->manageStatus == '240#0000ff' ? 'true' : 'false') . "
                 }";
             }
+            if ($actionI['alias'] == 'cancel' && $this->view->row->id) {
+                $a[] = "{
+                    text: 'Отменить',
+                    handler: function(){
+                        var aix = top.window.eventStore.getById(" . $this->view->row->id . ").index + 1;
+						$.post(PRE + '/" . $this->view->section->alias . "/cancel/id/" . $this->view->row->id . "/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/',
+							{},
+							function(response){
+								Ext.MessageBox.show({
+									title:'Отмена заявки',
+									msg: response == 'ok' ? 'Заявка отменена' : 'Отменять можно только подтвержденные заявки',
+									buttons: Ext.MessageBox.OK,
+									icon: response == 'ok' ? Ext.MessageBox.INFO : Ext.MessageBox.WARNING,
+									fn: function(){
+										top.window.form.close();
+										top.window.eventStore.reload();
+									}
+								});
+							}
+						)
+                    },
+                    id: 'button-cancel',
+                    hidden: " . ($this->view->row->manageStatus == '120#00ff00' ? 'false' : 'true') . "
+                }";
+            }
         }
         if (count($a)){?>
         <script>
