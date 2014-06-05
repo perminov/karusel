@@ -28,6 +28,7 @@ class Event extends Indi_Db_Table{
             WHERE 1
               AND `e`.`timeId` = `t`.`id`
               AND `e`.`placeId` = "' . $placeId . '"
+			  AND `e`.`manageStatus` != "036#ff9900"
               ' . ($eventId ? ' AND `e`.`id` != "' . $eventId . '" ' : '') . '
             GROUP BY `e`.`date`
             HAVING 1
@@ -71,6 +72,7 @@ class Event extends Indi_Db_Table{
             WHERE 1
               AND `e`.`timeId` = `t`.`id`
               AND `e`.`placeId` = "' . $placeId . '"
+			  AND `e`.`manageStatus` != "036#ff9900"
               ' . ($eventId ? ' AND `e`.`id` != "' . $eventId . '" ' : '') . '
               AND `e`.`date` = "' . $date . '"
             GROUP BY `e`.`date`
@@ -97,6 +99,7 @@ class Event extends Indi_Db_Table{
               AND `t`.`id` = "' . $timeId  .'"
               AND `e`.`date` = "' . $date . '"
               AND `e`.`placeId` != "' . $placeId . '"
+			  AND `e`.`manageStatus` != "036#ff9900"
               ' . ($eventId ? ' AND `e`.`id` != "' . $eventId . '" ' : '') . '
               AND `e`.`timeId` = `ot`.`id`
               AND `ea`.`eventId` = `e`.`id`

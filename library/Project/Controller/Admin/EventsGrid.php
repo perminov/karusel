@@ -29,10 +29,20 @@ class Project_Controller_Admin_EventsGrid extends Project_Controller_Admin{
             $data[$i]['price'] = $mPrice[$data[$i]['id']] ? $mPrice[$data[$i]['id']] : $data[$i]['price'];
             $data[$i]['programId'] = $subprogramTitleA[$data[$i]['id']] ? $subprogramTitleA[$data[$i]['id']] : $data[$i]['programId'];
             if($data[$i]['manageDate'] == '0000-00-00') $data[$i]['manageDate'] = '';
-            $data[$i]['manageStatus'] = preg_replace('/Подтвержденная|Предварительная|Проведенная/', '', $data[$i]['manageStatus']);
+            $data[$i]['manageStatus'] = preg_replace('/Подтвержденная|Предварительная|Проведенная|Отмененная/', '', $data[$i]['manageStatus']);
             $data[$i]['manageStatus'] = preg_replace('/style=[\'"]/', '$0 margin-left: 10px; ', $data[$i]['manageStatus']);
         }
 
         parent::setGridTitlesByCustomLogic($data);
     }
+	public function cancelAction(){
+		if ($this->row->manageStatus != '120#00ff00') {
+			$response = 'forbidden';
+		} else {
+			$this->row->manageStatus = '#ff9900';
+			$this->row->save();
+			$response = 'ok';
+		}
+		die($response);
+	}
 }
