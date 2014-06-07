@@ -6,7 +6,7 @@ class Event extends Indi_Db_Table{
     //public function disabledDates($placeId, $animatorsNeededCount, $eventId = null){
     public function disabledDates($placeId, $eventId = null){
         $disabledDates = array();
-        $dateA = $this->getAdapter()->query('
+        $dateA = Indi::db()->query('
             SELECT
               GROUP_CONCAT(
                 IF(`e`.`timeId` - 1 > 0, CONCAT(`e`.`timeId` - 1, ",",
@@ -50,7 +50,7 @@ class Event extends Indi_Db_Table{
 
     public function disabledTimes($placeId, $date, $eventId = null){
         $disabledTimes = array();
-        $timeA = $this->getAdapter()->query('
+        $timeA = Indi::db()->query('
             SELECT
               GROUP_CONCAT(
                 IF(`e`.`timeId` - 1 > 0, CONCAT(`e`.`timeId` - 1, ",",
@@ -83,7 +83,7 @@ class Event extends Indi_Db_Table{
     }
 
     public function disabledAnimators($placeId, $date, $timeId, $animatorsNeededCount, $eventId = null){
-        $disabledA = $this->getAdapter()->query('
+        $disabledA = Indi::db()->query('
             SELECT
               `e`.`date`,
               `t`.`id` AS `timeId`,
@@ -111,7 +111,7 @@ class Event extends Indi_Db_Table{
         ')->fetchColumn(4);
 
         if (!$animatorsNeededCount) $animatorsNeededCount = 1;
-        $price = $this->getAdapter()->query('
+        $price = Indi::db()->query('
                 SELECT
                   CAST((IF("'. $animatorsNeededCount . '" = "1", `price1`, `price2`) -
                   IF("'. $animatorsNeededCount . '" = "1",

@@ -1,7 +1,7 @@
 <?php
 class Admin_IndexController extends Project_Controller_Admin{
     public function homeAction() {
-        $this->view->home = Misc::loadModel('Profile')->fetchRow('`id` = "' . $_SESSION['admin']['profileId'] . '"')->home;
+        $this->view->home = Indi::model('Profile')->fetchRow('`id` = "' . $_SESSION['admin']['profileId'] . '"')->home;
     }
     public function postDispatch(){
         $out = parent::postDispatch(true);

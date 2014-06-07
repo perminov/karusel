@@ -1,7 +1,7 @@
 <?php
 class WeekController extends Indi_Controller_Front{
     public function indexAction(){
-        $thisWeekEvents = $this->db->query('
+        $thisWeekEvents = Indi::db()->query('
             SELECT
                 `birthChildName`,
                 `birthChildAge`
@@ -14,7 +14,7 @@ class WeekController extends Indi_Controller_Front{
         ')->fetchAll();
         
         for ($i = 0; $i < $thisWeekEvents[$i]; $i++) 
-            $thisWeekEvents[$i]['birthChildAge'] = Misc::tbq($thisWeekEvents[$i]['birthChildAge'], 'лет,год,года');
+            $thisWeekEvents[$i]['birthChildAge'] = tbq($thisWeekEvents[$i]['birthChildAge'], 'лет,год,года');
 
         die(json_encode($thisWeekEvents));
     }

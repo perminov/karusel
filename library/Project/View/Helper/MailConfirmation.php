@@ -1,11 +1,11 @@
 <?php
-class Project_View_Helper_MailConfirmation extends Indi_View_Helper_Abstract{
+class Project_View_Helper_MailConfirmation {
 	public function mailConfirmation($event){
-        $districtR = $event->getForeignRowByForeignKey('districtId');
-        $placeR = $event->getForeignRowByForeignKey('placeId');
-        $timeR = $event->getForeignRowByForeignKey('timeId');
-        $programR = $event->getForeignRowByForeignKey('programId');
-        $subprogramR = $event->getForeignRowByForeignKey('subprogramId');
+        $districtR = $event->foreign('districtId');
+        $placeR = $event->foreign('placeId');
+        $timeR = $event->foreign('timeId');
+        $programR = $event->foreign('programId');
+        $subprogramR = $event->foreign('subprogramId');
         ob_start();?>
 		<?=$this->view->mailHeader($client, 'Вы оставили заявку', 'Вы оставили заявку на проведение детского празника на сайте ' . ucfirst($_SERVER['HTTP_HOST']), '')?>
           <tr>
@@ -36,7 +36,7 @@ class Project_View_Helper_MailConfirmation extends Indi_View_Helper_Abstract{
 					  <td>
                         <font face="arial,sans-serif" color="#505050" style="font-size:12px">Когда: </font>
                         <font face="arial,sans-serif" color="#000000" style="font-size:12px">
-                            <?=rDate($event->date)?>, <?=$timeR->title?>
+                            <?=ldate('%d-%b-%Y', $event->date)?>, <?=$timeR->title?>
                         </font>
                       </td>
 					  <td width="10"></td>
@@ -66,7 +66,7 @@ class Project_View_Helper_MailConfirmation extends Indi_View_Helper_Abstract{
 					  <td width="10"></td>
 					  <td>
                         <font face="arial,sans-serif" color="#505050" style="font-size:12px">Дата рождения : </font>
-                        <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=rDate($event->birthChildBirthDate)?></font>
+                        <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=ldate('%d-%b-%Y', $event->birthChildBirthDate)?></font>
                       </td>
 					  <td width="10"></td>
 				  </tr>

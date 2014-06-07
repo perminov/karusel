@@ -14,20 +14,20 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
      * @return array|string
      */
     public function adjustPrimaryWHERE($where) {
-        if (!$this->get['start']) {
+        if (!Indi::get('start')) {
             $startDate = date('Y-m-01');
             $startTime = strtotime($startDate);
             $dayOfWeek = date('N', $startTime);
-            $this->get['start'] = date('m-d-Y', $startTime - 60 * 60 * 24 * ($dayOfWeek - 1));
+            Indi::get('start') = date('m-d-Y', $startTime - 60 * 60 * 24 * ($dayOfWeek - 1));
         }
-        if (!$this->get['end']) {
+        if (!Indi::get('end')) {
             $endDate = date('Y-m-' . date('t'));
             $endTime = strtotime($endDate);
             $dayOfWeek = date('N', $endTime);
-            $this->get['end'] = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek));
+            Indi::get('end') = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek));
         }
-        $start = explode('-', $this->get['start']);
-        $end = explode('-', $this->get['end']);
+        $start = explode('-', Indi::get('start'));
+        $end = explode('-', Indi::get('end'));
         $where[] = '`calendarStart` >= "' . $start[2] . '-' . $start[0] . '-' . $start[1]. ' 00:00:00"';
         $where[] = '`calendarEnd` <= "' . $end[2] . '-' . $end[0] . '-' . $end[1]. ' 23:59:59"';
         return $where;
@@ -38,14 +38,13 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
      */
     public function saveAction(){
         parent::saveAction(false);
-        i($this->post);
-        if (array_key_exists('confirm', $this->get)) {
-            die(json_encode(array('id' => $this->identifier)));
+        if (array_key_exists('confirm', Indi::get())) {
+            die(json_encode(array('id' => $this->row->id)));
         }
     }
 
-    public function setGridTitlesByCustomLogic(&$data) {
-        if (preg_match('/placeId/', $this->get['search']) || $this->get['start'] == $this->get['end']) {
+    public function adjustGridData(&$data) {
+        if (preg_match('/placeId/', Indi::get('search')) || Indi::get('start') == Indi::get('end')) {
             for ($i = 0; $i < count($data); $i++) {
                 $data[$i]['start'] = $data[$i]['calendarStart'];
                 $data[$i]['end'] = $data[$i]['calendarEnd'];
@@ -132,11 +131,11 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
         if (!$this->subprogramsCount) {
 
             // Получаем данные о том, сколько подпрограмм в каждой программе
-            $programA = $this->db->query('SELECT `title`, `subprogramsCount` FROM `program`')->fetchAll();
+            $programA = Indi::db()->query('SELECT `title`, `subprogramsCount` FROM `program`')->fetchAll();
             foreach($programA as $programI) $this->subprogramsCount[$programI['title']] = $programI['subprogramsCount'];
 
             // Получаем данные о том, сколько аниматоров в каждой подпрограмме
-            $subprogramA = $this->db->query('SELECT `title`, `animatorsCount` FROM `subprogram`')->fetchAll();
+            $subprogramA = Indi::db()->query('SELECT `title`, `animatorsCount` FROM `subprogram`')->fetchAll();
             foreach($subprogramA as $subprogramI) $this->animatorsCount[$subprogramI['title']] = $subprogramI['animatorsCount'];
         }
 
@@ -166,7 +165,7 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
             $e = false;
         }
 
-        if (strtotime($this->get['end']) > strtotime($this->get['start']) + 60 * 60 * 24 * 28) 
+        if (strtotime(Indi::get('end')) > strtotime(Indi::get('start')) + 60 * 60 * 24 * 28)
             $n = $item['details'] || $item['manageNotes'] ? '<span style="color:#cc00ff; font-weight: bold;">C</span> ' : '';
             
         return $n . ($e ? '<span style="color:red; font-weight: bold;">!</span> ' : '');
@@ -175,9 +174,9 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
     public function confirmAction(){
         if ($this->row->manageStatus != '240#0000ff') {
             $response = 'already';
-        } else if ($this->post['managePrepay']){
-            $this->row->managePrepay = $this->post['managePrepay'];
-            $this->row->manageManagerId = $this->post['manageManagerId'] ? $this->post['manageManagerId'] : $_SESSION['admin']['id'];
+        } else if (Indi::post('managePrepay')){
+            $this->row->managePrepay = Indi::post('managePrepay');
+            $this->row->manageManagerId = Indi::post('manageManagerId') ? Indi::post('manageManagerId') : $_SESSION['admin']['id'];
             $this->row->manageStatus = '#00ff00';
             $this->row->manageDate = date('Y-m-d');
             $this->row->save();
@@ -188,7 +187,7 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
     }
 
     public function agreementAction(){
-        if ($this->params['check'] && $this->row->manageStatus == '240#0000ff') {
+        if (Indi::uri()->check && $this->row->manageStatus == '240#0000ff') {
             die('not-confirmed');
         }
     }    

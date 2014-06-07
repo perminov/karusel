@@ -1,14 +1,14 @@
 <?php
-class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract{
+class Project_View_Helper_Admin_RenderCalendar {
     public function renderCalendar(){
-        $gridFields = $this->view->trail->getItem()->gridFields->toArray();
-        $actions    = $this->view->trail->getItem()->actions->toArray();
+        $gridFields = Indi::trail()->gridFields->toArray();
+        $actions    = Indi::trail()->actions->toArray();
         $canadd = false; foreach ($actions as $action) if ($action['alias'] == 'save') {$canadd = true; break;}
         $currentPage = $this->view->getScope('page') ? $this->view->getScope('page') : 1;
         $filterFieldAliases = array();
         $icons = array('form', 'delete', 'save', 'toggle', 'up', 'down');
         $comboFilters = array();
-        foreach ($this->view->trail->getItem()->filters as $filter) {
+        foreach (Indi::trail()->filters as $filter) {
             if (in_array($filter->foreign['fieldId']->foreign['elementId']['alias'], array('number','calendar','datetime'))) {
                 $filterFieldAliases[] = $filter->foreign['fieldId']->alias . '-gte';
                 $filterFieldAliases[] = $filter->foreign['fieldId']->alias . '-lte';
@@ -31,7 +31,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         $a = array();
         for($i = 0; $i < count($actions); $i++) if ($actions[$i]['display'] == 1){
 
-            $a[] =  ($actions[$i]['alias'] == 'form' && $canadd && ! $this->view->trail->getItem()->section->disableAdd ? '{
+            $a[] =  ($actions[$i]['alias'] == 'form' && $canadd && ! Indi::trail()->section->disableAdd ? '{
                 text: "' . ACTION_CREATE . '",
                 iconCls: "add",
                 actionAlias: "' . $actions[$i]['alias'] . '",
@@ -72,7 +72,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
 //			$actions = implode(',', $a);
 
         // set up dropdown to navigate through related different types of related items
-        $sections = $this->view->trail->getItem()->sections->toArray();
+        $sections = Indi::trail()->sections->toArray();
         if (count($sections)) {
             $sectionsDropdown = "'" . GRID_SUBSECTIONS_LABEL . ":  ', '";
             $sectionsDropdown .= '<span><select style="border: 0;" name="sectionId" id="subsectionSelect">';
@@ -114,19 +114,19 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         ";
         if ($sectionsDropdown) $tbarItems[] = $sectionsDropdown;
         if ($savedOrder = json_decode($this->view->getScope('order'))) {
-            $this->view->trail->getItem()->section->defaultSortFieldAlias = $savedOrder[0]->property;
-            $this->view->trail->getItem()->section->defaultSortDirection = $savedOrder[0]->direction;
-        } else if ($defaultSortField = $this->view->trail->getItem()->section->getForeignRowByForeignKey('defaultSortField')){
-            $this->view->trail->getItem()->section->defaultSortFieldAlias = $defaultSortField->alias;
+            Indi::trail()->section->defaultSortFieldAlias = $savedOrder[0]->property;
+            Indi::trail()->section->defaultSortDirection = $savedOrder[0]->direction;
+        } else if ($defaultSortField = Indi::trail()->section->foreign('defaultSortField')){
+            Indi::trail()->section->defaultSortFieldAlias = $defaultSortField->alias;
         }
         $meta = array(
             'columns' => $columns,
             'tbar' => $tbarItems,
             'fields' => $fields,
-            'params' => $this->view->trail->requestParams,
-            'section' => $this->view->trail->getItem()->section->toArray(),
-            'trail' => $this->view->trail(),
-            'entity' => $this->view->trail->getItem()->section->getForeignRowByForeignKey('entityId')->title
+            'params' => Indi::trail(true)->requestParams,
+            'section' => Indi::trail()->section->toArray(),
+            'trail' => Indi::trail(true)(),
+            'entity' => Indi::trail()->section->foreign('entityId')->title
         );
         if (STD) $meta = json_decode(str_replace('\/admin\/', str_replace('/', '\/', STD) . '\/admin\/', json_encode($meta)));
         if (COM) $meta = json_decode(str_replace('\/admin\/', '\/', json_encode($meta)));
@@ -147,13 +147,13 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         .ext-cal-day-col .ext-evt-bd {line-height: 14px; font-size: 12px; word-break: break-all;}
     </style>
     <script type="text/javascript">
-    Indi.section = '<?=$this->view->trail->getItem()->section->alias?>';
+    Indi.section = '<?=Indi::trail()->section->alias?>';
     var json = <?=json_encode($meta)?>;
     var timeout, timeout2;
     var eventStore, calendarStore, eventStore1, showEditWindow, calendar;
     var formMask;
     var filterChange;
-    Ext.Loader.setConfig({enabled: true, paths: {'Ext.calendar': STD+'/library/extjs4/examples/calendar/src'}});
+    Ext.Loader.setConfig({enabled: true, paths: {'Ext.calendar': Indi.std+'/library/extjs4/examples/calendar/src'}});
     Ext.require([
         'Ext.calendar.util.Date',
         'Ext.calendar.CalendarPanel',
@@ -216,9 +216,9 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
         var myMask;
         eventStore = Ext.create('Ext.data.Store', {
             model: 'Ext.calendar.data.EventModel',
-            pageSize: <?=$this->view->section->rowsOnPage?>,
+            pageSize: <?=Indi::trail()->section->rowsOnPage?>,
             proxy:  new Ext.data.proxy.Ajax({
-                url: '<?=PRE?>/<?=$this->view->section->alias?>/index/json/1/',
+                url: '<?=PRE?>/<?=Indi::trail()->section->alias?>/index/json/1/',
                 method: 'POST',
                 reader: {
                     type: 'json',
@@ -308,7 +308,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
                 for: rec.internalId,
                 items: [{
                     id: 'calendar-form-panel',
-                    html: '<iframe src="<?=PRE?>/<?=$this->view->section->alias?>/form/'+(rec.internalId ? 'id/'+rec.internalId+'/' : '')+'ph/'+Indi.trail.item().section.primaryHash+'/aix/'+aix+'/?width=600" width="100%" height="100%" scrolling="auto" frameborder="0" id="form-frame" name="form-frame"></iframe>',
+                    html: '<iframe src="<?=PRE?>/<?=Indi::trail()->section->alias?>/form/'+(rec.internalId ? 'id/'+rec.internalId+'/' : '')+'ph/'+Indi.trail.item().section.primaryHash+'/aix/'+aix+'/?width=600" width="100%" height="100%" scrolling="auto" frameborder="0" id="form-frame" name="form-frame"></iframe>',
                     border: 0
                 }]
             });
@@ -327,7 +327,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
             closable: true,
             id:'i-center-content',
             /*activeItem: 3, // month view*/
-            title: '<?=$this->view->section->title?>',
+            title: '<?=Indi::trail()->section->title?>',
             height: '100%',
             startDay: 1,
             renderTo: 'center-content-body',
@@ -421,7 +421,7 @@ class Project_View_Helper_Admin_RenderCalendar extends Indi_View_Helper_Abstract
     });
     </script>
     <script>
-        Indi.trail.apply(<?=json_encode($this->view->trail->toArray())?>);
+        Indi.trail.apply(<?=json_encode(Indi::trail(true)->toArray())?>);
         Indi.scope = <?=json_encode($this->view->getScope())?>;
         top.Indi.scope = Indi.scope;
     </script>

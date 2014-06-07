@@ -1,21 +1,21 @@
 <?php
 class Project_Controller_Admin_EventsGrid extends Project_Controller_Admin{
     public function preDispatch() {
-        if ($this->params['action'] == 'index' && $this->params['json']) {
-//          $this->db->query('UPDATE `event` SET `manageStatus` = "060#ffff00" WHERE `manageStatus` = "120#00ff00" AND `date` < CURDATE();');
-            $this->db->query('UPDATE `event` SET `manageStatus` = "000#980000" WHERE `manageStatus` = "120#00ff00" AND `date` < CURDATE();');
+        if (Indi::uri()->action == 'index' && Indi::uri()->json) {
+//          Indi::db()->query('UPDATE `event` SET `manageStatus` = "060#ffff00" WHERE `manageStatus` = "120#00ff00" AND `date` < CURDATE();');
+            Indi::db()->query('UPDATE `event` SET `manageStatus` = "000#980000" WHERE `manageStatus` = "120#00ff00" AND `date` < CURDATE();');
         }
         parent::preDispatch();
     }
-    public function setGridTitlesByCustomLogic(&$data){
+    public function adjustGridData(&$data){
         $ids = array(); for ($i = 0; $i < count($data); $i++) $ids[] = $data[$i]['id'];
-        $infoA = $this->db->query('SELECT `id`, `modifiedPrice`, `subprogramId` FROM `event` WHERE FIND_IN_SET(`id`, "' . implode(',', $ids) . '")')->fetchAll();
+        $infoA = Indi::db()->query('SELECT `id`, `modifiedPrice`, `subprogramId` FROM `event` WHERE FIND_IN_SET(`id`, "' . implode(',', $ids) . '")')->fetchAll();
         $mPrice = $subprogramIdA = array(); 
         foreach ($infoA as $infoI) {
             if ($infoI['modifiedPrice']) $mPrice[$infoI['id']] = $infoI['modifiedPrice'];
             if ($infoI['subprogramId']) $subprogramIdA[$infoI['id']] = $infoI['subprogramId'];
         }
-        $subprogramA = Misc::loadModel('Subprogram')->fetchAll('FIND_IN_SET(`id`, "' . implode(',', array_values($subprogramIdA)) . '")')->toArray();
+        $subprogramA = Indi::model('Subprogram')->fetchAll('FIND_IN_SET(`id`, "' . implode(',', array_values($subprogramIdA)) . '")')->toArray();
         $subprogramTitleA = array();
         foreach ($subprogramA as $subprogramI) {
             if ($found = array_search($subprogramI['id'], $subprogramIdA)) {
@@ -32,8 +32,7 @@ class Project_Controller_Admin_EventsGrid extends Project_Controller_Admin{
             $data[$i]['manageStatus'] = preg_replace('/Подтвержденная|Предварительная|Проведенная|Отмененная/', '', $data[$i]['manageStatus']);
             $data[$i]['manageStatus'] = preg_replace('/style=[\'"]/', '$0 margin-left: 10px; ', $data[$i]['manageStatus']);
         }
-
-        parent::setGridTitlesByCustomLogic($data);
+        parent::adjustGridData($data);
     }
 	public function cancelAction(){
 		if ($this->row->manageStatus != '120#00ff00') {

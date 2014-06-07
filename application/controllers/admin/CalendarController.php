@@ -1,7 +1,7 @@
 <?php
 class Admin_CalendarController extends Project_Controller_Admin_Calendar{
-    public function setGridTitlesByCustomLogic(&$data) {
-        if (preg_match('/placeId/', $this->get['search']) || $this->get['start'] == $this->get['end']) {
+    public function adjustGridData(&$data) {
+        if (preg_match('/placeId/', Indi::get('search')) || Indi::get('start') == Indi::get('end')) {
             for ($i = 0; $i < count($data); $i++) {
                 $data[$i]['start'] = $data[$i]['calendarStart'];
                 $data[$i]['end'] = $data[$i]['calendarEnd'];

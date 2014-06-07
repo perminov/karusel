@@ -9,7 +9,7 @@
 <script src="/js/jquery-migrate-1.1.1.min.js"></script>
 <script src="/js/jquery.scrollTo-min.js"></script>
 
-<? $this->row = Misc::loadModel('Event')->createRow(); ?>
+<? $this->row = Indi::model('Event')->createRow(); ?>
 <? if (!$_SESSION['admin']['id']) $_SESSION['admin'] = array('id' => '15', 'email' => 'visitor@gmail.com', 'password' => 'visitor', 'profileId' => '17'); ?>
 <script>
     var email = /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
@@ -53,7 +53,7 @@
                         if ($('#date').val() == '') {
                             Indi.combo.form.toggle('timeId', true);
                         } else {
-                            $.post(STD+'/auxillary/disabledTimes/',
+                            $.post(Indi.std+'/auxiliary/disabledTimes/',
                                 {placeId:$('#placeId').val(), date: Ext.Date.format(Ext.Date.parse($('#date').val(), Ext.getCmp('dateCalendar').longDayFormat), 'Y-m-d')},
                                 function (disabledTimeIds) {
                                     Indi.combo.form.setDisabledOptions('timeId', disabledTimeIds);
@@ -331,7 +331,7 @@ $(document).ready(function(){
             }
             if (error == false) {
                 data.animatorsNeededCount = parseInt($('#programId').attr('animatorsCount'));
-                $.post(STD+'/admin/client/save/', data, function (response) {
+                $.post(Indi.std+'/admin/client/save/', data, function (response) {
                     top.window.$('iframe[name="form-frame"]').height(664);
                     if (response == 'ok') {
 						$('form[name=event]').hide();

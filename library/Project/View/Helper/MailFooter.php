@@ -1,5 +1,5 @@
 <?php
-class Project_View_Helper_MailFooter extends Indi_View_Helper_Abstract{
+class Project_View_Helper_MailFooter {
 	public function mailFooter($user, $additional = null){
 		ob_start();?>
           <tr><td height="10"></td></tr>

@@ -1,26 +1,26 @@
 <?php
-class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
+class Indi_View_Helper_Admin_CalendarForm {
     public function calendarForm()
     {
         ob_start();
         $header = $this->view->formHeader();
         $header = str_replace("'#trail'", "'#trail-dev-null'", $header);
         echo $header;
-        foreach ($this->view->trail->getItem()->fields as $field) {
-            if(!$field->getForeignRowByForeignKey('elementId')->hidden) echo $this->view->formField($field);
+        foreach (Indi::trail()->fields as $field) {
+            if(!$field->foreign('elementId')->hidden) echo $this->view->formField($field);
         }
         ?></table>
         </form>
-        <script><?=$this->view->trail->getItem()->section->javascriptForm?></script><?
-        $parent = $this->view->trail->getItem(1);
-        $actionA = $this->view->trail->getItem()->actions->toArray();
+        <script><?=Indi::trail()->section->javascriptForm?></script><?
+        $parent = Indi::trail(1);
+        $actionA = Indi::trail()->actions->toArray();
         $a = array();
         foreach ($actionA as $actionI) {
             if ($actionI['alias'] == 'save' && ($this->view->row->manageStatus != '000#980000' || !$_SESSION['admin']['alternate'])) {
                 $a[] = "{
                     text: 'Сохранить',
                     handler: function(){
-                         $('form[name=" . $this->view->entity->table . "]').submit()
+                         $('form[name=" . Indi::trail()->model->name() . "]').submit()
                     },
                     iconCls: 'save',
                     id: 'button-save'
@@ -38,7 +38,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                             fn: function(answer, arg2){
                                 if (answer == 'yes') {
                                     var aix = top.window.eventStore.getById(" . $this->view->row->id . ").index + 1;
-                                    $.get(PRE + '/" . $this->view->section->alias . "/delete/id/" . $this->view->row->id . "/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/', function(){
+                                    $.get(Indi.pre + '/" . Indi::trail()->section->alias . "/delete/id/" . $this->view->row->id . "/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/', function(){
                                         top.window.form.close();
                                         top.window.eventStore.reload();
                                     });
@@ -51,7 +51,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                 }";
             }
             if ($actionI['alias'] == 'confirm' && $this->view->row->id && $this->view->row->manageStatus == '240#0000ff') {
-                $managerRs = Misc::loadModel('Manager')->fetchAll();
+                $managerRs = Indi::model('Manager')->fetchAll();
                 $options = array(); foreach($managerRs as $managerR) $options[] = array('id' => $managerR->id, 'title' => $managerR->title);
                 $a[] = "{
                     text: 'Подтвердить',
@@ -65,7 +65,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                             fn: function(answer, arg2){
                                 if (answer == 'ok') {
                                     var aix = top.window.eventStore.getById(" . $this->view->row->id . ").index + 1;
-                                    $.post(PRE + '/" . $this->view->section->alias . "/confirm/id/" . $this->view->row->id . "/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/',
+                                    $.post(Indi.pre + '/" . Indi::trail()->section->alias . "/confirm/id/" . $this->view->row->id . "/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/',
                                         {managePrepay: Ext.getCmp('managePrepay').getValue(), manageManagerId: Ext.getCmp('manageManagerId').getValue()},
                                         function(response){
                                             Ext.MessageBox.show({
@@ -74,7 +74,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                                                 buttons: Ext.MessageBox.OK,
                                                 icon: Ext.MessageBox.INFO,
                                                 fn: function(){
-													$('form[name=" . $this->view->entity->table . "]').submit();
+													$('form[name=" . Indi::trail()->model->name() . "]').submit();
                                                     top.window.eventStore.reload();
                                                     top.window.Ext.getCmp('button-confirm').hide();
                                                     top.window.Ext.getCmp('button-delete').hide();
@@ -121,7 +121,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                 }";
             }
             if ($actionI['alias'] == 'confirm' && !$this->view->row->id) {
-                $managerRs = Misc::loadModel('Manager')->fetchAll();
+                $managerRs = Indi::model('Manager')->fetchAll();
                 $options = array(); foreach($managerRs as $managerR) $options[] = array('id' => $managerR->id, 'title' => $managerR->title);
                 $a[] = "{
                     text: 'Подтвердить',
@@ -136,13 +136,13 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                                 if (answer == 'ok') {
                                     var data = {};
                                     $('input, textarea').each(function(){data[$(this).attr('name')] = $(this).val();});
-                                    $.post($('form[name=" . $this->view->entity->table . "]').attr('action') + '?confirm', data, function(response){
+                                    $.post($('form[name=" . Indi::trail()->model->name() . "]').attr('action') + '?confirm', data, function(response){
                                         var lastOptions = top.window.eventStore.lastOptions;
                                         var eventsStore = top.window.eventStore;
                                         Ext.apply(lastOptions, {
                                             callback: function(records, options) {
                                                 var aix = eventsStore.getById(parseInt(response.id)).index + 1;
-                                                $.post(PRE + '/" . $this->view->section->alias . "/confirm/id/'+response.id+'/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/',
+                                                $.post(Indi.pre + '/" . Indi::trail()->section->alias . "/confirm/id/'+response.id+'/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/',
                                                     {managePrepay: Ext.getCmp('managePrepay').getValue(), manageManagerId: Ext.getCmp('manageManagerId').getValue()},
                                                     function(){
                                                         Ext.MessageBox.show({
@@ -206,7 +206,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                     handler: function(){
                         top.window.form.close();
                         var aix = top.window.eventStore.getById(" . $this->view->row->id . ").index + 1;
-                        top.window.Indi.load(PRE + '/" . $this->view->section->alias . "/agreement/id/" . $this->view->row->id . "/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/', true);
+                        top.window.Indi.load(Indi.pre + '/" . Indi::trail()->section->alias . "/agreement/id/" . $this->view->row->id . "/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/', true);
                     },
                     id: 'button-agreement',
                     hidden: " . ($this->view->row->manageStatus == '240#0000ff' ? 'true' : 'false') . "
@@ -217,7 +217,7 @@ class Indi_View_Helper_Admin_CalendarForm extends Indi_View_Helper_Abstract{
                     text: 'Отменить',
                     handler: function(){
                         var aix = top.window.eventStore.getById(" . $this->view->row->id . ").index + 1;
-						$.post(PRE + '/" . $this->view->section->alias . "/cancel/id/" . $this->view->row->id . "/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/',
+						$.post(Indi.pre + '/" . Indi::trail()->section->alias . "/cancel/id/" . $this->view->row->id . "/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/',
 							{},
 							function(response){
 								Ext.MessageBox.show({

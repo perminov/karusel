@@ -1,5 +1,5 @@
 <?php
-class Project_View_Helper_MailHeader extends Indi_View_Helper_Abstract{
+class Project_View_Helper_MailHeader {
 	public function mailHeader($user, $subject, $announce, $additional = array()){
 		ob_start();?>
 <div id="mailsub">

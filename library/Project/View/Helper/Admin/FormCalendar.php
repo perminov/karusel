@@ -1,6 +1,5 @@
 <?php
-class Project_View_Helper_Admin_FormCalendar extends Indi_View_Helper_Abstract
-{
+class Project_View_Helper_Admin_FormCalendar {
     public function formCalendar($name = 'date', $minimal = null, $value = null, $attribs = '')
     {
 		$p = '/i/admin/';
@@ -11,14 +10,15 @@ class Project_View_Helper_Admin_FormCalendar extends Indi_View_Helper_Abstract
 
         $zIndex++;
 
-        $field = $this->view->trail->getItem()->getFieldByAlias($name);
+        $field = Indi::trail()->model->fields($name);
         //by default, value is got from row object's value of $name field
-		if($this->view->row->id) {
-			$value = $value != '0000-00-00' ? $value : $this->view->row->$name;
-		} else {
-			$value = $field->defaultValue;
-			if ($value == '0000-00-00') $value = date('Y-m-d');
-		}
+        if (Indi::view()->row->$name != '0000-00-00') {
+            $value = $value != '0000-00-00' ? $value : Indi::view()->row->$name;
+        } else {
+            $value = $field->defaultValue;
+            Indi::$cmpTpl = $value; eval(Indi::$cmpRun); $value = Indi::cmpOut();
+            //if ($value == '0000-00-00') $value = date('Y-m-d');
+        }
         $value = $value ? $value : date('Y-m-d');
 
         //minimal date available to select in calendar, 2006-01-01 by default
@@ -27,14 +27,17 @@ class Project_View_Helper_Admin_FormCalendar extends Indi_View_Helper_Abstract
         // if current value earlier than minimal date, minimal date is to be set
         // equal to value
         $minimal = $minimal > $value ? $value : $minimal;
-        $params = $field->getParams();
-        if ($params['displayFormat']) {
-            $value = date($params['displayFormat'], strtotime($value));
-            if ($value == '30.11.-0001') $value = '00.00.0000';
+        if ($field->params['displayFormat']) {
+            if ($value == '0000-00-00' && $field->params['displayFormat'] == 'd.m.Y') {
+                $value = '00.00.0000';
+            } else if ($value != '0000-00-00'){
+                $value = date($field->params['displayFormat'], strtotime($value));
+                if ($value == '30.11.-0001') $value = '00.00.0000';
+            }
         }
         $xhtml  = '<div style="position: relative; z-index: ' . (100 - $zIndex) . '" id="calendar' . $name . 'Div" class="calendar-div i-element-calendar-wrapper">';
-        $xhtml .= '<input type="text" name="' . $name . '" value="' . $value . '" style="width: 62px; margin-top: 1px;" id="' . $name . '" class="calendar-input"> ';
-		$xhtml .= '<a href="javascript:void(0);" onclick="$(\'#' . $name . 'CalendarRender\').toggle();" id="' . $name . 'CalendarIcon" class="calendar-trigger"><img src="' . $p . 'b_calendar.png" alt="Show calendar" width="14" height="18" border="0" style="vertical-align: top; margin-top: 1px; margin-left: -2px;"></a>';
+        $xhtml .= '<input type="text" name="' . $name . '" value="' . $value . '" style="width: 62px;" id="' . $name . '" class="calendar-input"> ';
+		$xhtml .= '<a href="javascript:void(0);" onclick="$(\'#' . $name . 'CalendarRender\').toggle();" id="' . $name . 'CalendarIcon" class="calendar-trigger"><img src="' . $p . 'b_calendar.png" alt="Show calendar" width="14" height="18" border="0" style="vertical-align: top; margin-left: -2px;"></a>';
 		ob_start();?>
 		<div id="<?=$name?>CalendarRender" style="position: absolute; display: none; margin-top: 1px;">
 			<script>
@@ -42,30 +45,21 @@ class Project_View_Helper_Admin_FormCalendar extends Indi_View_Helper_Abstract
                     <?=$field->javascript?>
                 });
 				Ext.onReady(function() {
-					//Ext.Date.monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
 					Ext.create('Ext.picker.Date', {
-						//dayNames: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
-						//monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
 						renderTo: '<?=$name?>CalendarRender',
                         id: '<?=$name?>Calendar',
 						width: 185,
-                        disabledDatesText: '<?=Misc::loadModel('Staticblock')->fetchRow('`alias` = "inactive-date-tip"')->detailsString?>',
-						//todayText: 'Сегодня',
-						//ariaTitle: 'Выбрать месяц и год',
-						ariaTitleDateFormat: '<?=$params['displayFormat']?>',
-						longDayFormat: '<?=$params['displayFormat']?>',
-                        format: '<?=$params['displayFormat']?>',
-                        value: Ext.Date.parse('<?=$value?>', '<?=$params['displayFormat']?>'),
-						//nextText: 'Следующий месяц',
-						//prevText: 'Предыдущий месяц',
-						//todayTip: 'Выбрать сегодняшнюю дату',
-						//startDay: 1,
-                        <?if ($name == 'date' && $this->view->trail->getItem()->model->info('name') == 'event'){?>
+                        disabledDatesText: '<?=Indi::model('Staticblock')->fetchRow('`alias` = "inactive-date-tip"')->detailsString?>',
+						ariaTitleDateFormat: '<?=$field->params['displayFormat']?>',
+						longDayFormat: '<?=$field->params['displayFormat']?>',
+                        format: '<?=$field->params['displayFormat']?>',
+                        value: Ext.Date.parse('<?=$value?>', '<?=$field->params['displayFormat']?>'),
+                        <?if ($name == 'date' && Indi::trail()->model->table() == 'event'){?>
                             minDate: new Date(),
                             maxDate: Ext.Date.add(new Date(), Ext.Date.DAY, 35),
                         <?}?>
 						handler: function(picker, date) {
-							var selectedDate = Ext.Date.format(date, '<?=$params['displayFormat']?>');
+							var selectedDate = Ext.Date.format(date, '<?=$field->params['displayFormat']?>');
 							$('#<?=$name?>').val(selectedDate);
 							$('#<?=$name?>CalendarRender').toggle();
                             $('#<?=$name?>').change();

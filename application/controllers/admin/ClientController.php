@@ -4,24 +4,26 @@ class Admin_ClientController extends Project_Controller_Admin{
         if (!$this->row->id) parent::formAction();
     }
     public function saveAction(){
-        if (!$this->row->id && !$this->params['id']) {
-            $eventM = Misc::loadModel('Event');
+        if (!$this->row->id && !Indi::uri()->id) {
+            $eventM = Indi::model('Event');
 
-            $disabledDates = $eventM->disabledDates($this->post['placeId']);
-            if (in_array($this->post['date'], $disabledDates)) die('expiredDate');
+            $disabledDates = $eventM->disabledDates(Indi::post('placeId'));
+            if (in_array(Indi::post('date'), $disabledDates)) die('expiredDate');
 
-            $disabledTimes = $eventM->disabledTimes($this->post['placeId'], $this->post['date']);
-            if (in_array($this->post['timeId'], $disabledTimes)) die('expiredTime');
+            $disabledTimes = $eventM->disabledTimes(Indi::post('placeId'), Indi::post('date'));
+            if (in_array(Indi::post('timeId'), $disabledTimes)) die('expiredTime');
 
-            $disabledAnimators = $eventM->disabledAnimators($this->post['placeId'], $this->post['date'], $this->post['timeId'], $this->post['animatorsCount']);
-            $animatorsCount = $this->db->query('SELECT COUNT(`id`) FROM `animator`')->fetchColumn(0);
-            if ($this->post['animatorsCount'] > $animatorsCount - count($disabledAnimators['disabled'])) die('expiredAnimators');
+            $disabledAnimators = $eventM->disabledAnimators(Indi::post('placeId'), Indi::post('date'), Indi::post('timeId'), Indi::post('animatorsCount'));
+            $animatorsCount = Indi::db()->query('SELECT COUNT(`id`) FROM `animator`')->fetchColumn(0);
+            if (Indi::post('animatorsCount') > $animatorsCount - count($disabledAnimators['disabled'])) die('expiredAnimators');
 
             parent::saveAction(false);
 
             if ($_SESSION['admin']['id'] == '15') unset($_SESSION);
             
-            $eventR = $this->trail->getItem()->model->fetchRow('`id` = "' . $this->identifier . '"');
+            if (!$this->row->id) die(json_encode(array('error' => $this->row->mismatch())));
+
+            $eventR = $this->row; //Indi::trail()->model->fetchRow('`id` = "' . $this->identifier . '"');
             
             // Добавляем путь к хелперам уведомлений
             $coreH = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . STD . '/core/library';
@@ -29,7 +31,7 @@ class Admin_ClientController extends Project_Controller_Admin{
             if (is_dir($wwwH)) $this->view->addHelperPath($wwwH . '/Project/View/Helper', 'Project_View_Helper_');
             
             // Уведомление заказчику
-            if (preg_match($this->emailPattern, $eventR->clientEmail)) {
+            if (preg_match(Indi::rex('email'), $eventR->clientEmail)) {
                 $subject = 'Ваша заявка на проведение детского праздника';
                 $message = $this->view->mailConfirmation($eventR);
                 $emails = array(); $emails[] = $eventR->clientEmail;
@@ -37,8 +39,8 @@ class Admin_ClientController extends Project_Controller_Admin{
             }
 
             // Уведомление для локейшена
-            $districtR = $eventR->getForeignRowByForeignKey('districtId');
-            if (preg_match($this->emailPattern, $districtR->email)) {
+            $districtR = $eventR->foreign('districtId');
+            if (preg_match(Indi::rex('email'), $districtR->email)) {
                 $subject = 'Поступила новая заявка на проведение детского праздника';
                 $message = $this->view->mailEvent($eventR);
                 $emails = array(); $emails[] = $districtR->email;

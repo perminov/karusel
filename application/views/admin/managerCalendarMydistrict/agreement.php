@@ -5,11 +5,10 @@ $this->months = array(
     '01' => 'Января', '02' => 'Февраля', '03' => 'Марта', '04' => 'Апреля', '05' => 'Мая', '06' => 'Июня',
     '07' => 'Июля', '08' => 'Августа', '09' => 'Сентября', '10' => 'Октября', '11' => 'Ноября', '12' => 'Декабря'
 );
-$this->row->setForeignRowsByForeignKeys('districtId,placeId,animatorIds,programId,subprogramId,timeId');
+$this->row->foreign('districtId,placeId,animatorIds,programId,subprogramId,timeId');
 $name = 'agreement';
 $value = $this->render('managerCalendarMydistrict/agreementTemplate.php');
-$config = Indi::registry('config');
-$CKconfig['language'] = $config['view']->lang;
+$CKconfig['language'] = Indi::ini('view')->lang;
 $customParams = array('width','height','bodyClass','style','script','sourceStripper');
 foreach($customParams as $customParam) {
     if ($this->view->row->{$name . ucfirst($customParam)}) {
@@ -100,7 +99,7 @@ $CKconfig['readOnly'] = true;
 <?
 echo '</td></tr>';
 $xhtml  = '</table>';
-$title[] = BUTTON_BACK;
+$title[] = I_BACK;
 $action[] = "top.window.Ext.getCmp('i-action-form-topbar-button-back').handler();";
 $title[] = 'Распечатать';
 $action[] = 'CKEDITOR.tools.callFunction(9, CKEDITOR.instances.agreement)';
@@ -120,13 +119,14 @@ ob_start();?>
         )
 		//$.cookie('last-row-id', <?=$this->row->id?>, {path: '/'});
         top.window.Ext.getCmp('i-action-form-topbar-button-save').disable();
+        top.window.Ext.getCmp('i-action-form-topbar-checkbox-autosave').disable();
         top.window.Ext.getCmp('i-action-form-topbar-button-add').disable();
     });
 </script>
 <?
 $xhtml = ob_get_clean();
-$parent = $this->trail->getItem(1);
-$this->trail->items[1]->actions->exclude(3);
-$actionA = $this->trail->getItem()->actions->toArray();
+$parent = Indi::trail(1);
+Indi::trail()->actions->exclude(3);
+$actionA = Indi::trail()->actions->toArray();
 foreach ($actionA as $actionI) if ($actionI['alias'] == 'save') {$save = true; break;}
 echo $xhtml;

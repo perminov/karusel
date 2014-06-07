@@ -1,48 +1,59 @@
 <?php
-class Event_Row extends Indi_Db_Table_Row{
+class Event_Row extends Indi_Db_Table_Row {
     public function save() {
 
         // Делаем логи изменений в мероприятиях, но только для уже существующих мероприятий
         if ($this->id && count($this->_modified)) {
+
             // Находим id текущей сущности
-            $entityId = Misc::loadModel('Entity')->fetchRow('`table` = "' . $this->getTable()->info('name') . '"')->id;
+            $entityId = $this->model()->id();
 
             // Обуляем изменения, предварительно селав бакап
             $modified = $this->_modified; $this->_modified = array(); unset($modified['price'], $modified['clientAgreementNumber']);
 
+            // Получаем список внешних ключей
+            $foreignA = $this->model()->fields()->select('one,many', 'storeRelationAbility')->column('alias');
+
+            // Получаем список измененных внешних ключей
+            $modifiedForeignA = array_intersect($foreignA, array_keys($modified));
+
             // Выдергиваем записи 'Было' по внешним ключам
-            $was = clone $this; $was->setForeignRowsByForeignKeys(implode(',', array_keys($modified)));
+            $was = clone $this; $was->foreign(implode(',', $modifiedForeignA));
 
             // Выдергиваем записи 'Стало' по внешним ключам
             $this->_modified = $modified;
-            $now = clone $this; $now->setForeignRowsByForeignKeys(implode(',', array_keys($modified)));
 
-            $adjustmentM = Misc::loadModel('Adjustment');
-            $fieldRs = Misc::loadModel('Field')->fetchAll('`entityId` = "' . $entityId .'" AND FIND_IN_SET(`alias`, "' . implode(',', array_keys($modified)) . '")', 'move');
+            // Конвертируем значения, имеющиеся в _modified в формат, пригодный для работы с ->foreign()
+            $this->mismatch(true);
+
+            $now = clone $this; $now->foreign(implode(',', $modifiedForeignA));
+
+            $adjustmentM = Indi::model('Adjustment');
+            $fieldRs = Indi::model('Field')->fetchAll('`entityId` = "' . $entityId .'" AND FIND_IN_SET(`alias`, "' . implode(',', array_keys($this->_modified)) . '")', 'move');
             foreach ($fieldRs as $fieldR) {
                 $adjustmentR = $adjustmentM->createRow();
                 $adjustmentR->eventId = $this->id;
                 $adjustmentR->fieldId = $fieldR->id;
 
-                if (is_array($was->_original['foreign']) && array_key_exists($fieldR->alias, $was->_original['foreign'])) {
-                    if ($was->_original['foreign'][$fieldR->alias] instanceof Indi_Db_Table_Rowset) {
+                if (array_key_exists($fieldR->alias, $was->foreign())) {
+                    if ($was->foreign($fieldR->alias) instanceof Indi_Db_Table_Rowset) {
                         $implodedWas = array();
-                        foreach ($was->_original['foreign'][$fieldR->alias] as $r) $implodedWas[] = $r->getTitle();
+                        foreach ($was->foreign($fieldR->alias) as $r) $implodedWas[] = $r->title();
                         $adjustmentR->was = implode(', ', $implodedWas);
-                    } else {
-                        $adjustmentR->was = $was->_original['foreign'][$fieldR->alias]->getTitle();
+                    } else if ($now->foreign($fieldR->alias) instanceof Indi_Db_Table_Row) {
+                        $adjustmentR->was = $was->foreign($fieldR->alias)->title();
                     }
                 } else {
                     $adjustmentR->was = $was->{$fieldR->alias};
                 }
 
-                if (is_array($was->_original['foreign']) && array_key_exists($fieldR->alias, $now->_original['foreign'])) {
-                    if ($now->_original['foreign'][$fieldR->alias] instanceof Indi_Db_Table_Rowset) {
+                if (array_key_exists($fieldR->alias, $now->foreign())) {
+                    if ($now->foreign($fieldR->alias) instanceof Indi_Db_Table_Rowset) {
                         $implodedNow = array();
-                        foreach ($now->_original['foreign'][$fieldR->alias] as $r) $implodedNow[] = $r->getTitle();
+                        foreach ($now->foreign($fieldR->alias) as $r) $implodedNow[] = $r->title();
                         $adjustmentR->now = implode(', ', $implodedNow);
-                    } else {
-                        $adjustmentR->now = $now->_original['foreign'][$fieldR->alias]->getTitle();
+                    } else if ($now->foreign($fieldR->alias) instanceof Indi_Db_Table_Row) {
+                        $adjustmentR->now = $now->foreign($fieldR->alias)->title();
                     }
                 } else {
                     $adjustmentR->now = $now->{$fieldR->alias};
@@ -56,11 +67,11 @@ class Event_Row extends Indi_Db_Table_Row{
         }
 
         // Формируем title
-        $districtR = $this->getForeignRowByForeignKey('districtId');
-        $placeR = $this->getForeignRowByForeignKey('placeId');
-        $timeR = $this->getForeignRowByForeignKey('timeId');
+        $districtR = $this->foreign('districtId');
+        $placeR = $this->foreign('placeId');
+        $timeR = $this->foreign('timeId');
         $title = array();
-        $title[] = '[' . $this->date . ', ' . $timeR->getTitle() . ']';
+        $title[] = '[' . $this->date . ', ' . $timeR->title . ']';
         $title[] = $districtR->code . ': ' . $placeR->title;
         $this->title = implode(' ', $title);
 
@@ -73,17 +84,19 @@ class Event_Row extends Indi_Db_Table_Row{
             }
         }
 
+        if (is_array($this->animatorIds)) $this->animatorIds = implode(',', $this->animatorIds);
+
         // Рассчитываем стоимость
         if (!trim($this->animatorIds)) {
             if ($this->subprogramId) {
-                $animatorsCount = $this->getForeignRowByForeignKey('subprogramId')->animatorsCount;
+                $animatorsCount = $this->foreign('subprogramId')->animatorsCount;
             } else {
                 $animatorsCount = 1;
             }
         } else {
             $animatorsCount = count(explode(',', $this->animatorIds));
         }
-        $this->price = $this->getTable()->getAdapter()->query('
+        $this->price = Indi::db()->query('
                 SELECT
                   CAST((IF("'. $animatorsCount . '" = "1", `price1`, `price2`) -
                   IF("'. $animatorsCount . '" = "1",
@@ -127,7 +140,7 @@ class Event_Row extends Indi_Db_Table_Row{
 
         // Формируем calendarStart и calendarEnd
         $this->calendarStart = $this->date . ' ' . $timeR->title . ':00';
-        $this->calendarEnd = $this->getTable()->getAdapter()->query('
+        $this->calendarEnd = Indi::db()->query('
             SELECT DATE_ADD(TIMESTAMP("' . $this->calendarStart . '"), INTERVAL ' . $placeR->duration . ' MINUTE)
         ')->fetchColumn(0);
 
@@ -135,7 +148,7 @@ class Event_Row extends Indi_Db_Table_Row{
 
         // Забиваем аниматоров
         $animators = explode(',', $this->animatorIds);
-        $eaM = Misc::loadModel('EventAnimator');
+        $eaM = Indi::model('EventAnimator');
         $eaM->fetchAll('`eventId` = "' . $this->id . '"')->delete();
         for ($i = 0; $i < count($animators); $i++) {
             if ($animators[$i]) {
@@ -149,7 +162,7 @@ class Event_Row extends Indi_Db_Table_Row{
 
     public function setAgreementNumber(){
         // Конструируем номер договора
-        $districtR = $this->getForeignRowByForeignKey('districtId');
+        $districtR = $this->foreign('districtId');
         $this->clientAgreementNumber = $districtR->code . str_pad($districtR->lastAgreement + 1, 4, '0', STR_PAD_LEFT);
         $districtR->lastAgreement++;
         $districtR->save();
