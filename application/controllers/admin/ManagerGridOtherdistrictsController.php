@@ -35,11 +35,4 @@ class Admin_ManagerGridOtherdistrictsController extends Project_Controller_Admin
         }
         die($response);
     }
-
-    public function agreementAction(){
-        if (Indi::uri()->check && $this->row->manageStatus != '120#00ff00') {
-            die('not-confirmed');
-        }
-    }
-
 }

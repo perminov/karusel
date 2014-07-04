@@ -19,12 +19,6 @@ class Admin_ManagerGridMydistrictController extends Project_Controller_Admin_Eve
         die($response);
     }
 
-    public function agreementAction(){
-        if (Indi::uri()->checkConfirmed && $this->row->manageStatus != '120#00ff00') {
-            die('not-confirmed');
-        }
-    }
-    
     public function postDispatch($return = false) {
         foreach (Indi::trail()->actions as $actionR) {
             if ($actionR->alias == 'delete') {
