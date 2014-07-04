@@ -44,4 +44,8 @@ class Project_Controller_Admin_EventsGrid extends Project_Controller_Admin{
 		}
 		die($response);
 	}
+
+    public function agreementAction(){
+        if (Indi::uri()->checkConfirmed) die($this->row->manageStatus != '120#00ff00' ? 'not-confirmed': 'ok');
+    }
 }
