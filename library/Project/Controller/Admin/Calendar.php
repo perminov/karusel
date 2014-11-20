@@ -1,5 +1,5 @@
 <?php
-class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
+class Project_Controller_Admin_Calendar extends Project_Controller_Admin_Events{
     /**
      * We set ORDER as 'id', as we do not need any other order type
      * @return string
@@ -18,13 +18,14 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
             $startDate = date('Y-m-01');
             $startTime = strtotime($startDate);
             $dayOfWeek = date('N', $startTime);
-            Indi::get('start') = date('m-d-Y', $startTime - 60 * 60 * 24 * ($dayOfWeek - 1));
+            Indi::get()->start = date('m-d-Y', $startTime - 60 * 60 * 24 * ($dayOfWeek - 1));
         }
         if (!Indi::get('end')) {
             $endDate = date('Y-m-' . date('t'));
             $endTime = strtotime($endDate);
             $dayOfWeek = date('N', $endTime);
-            Indi::get('end') = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek));
+            Indi::get()->end = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek));
+            Indi::get()->end = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek + 7));
         }
         $start = explode('-', Indi::get('start'));
         $end = explode('-', Indi::get('end'));

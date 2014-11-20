@@ -1,5 +1,5 @@
 <?php
-class Project_Controller_Admin_EventsGrid extends Project_Controller_Admin{
+class Project_Controller_Admin_EventsGrid extends Project_Controller_Admin_Events {
     public function preDispatch() {
         if (Indi::uri()->action == 'index' && Indi::uri()->json) {
 //          Indi::db()->query('UPDATE `event` SET `manageStatus` = "060#ffff00" WHERE `manageStatus` = "120#00ff00" AND `date` < CURDATE();');
@@ -29,8 +29,8 @@ class Project_Controller_Admin_EventsGrid extends Project_Controller_Admin{
             $data[$i]['price'] = $mPrice[$data[$i]['id']] ? $mPrice[$data[$i]['id']] : $data[$i]['price'];
             $data[$i]['programId'] = $subprogramTitleA[$data[$i]['id']] ? $subprogramTitleA[$data[$i]['id']] : $data[$i]['programId'];
             if($data[$i]['manageDate'] == '0000-00-00') $data[$i]['manageDate'] = '';
-            $data[$i]['manageStatus'] = preg_replace('/Подтвержденная|Предварительная|Проведенная|Отмененная/', '', $data[$i]['manageStatus']);
-            $data[$i]['manageStatus'] = preg_replace('/style=[\'"]/', '$0 margin-left: 10px; ', $data[$i]['manageStatus']);
+            //$data[$i]['manageStatus'] = preg_replace('/Подтвержденная|Предварительная|Проведенная|Отмененная/', '', $data[$i]['manageStatus']);
+            //$data[$i]['manageStatus'] = preg_replace('/style=[\'"]/', '$0 margin-left: 10px; ', $data[$i]['manageStatus']);
         }
         parent::adjustGridData($data);
     }
@@ -46,6 +46,7 @@ class Project_Controller_Admin_EventsGrid extends Project_Controller_Admin{
 	}
 
     public function agreementAction(){
-        if (Indi::uri()->checkConfirmed) die($this->row->manageStatus != '120#00ff00' ? 'not-confirmed': 'ok');
+        Indi::trail()->view->mode = 'view';
+        //if (Indi::uri()->checkConfirmed) die($this->row->manageStatus != '120#00ff00' ? 'not-confirmed': 'ok');
     }
 }
