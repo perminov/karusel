@@ -5,6 +5,13 @@ Ext.define('Indi.controller.list', {
             rowset: {
                 firstColumnWidthFraction: 0.23
             },
+            panelDockedInner$Actions$Agreement: function(item) {
+                return Ext.merge(item, {
+                    iconCls: 'i-btn-icon-print',
+                    tooltip: item.text,
+                    text: ''
+                });
+            },
             panelDocked$Filter$PlaceId: function(filter) {
                 filter.store.js = '';
                 return filter;
@@ -55,7 +62,8 @@ Ext.define('Indi.controller.list', {
                 return {
                     id: me.panelDockedInnerBid() + 'agreement',
                     xtype: 'button',
-                    text: 'Договор',
+                    tooltip: 'Договор',
+                    iconCls: 'i-btn-icon-print',
                     handler: function() {
                         me.goto(me.other('agreement'));
                     }
