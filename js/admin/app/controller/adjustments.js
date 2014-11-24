@@ -3,9 +3,6 @@ Ext.define('Indi.controller.adjustments', {
     actionsConfig: {
         index: {
             panel: {
-                /**
-                 * Docked items special config
-                 */
                 docked: {
                     default: {minHeight: 27},
                     items: [{alias: 'filter'}],
@@ -14,42 +11,23 @@ Ext.define('Indi.controller.adjustments', {
                     }
                 }
             },
-            panelDocked$Filter$Keyword: function() {
-                return this.panelDockedInner$Keyword();
-            },
             rowset: {
-                docked: {
-                    items: [{alias: 'paging'}],
-                    inner: {
-                        paging: []
-                    }
-                },
                 features: [{
                     ftype: 'grouping',
                     groupHeaderTpl: '{name}'
                 }]
             },
+            panelDocked$Filter$Keyword: function() {
+                return this.panelDockedInner$Keyword();
+            },
+            rowsetInner$Excel: function() {
+                return {disabled: true};
+            },
             store: {
-                groupField: 'grouperField'
+                groupField: 'datetime'
             },
             storeLoadCallbackDataRowAdjust: function(r) {
-                r.set('grouperField', r.get('datetime') + ' - ' + r.get('author'));
-            },
-            initComponent: function() {
-                var me = this; me.ti().gridFields.unshift({
-                    alias: "grouperField", alternative: "", columnTypeId: "1", defaultValue: "", dependency: "u",
-                    elementId: "1", entityId: "309", filter: "", id: "grouperField", javascript: "", move: "2181",
-                    relation: "0", satellite: "0", satellitealias: "", storeRelationAbility: "none", title: ""
-                });
-                me.callParent();
-            },
-            gridColumn$FieldId: function(column) {
-                return Ext.merge(column, {
-                    header: 'Что'
-                });
-            },
-            gridColumn$GrouperField: function(column) {
-                column = null;
+                r.set('datetime', r.get('datetime') + ' - ' + r.get('author'));
             },
             gridColumn$Author: function(column) {
                 column = null;
@@ -57,8 +35,19 @@ Ext.define('Indi.controller.adjustments', {
             gridColumn$Datetime: function(column) {
                 column = null;
             },
+            gridColumn$FieldId: function(column) {
+                return Ext.merge(column, {
+                    groupable: false,
+                    sortable: false,
+                    menuDisabled: true,
+                    header: 'Что'
+                });
+            },
             gridColumn$Was: function(column) {
                 return Ext.merge(column, {
+                    groupable: false,
+                    sortable: false,
+                    menuDisabled: true,
                     renderer: function(value) {
                         return value;
                     }
@@ -66,6 +55,9 @@ Ext.define('Indi.controller.adjustments', {
             },
             gridColumn$Now: function(column) {
                 return Ext.merge(column, {
+                    groupable: false,
+                    sortable: false,
+                    menuDisabled: true,
                     renderer: function(value) {
                         return value;
                     }
