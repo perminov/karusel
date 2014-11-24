@@ -63,15 +63,16 @@ UPDATE `adjustment` SET `was` = CONCAT(SUBSTRING(`was`, 1, CHAR_LENGTH(`was`) - 
 UPDATE `adjustment` SET `now` = CONCAT(SUBSTRING(`now`, 1, CHAR_LENGTH(`now`) - 6), '******') WHERE `fieldId` = "2223";
 
 INSERT INTO `search` SET `sectionId` = "389", `fieldId` = "2209", alt = "За период";
-UPDATE `search` SET `filter` = "`districtId` = \"<?=Indi::admin()->districtId?>\"" WHERE `id` = "141";
-UPDATE `search` SET `filter` = "`districtId` != \"<?=Indi::admin()->districtId?>\"" WHERE `id` = "147";
-UPDATE `section` SET `filter` = "`districtId` = \"<?=Indi::admin()->districtId?>\"" WHERE `id` = "402";
-UPDATE `section` SET `filter` = "`districtId` != \"<?=Indi::admin()->districtId?>\"" WHERE `id` = "403";
+UPDATE `search` SET `filter` = "`districtId` = '<?=Indi::admin()->districtId?>'" WHERE `id` = "141";
+UPDATE `search` SET `filter` = "`districtId` != '<?=Indi::admin()->districtId?>'" WHERE `id` = "147";
+UPDATE `section` SET `filter` = "`districtId` = '<?=Indi::admin()->districtId?>'" WHERE `id` = "402";
+UPDATE `section` SET `filter` = "`districtId` != '<?=Indi::admin()->districtId?>'" WHERE `id` = "403";
 UPDATE `section2action` SET `move` = "1375" WHERE `id` = "1603";
 UPDATE `section2action` SET `move` = "1374" WHERE `id` = "1604";
 UPDATE `section2action` SET `move` = "1387" WHERE `id` = "1615";
 UPDATE `section2action` SET `move` = "1386" WHERE `id` = "1616";
 UPDATE `section2action` SET `toggle` = "n" WHERE `id` IN (1615, 1622, 1603, 1621);
+UPDATE `field` SET `elementId` = "23" WHERE `id` = "2185";
         <?
             $sql = explode(";\n", ob_get_clean());
             foreach ($sql as $sqlI) if (trim($sqlI))Indi::db()->query($sqlI);
