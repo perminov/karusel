@@ -40,7 +40,6 @@ Ext.define('Indi.controller.list', {
                     }
                 }
             },
-
             formItem$PlaceId: function(item) {
                 var me = this;
                 return Ext.merge(item, {
@@ -48,9 +47,34 @@ Ext.define('Indi.controller.list', {
                         afterrender: function(c) {
                         },
                         change: function() {
-                            console.log('change');
                         }
-                    }
+                    },
+                    allowBlank: false
+                });
+            },
+            formItem$DistrictId: function(item) {
+                return Ext.merge(item, {
+                    allowBlank: false
+                });
+            },
+            formItem$Date: function(item) {
+                return Ext.merge(item, {
+                    allowBlank: false
+                });
+            },
+            formItem$TimeId: function(item) {
+                return Ext.merge(item, {
+                    allowBlank: false
+                });
+            },
+            formItem$ProgramId: function(item) {
+                return Ext.merge(item, {
+                    allowBlank: false
+                });
+            },
+            formItem$AnimatorIds: function(item) {
+                return Ext.merge(item, {
+                    allowBlank: false
                 });
             },
             panelDockedInner$Agreement: function() {
