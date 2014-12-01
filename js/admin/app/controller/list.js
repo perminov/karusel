@@ -40,41 +40,147 @@ Ext.define('Indi.controller.list', {
                     }
                 }
             },
-            formItem$PlaceId: function(item) {
+            formItemDefault: function(item) {
                 var me = this;
-                return Ext.merge(item, {
-                    listeners: {
-                        afterrender: function(c) {
-                        },
-                        change: function() {
-                        }
-                    },
-                    allowBlank: false
+                return Ext.merge(me.callParent(arguments), {
+                    allowBlank: true
                 });
             },
             formItem$DistrictId: function(item) {
                 return Ext.merge(item, {
-                    allowBlank: false
+                    allowBlank: false,
+                    listeners: {
+                        change: function(c) {
+                            if (parseInt(c.val())) {
+                                /*if ($('#maxChildrenCount').length) {
+                                 Ext.getCmp('ext-childrenCount-slider').setMaxValue(parseInt($(this).attr('maxChildrenCount')));
+                                 if (parseInt($('#childrenCount').val()) > parseInt($(this).attr('maxChildrenCount'))) {
+                                 $('#childrenCount').val($(this).attr('maxChildrenCount'));
+                                 }
+                                 $('#maxChildrenCount').text($(this).attr('maxChildrenCount'));
+                                 }*/
+                            }
+                        }
+                    }
+                });
+            },
+            formItem$PlaceId: function(item) {
+                return Ext.merge(item, {
+                    allowBlank: false,
+                    listeners: {
+                        change: function(c) {
+                            if (parseInt(c.val())) {
+                                /*if ($('#maxChildrenCount').length) {
+                                    Ext.getCmp('ext-childrenCount-slider').setMaxValue(parseInt($(this).attr('maxChildrenCount')));
+                                    if (parseInt($('#childrenCount').val()) > parseInt($(this).attr('maxChildrenCount'))) {
+                                        $('#childrenCount').val($(this).attr('maxChildrenCount'));
+                                    }
+                                    $('#maxChildrenCount').text($(this).attr('maxChildrenCount'));
+                                }*/
+                            }
+                        }
+                    }
                 });
             },
             formItem$Date: function(item) {
                 return Ext.merge(item, {
-                    allowBlank: false
+                    allowBlank: false,
+                    considerOn: [{
+                        name: 'placeId',
+                        required: true
+                    }],
+                    listeners: {
+                        enablebysatellite: function(c, data) {
+                            Ext.Ajax.request({
+                                url: Indi.std + '/auxiliary/disabledDates/',
+                                params: data,
+                                success: function(response) {
+                                    var json = Ext.JSON.decode(response.responseText, true);
+                                    if (Ext.isArray(json)) c.setDisabledDates(json.length ? json : ["2000-01-01"]);
+                                }
+                            });
+                        }
+                    }
                 });
             },
             formItem$TimeId: function(item) {
                 return Ext.merge(item, {
-                    allowBlank: false
+                    allowBlank: false,
+                    considerOn: [{
+                        name: 'date',
+                        required: true
+                    }, {
+                        name: 'placeId',
+                        required: true
+                    }],
+                    listeners: {
+                        enablebysatellite: function(c, data) {
+                            Ext.Ajax.request({
+                                url: Indi.std + '/auxiliary/disabledTimes/',
+                                params: data,
+                                success: function(response) {
+                                    var json = Ext.JSON.decode(response.responseText, true);
+                                    if (Ext.isArray(json)) c.setDisabledOptions(json);
+                                }
+                            });
+                        }
+                    }
                 });
             },
             formItem$ProgramId: function(item) {
                 return Ext.merge(item, {
-                    allowBlank: false
+                    allowBlank: false,
+                    considerOn: [{
+                        name: 'timeId',
+                        required: true
+                    }],
+                    listeners: {
+                        change: function(c) {
+                            c.sbl('price').val(0);
+                            if (c.hasZeroValue()) {
+                                //c.sbl('subprogramId').hide();
+                                top.window.$('.feature-item-5').css('height', '669px');
+                            } else if (!c.sbl('subprogramId').disabled) {
+                                c.sbl('subprogramId').show();
+                                top.window.$('.feature-item-5').css('height', '714px');
+                                c.sbl('animatorIds').disable().clearValue();
+                            } else {
+                                //c.sbl('subprogramId').hide();
+                                top.window.$('.feature-item-5').css('height', '669px');
+                            }
+                        }
+                    }
                 });
             },
             formItem$AnimatorIds: function(item) {
                 return Ext.merge(item, {
-                    allowBlank: false
+                    allowBlank: false,
+                    considerOn: [
+                        {name: 'timeId', required: true}, {name: 'programId', required: true},
+                        {name: 'date', required: true}, {name: 'placeId', required: true}, {name: 'subprogramId'}
+                    ],
+                    listeners: {
+                        enablebysatellite: function(c, data) {
+                            if (c.sbl('subprogramId').disabled || !c.sbl('subprogramId').hasZeroValue()) {
+                                Ext.Ajax.request({
+                                    url: Indi.std + '/auxiliary/disabledAnimators/',
+                                    params: {
+                                        timeId: c.sbl('timeId').val(),
+                                        date: c.sbl('date').getSubmitValue(),
+                                        placeId: c.sbl('placeId').val(),
+                                        animatorsNeededCount: !c.sbl('subprogramId').hasZeroValue() ? 1 : 1
+                                    },
+                                    success: function(response) {
+                                        var json = Ext.JSON.decode(response.responseText, true);
+                                        if (Ext.isObject(json)) {
+                                            c.setDisabledOptions(json.disabled);
+                                            c.sbl('price').val(json.price);
+                                        }
+                                    }
+                                });
+                            } else c.disable();
+                        }
+                    }
                 });
             },
             panelDockedInner$Agreement: function() {
