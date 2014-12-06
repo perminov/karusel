@@ -65,6 +65,7 @@ Ext.define('Indi.controller.list', {
                 });
             },
             formItem$PlaceId: function(item) {
+                item.store.js = '';
                 return Ext.merge(item, {
                     allowBlank: false,
                     listeners: {
@@ -104,6 +105,8 @@ Ext.define('Indi.controller.list', {
                 });
             },
             formItem$TimeId: function(item) {
+                var me = this;
+                item.store.js = '';
                 return Ext.merge(item, {
                     allowBlank: false,
                     considerOn: [{
@@ -115,8 +118,9 @@ Ext.define('Indi.controller.list', {
                     }],
                     listeners: {
                         enablebysatellite: function(c, data) {
+                            var id = parseInt(me.ti().row.id) ? 'id/' + me.ti().row.id + '/' : '';
                             Ext.Ajax.request({
-                                url: Indi.std + '/auxiliary/disabledTimes/',
+                                url: Indi.std + '/auxiliary/disabledTimes/' + id,
                                 params: data,
                                 success: function(response) {
                                     var json = Ext.JSON.decode(response.responseText, true);
@@ -128,6 +132,7 @@ Ext.define('Indi.controller.list', {
                 });
             },
             formItem$ProgramId: function(item) {
+                item.store.js = '';
                 return Ext.merge(item, {
                     allowBlank: false,
                     considerOn: [{
@@ -138,21 +143,36 @@ Ext.define('Indi.controller.list', {
                         change: function(c) {
                             c.sbl('price').val(0);
                             if (c.hasZeroValue()) {
-                                //c.sbl('subprogramId').hide();
+                                c.sbl('subprogramId').hide();
                                 top.window.$('.feature-item-5').css('height', '669px');
-                            } else if (!c.sbl('subprogramId').disabled) {
+                            } else if (c.prop('subprogramsCount')) {
                                 c.sbl('subprogramId').show();
                                 top.window.$('.feature-item-5').css('height', '714px');
                                 c.sbl('animatorIds').disable().clearValue();
                             } else {
-                                //c.sbl('subprogramId').hide();
+                                c.sbl('subprogramId').hide();
                                 top.window.$('.feature-item-5').css('height', '669px');
                             }
                         }
                     }
                 });
             },
+            formItem$SubprogramId: function(item) {
+                item.store.js = ''; return item;
+            },
+            formItem$ChildrenCount: function(item) {
+                return Ext.merge(item, {
+                    considerOn: [{name: 'placeId'}],
+                    listeners: {
+                        enablebysatellite: function(c, data) {
+                            if (c.sbl('placeId').prop('maxChildrenCount'))
+                                c.maxValue = c.sbl('placeId').prop('maxChildrenCount');
+                        }
+                    }
+                });
+            },
             formItem$AnimatorIds: function(item) {
+                item.store.js = '';
                 return Ext.merge(item, {
                     allowBlank: false,
                     considerOn: [
@@ -161,19 +181,24 @@ Ext.define('Indi.controller.list', {
                     ],
                     listeners: {
                         enablebysatellite: function(c, data) {
-                            if (c.sbl('subprogramId').disabled || !c.sbl('subprogramId').hasZeroValue()) {
+                            if (!c.sbl('programId').prop('subprogramsCount') || !c.sbl('subprogramId').hasZeroValue()) {
                                 Ext.Ajax.request({
                                     url: Indi.std + '/auxiliary/disabledAnimators/',
                                     params: {
                                         timeId: c.sbl('timeId').val(),
                                         date: c.sbl('date').getSubmitValue(),
                                         placeId: c.sbl('placeId').val(),
-                                        animatorsNeededCount: !c.sbl('subprogramId').hasZeroValue() ? 1 : 1
+                                        animatorsNeededCount: !c.sbl('subprogramId').hasZeroValue()
+                                            ? c.sbl('subprogramId').prop('animatorsCount')
+                                            : 1
                                     },
                                     success: function(response) {
                                         var json = Ext.JSON.decode(response.responseText, true);
                                         if (Ext.isObject(json)) {
                                             c.setDisabledOptions(json.disabled);
+                                            c.maxSelected = !c.sbl('subprogramId').hasZeroValue()
+                                                ? c.sbl('subprogramId').prop('animatorsCount')
+                                                : 1;
                                             c.sbl('price').val(json.price);
                                         }
                                     }
@@ -210,7 +235,7 @@ Ext.define('Indi.controller.list', {
                 var me = this; return Ext.merge(me.callParent(), {
                     editorCfg: {
                         style: 'body {background: url('+ Indi.std + '/i/admin/bg-dogovor.jpg) no-repeat 50% 95%;} ' +
-                            '* {font-family:Verdana, Arial, Helvetica, sans-serif; font-size:10.4px; line-height: 12px !important;}',
+                            '* {font-family:Verdana, Arial, Helvetica, sans-serif; font-size:10.4px; line-height: 12px !important;}'
                     },
                     listeners: {
                         boxready: function() {
@@ -219,50 +244,6 @@ Ext.define('Indi.controller.list', {
                     }
                 });
             }
-        },
-        form1: {
-
- /* --animatorIds--
-  if($(this).parents('table').find('span.checkbox.checked').length < parseInt($('#programId').attr('animatorsCount'))) {
-    $(this).parents('table').find('span.checkbox').parents('tr').not('.disabled').show();
-} else {
-    $(this).parents('table').find('span.checkbox').not('.checked').parent().parent().hide();
-}  */
-
-/* --placeId--           if ($(this).val() != "0") {
-    $('#date').removeAttr('disabled');
-    $('#date').parents('.calendar-div').removeClass('disabled');
-    $('#date').val('').change();
-
-    $('#timeId-keyword').val('');
-    $('#timeId').val(0).change();
-
-    Indi.combo.form.toggle('timeId', true);
-    $.post(Indi.std+'/auxiliary/disabledDates/',{placeId: $('#placeId').val()}, function(disabledDates){
-        if(disabledDates.length) {
-            Ext.getCmp('dateCalendar').setDisabledDates(disabledDates);
-        } else {
-            Ext.getCmp('dateCalendar').setDisabledDates(["2000-01-01"]);
-        }
-    }, 'json');
-    if ($('#maxChildrenCount').length) {
-        Ext.getCmp('ext-childrenCount-slider').setMaxValue(parseInt($(this).attr('maxChildrenCount')));
-        if (parseInt($('#childrenCount').val()) > parseInt($(this).attr('maxChildrenCount'))) {
-            $('#childrenCount').val($(this).attr('maxChildrenCount'));
-        }
-        $('#maxChildrenCount').text($(this).attr('maxChildrenCount'));
-    }
-} else {
-    $('#date').attr('disabled','disabled');
-    $('#date').parents('.calendar-div').addClass('disabled');
-    $('#date').val('').change();
-
-    $('#timeId-keyword').val('');
-    $('#timeId').val(0).change();
-    Indi.combo.form.toggle('timeId',true);
-
-    $('#programId').removeAttr('animatorsCount');
-}*/
         }
     }
 });

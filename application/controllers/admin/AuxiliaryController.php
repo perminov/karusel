@@ -2,7 +2,7 @@
 class Admin_AuxiliaryController extends Indi_Controller_Auxiliary {
     public $eventId;
     public function preDispatch(){
-        if (preg_match('/\/id\/([0-9]+)\//', $_SERVER['HTTP_REFERER'], $matches)) $this->eventId = $matches[1];
+        if (preg_match(':/id/([0-9]+)/:', $_SERVER['REQUEST_URI'], $matches)) $this->eventId = $matches[1];
     }
     public function disabledDatesAction(){
         $disabledDates = array();
