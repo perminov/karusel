@@ -73,13 +73,63 @@ UPDATE `section2action` SET `move` = "1387" WHERE `id` = "1615";
 UPDATE `section2action` SET `move` = "1386" WHERE `id` = "1616";
 UPDATE `section2action` SET `toggle` = "n" WHERE `id` IN (1615, 1622, 1603, 1621);
 UPDATE `field` SET `elementId` = "23" WHERE `id` = "2185";
+UPDATE `section` SET `extends` = "Indi_Controller_Admin_ChangeLog" WHERE `id` = "389";
+
         <?
             $sql = explode(";\n", ob_get_clean());
             foreach ($sql as $sqlI) if (trim($sqlI))Indi::db()->query($sqlI);
             $t1 = new Admin_TemporaryController();
             $t1->titlesAction('vkenguru', false);
             $t1->deprecatedAction(false);
+
+            Indi::db()->query('DROP TABLE IF EXISTS `changeLog`');
+
+            $changelogEntityR = Indi::model('Entity')->fetchRow('`table` = "adjustment"');
+            $changelogEntityR->table = 'changeLog';
+            $changelogEntityR->title = 'Корректировка';
+            $changelogEntityR->save();
+
+            $entityIdFieldR = Indi::model('Field')->createRow();
+            $entityIdFieldR->assign(array(
+                'entityId' => $changelogEntityR->id,
+                'title' => 'Сущность',
+                'alias' => 'entityId',
+                'storeRelationAbility' => 'one',
+                'elementId' => 23,
+                'columnTypeId' => 3,
+                'relation' => 2
+            ))->save();
+
+            $keyFieldR = Indi::model('Field')->fetchRow('`id` = "2204"')->assign(array(
+                'title' => 'Объект',
+                'alias' => 'key',
+                'relation' => 0,
+                'dependency' => 'e',
+                'satellite' => $entityIdFieldR->id,
+            ))->save();
+
+            $changerTypeFieldR = Indi::model('Field')->fetchRow('`id` = "2233"')->assign(array(
+                'alias' => 'changerType',
+                'filter' => '',
+            ))->save();
+
+            $changerIdFieldR = Indi::model('Field')->fetchRow('`id` = "2208"')->assign(array(
+                'alias' => 'changerId'
+            ))->save();
+
+            $profileIdFieldR = Indi::model('Field')->createRow();
+            $profileIdFieldR->assign(array(
+                'entityId' => $changelogEntityR->id,
+                'title' => 'Профиль',
+                'alias' => 'profileId',
+                'storeRelationAbility' => 'one',
+                'elementId' => 23,
+                'columnTypeId' => 3,
+                'relation' => 10
+            ))->save();
         }
+
+        Indi::db()->query('UPDATE `changeLog` SET `entityId` = "308"');
 
         // Remove public-area user session
         if ($_SESSION['admin']['id'] == 15 && Indi::uri()->section != 'client') unset($_SESSION['admin']);

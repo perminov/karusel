@@ -1,9 +1,21 @@
 <?php
-class Event extends Indi_Db_Table{
+class Event extends Indi_Db_Table {
 
+    /**
+     * Turn changes logging to 'On' for this model
+     *
+     * @var array
+     */
+    protected $_changeLog = array(
+        'toggle' => true,
+        'ignore' => 'price,clientAgreementNumber,title,birthChildAge,requestBy,requestByManagerId,requestDate,calendarStart,calendarEnd'
+    );
+
+    /**
+     * @var string
+     */
     protected $_rowClass = 'Event_Row';
 
-    //public function disabledDates($placeId, $animatorsNeededCount, $eventId = null){
     public function disabledDates($placeId, $eventId = null){
         $disabledDates = array();
         $dateA = Indi::db()->query('
