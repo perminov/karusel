@@ -1,6 +1,10 @@
 <?php
-class Admin_CalendarController extends Project_Controller_Admin_Calendar{
-    public function adjustGridData(&$data) {
+//class Admin_CalendarController1 extends Project_Controller_Admin_Calendar{
+class Admin_CalendarController extends Indi_Controller_Admin{
+    public function adjustActionCfg() {
+        $this->actionCfg['view']['index'] = 'calendar';
+    }
+    /*public function adjustGridData(&$data) {
         if (preg_match('/placeId/', Indi::get('search')) || Indi::get('start') == Indi::get('end')) {
             for ($i = 0; $i < count($data); $i++) {
                 $data[$i]['start'] = $data[$i]['calendarStart'];
@@ -47,5 +51,5 @@ class Admin_CalendarController extends Project_Controller_Admin_Calendar{
                 $data[$i]['title'] = $this->setExclaim($data[$i]) . $m[1] . $data[$i]['placeId'];
             }
         }
-    }
+    }*/
 }

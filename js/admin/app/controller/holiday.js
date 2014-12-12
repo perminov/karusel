@@ -4,7 +4,6 @@ Ext.define('Indi.controller.holiday', {
         form: {
             formItem$Title: function(item) {
                 return Ext.merge(item, {
-                    allowBlank: false,
                     minValue: new Date()
                 })
             }
