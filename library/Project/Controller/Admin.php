@@ -29,10 +29,10 @@ UPDATE `section` SET `javascriptForm` = CONCAT('if (Indi.trail.item().action.ali
 UPDATE `field` SET `javascript` = REPLACE(`javascript`, '(STD', '(Indi.std');
 UPDATE `section` SET `filter` = "<?=$_SESSION['admin']['profileId']==1?'1':'`toggle`=\"y\"'?>" WHERE `id` = "113";
 UPDATE `fsection` SET `where` = "`id` = '<?=$_SESSION['user']['id']?>'" WHERE `id` = "26";
-UPDATE `section` SET `filter` = "`districtId` = '<?=Indi::admin()->districtId?>'" WHERE `id` IN (392,402);
-UPDATE `section` SET `filter` = "`districtId` != '<?=Indi::admin()->districtId?>'" WHERE `id` IN (393,403);
-UPDATE `profile` SET `home` = "<script>Indi.ready(function(){Indi.load('./managerGridMydistrict/')}, 'trail')</script>" WHERE `id` = "15";
-UPDATE `profile` SET `home` = "<script>Indi.ready(function(){Indi.load('./animatorEvents/')}, 'trail')</script>" WHERE `id` = "16";
+UPDATE `section` SET `filter` = '`districtId` = "<?=Indi::admin()->districtId?>"' WHERE `id` IN (392,402);
+UPDATE `section` SET `filter` = '`districtId` != "<?=Indi::admin()->districtId?>"' WHERE `id` IN (393,403);
+UPDATE `profile` SET `home` = "<script>Ext.defer(function(){Indi.load('/managerGridMydistrict/');}, 500)</script>" WHERE `id` = "15";
+UPDATE `profile` SET `home` = "<script>Ext.defer(function(){Indi.load('/animatorEvents/');}, 500)</script>" WHERE `id` = "16";
 UPDATE `event` SET `clientPhone` = CONCAT(SUBSTRING(`clientPhone`, 1, CHAR_LENGTH(`clientPhone`) - 4), '****') WHERE CHAR_LENGTH(`clientPhone`) > 0;
 UPDATE `event` SET `clientPassportNumber` = CONCAT(SUBSTRING(`clientPassportNumber`, 1, LENGTH(`clientPassportNumber`) - 6), '******');
 UPDATE `event` SET `clientPassportIssueInfo` = CONCAT(SUBSTRING(`clientPassportIssueInfo`, 1, 3), REPEAT('*', CHAR_LENGTH(`clientPassportIssueInfo`) - 3));

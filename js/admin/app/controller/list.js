@@ -26,7 +26,7 @@ Ext.define('Indi.controller.list', {
                 docked: {
                     inner: {
                         master: [
-                            {alias: 'back'}, '-',
+                            {alias: 'back'}, {alias: 'close'}, '-',
                             {alias: 'ID'},
                             {alias: 'reload'}, '-',
                             {alias: 'save'}, {alias: 'autosave'}, '-',
