@@ -27,20 +27,20 @@ UPDATE `action` SET `javascript` = REPLACE(`javascript`, '</span> Подтвер
 UPDATE `action` SET `javascript` = REPLACE(`javascript`, '<span class="i-color-box" style="background: #00ff00;"', '<span class="i-color-box" style="margin-left: 10px; background: #00ff00;"');
 UPDATE `section` SET `javascriptForm` = CONCAT('if (Indi.trail.item().action.alias=="form"){ ', `javascriptForm`, '}') WHERE `id` IN (402,403) AND `javascript` NOT LIKE 'if (Indi.trail.item().action.alias=="form")%';
 UPDATE `field` SET `javascript` = REPLACE(`javascript`, '(STD', '(Indi.std');
-UPDATE `section` SET `filter` = "<?=$_SESSION['admin']['profileId']==1?'1':'`toggle`=\"y\"'?>" WHERE `id` = "113";
-UPDATE `fsection` SET `where` = "`id` = '<?=$_SESSION['user']['id']?>'" WHERE `id` = "26";
-UPDATE `section` SET `filter` = '`districtId` = "<?=Indi::admin()->districtId?>"' WHERE `id` IN (392,402);
-UPDATE `section` SET `filter` = '`districtId` != "<?=Indi::admin()->districtId?>"' WHERE `id` IN (393,403);
+UPDATE `section` SET `filter` = "<?='<?=$_SESSION[\'admin\'][\'profileId\']==1?\'1\':\'`toggle`="y"\'?>'?>" WHERE `id` = "113";
+UPDATE `fsection` SET `where` = "`id` = '<?='<?=$_SESSION[\'user\'][\'id\']?>'?>'" WHERE `id` = "26";
+UPDATE `section` SET `filter` = '`districtId` = "<?='<?=Indi::admin()->districtId?>'?>"' WHERE `id` IN (392,402);
+UPDATE `section` SET `filter` = '`districtId` != "<?='<?=Indi::admin()->districtId?>'?>"' WHERE `id` IN (393,403);
 UPDATE `profile` SET `home` = "" WHERE `id` = "15";
 UPDATE `profile` SET `home` = "" WHERE `id` = "16";
 UPDATE `event` SET `clientPhone` = CONCAT(SUBSTRING(`clientPhone`, 1, CHAR_LENGTH(`clientPhone`) - 4), '****') WHERE CHAR_LENGTH(`clientPhone`) > 0;
 UPDATE `event` SET `clientPassportNumber` = CONCAT(SUBSTRING(`clientPassportNumber`, 1, LENGTH(`clientPassportNumber`) - 6), '******');
 UPDATE `event` SET `clientPassportIssueInfo` = CONCAT(SUBSTRING(`clientPassportIssueInfo`, 1, 3), REPEAT('*', CHAR_LENGTH(`clientPassportIssueInfo`) - 3));
 UPDATE `event` SET `clientAddress` = CONCAT(SUBSTRING(`clientAddress`, 1, CHAR_LENGTH(`clientAddress`) - 6), '******');
-UPDATE `search` SET `defaultValue` = "<?=$_SESSION['admin']['id']?>" WHERE `id` = "140";
+UPDATE `search` SET `defaultValue` = "<?='<?=$_SESSION[\'admin\'][\'id\']?>'?>" WHERE `id` = "140";
 UPDATE `field` SET `javascript` = REPLACE(`javascript`, 'auxillary', 'auxiliary');
-UPDATE `search` SET `filter` = "`districtId` = <?=Indi::admin()->districtId?>" WHERE `id` = "141";
-UPDATE `search` SET `filter` = "`districtId` != <?=Indi::admin()->districtId?>" WHERE `id` = "147";
+UPDATE `search` SET `filter` = "`districtId` = <?='<?=Indi::admin()->districtId?>'?>" WHERE `id` = "141";
+UPDATE `search` SET `filter` = "`districtId` != <?='<?=Indi::admin()->districtId?>'?>" WHERE `id` = "147";
 UPDATE `action` SET `javascript` = REPLACE(`javascript`, "check/1/","checkConfirmed/1/") WHERE `id` = "33";
 UPDATE `section2action` SET `profileIds` = "1,12" WHERE `id` = "1623";
 
@@ -63,10 +63,10 @@ UPDATE `adjustment` SET `was` = CONCAT(SUBSTRING(`was`, 1, CHAR_LENGTH(`was`) - 
 UPDATE `adjustment` SET `now` = CONCAT(SUBSTRING(`now`, 1, CHAR_LENGTH(`now`) - 6), '******') WHERE `fieldId` = "2223";
 
 INSERT INTO `search` SET `sectionId` = "389", `fieldId` = "2209", alt = "За период";
-UPDATE `search` SET `filter` = "`districtId` = '<?=Indi::admin()->districtId?>'" WHERE `id` = "141";
-UPDATE `search` SET `filter` = "`districtId` != '<?=Indi::admin()->districtId?>'" WHERE `id` = "147";
-UPDATE `section` SET `filter` = "`districtId` = '<?=Indi::admin()->districtId?>'" WHERE `id` = "402";
-UPDATE `section` SET `filter` = "`districtId` != '<?=Indi::admin()->districtId?>'" WHERE `id` = "403";
+UPDATE `search` SET `filter` = "`districtId` = '<?='<?=Indi::admin()->districtId?>'?>" WHERE `id` = "141";
+UPDATE `search` SET `filter` = "`districtId` != '<?='<?=Indi::admin()->districtId?>'?>" WHERE `id` = "147";
+UPDATE `section` SET `filter` = "`districtId` = '<?='<?=Indi::admin()->districtId?>'?>" WHERE `id` = "402";
+UPDATE `section` SET `filter` = "`districtId` != '<?='<?=Indi::admin()->districtId?>'?>" WHERE `id` = "403";
 UPDATE `section2action` SET `move` = "1375" WHERE `id` = "1603";
 UPDATE `section2action` SET `move` = "1374" WHERE `id` = "1604";
 UPDATE `section2action` SET `move` = "1387" WHERE `id` = "1615";
