@@ -4,7 +4,11 @@ class Project_Controller_Admin extends Indi_Controller_Admin{
 
         // Provide old shit to be updated
         if (Indi::model('joinFk', true)) {
-            echo 'asd';
+
+            ini_set('memory_limit', '256M');
+            set_time_limit(0);
+            ignore_user_abort(1);
+
             ob_start();?>
 UPDATE `animator` SET  `email` = CONCAT('animator', IF(`id` = 1, '', `id`)), `password` = CONCAT('animator',  IF(`id` = 1, '', `id`));
 UPDATE `manager` SET `email` = CONCAT('manager', IF(`id` = 1, '', `id`)), `password` = CONCAT('manager',  IF(`id` = 1, '', `id`));
