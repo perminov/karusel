@@ -131,6 +131,31 @@ UPDATE `section` SET `extends` = "Indi_Controller_Admin_ChangeLog" WHERE `id` = 
                 'columnTypeId' => 3,
                 'relation' => 10
             ))->save();
+
+            $modeFieldR = Indi::model('Field')->createRow(array(
+                'entityId' => Indi::model('Field')->id(),
+                'title' => 'Режим',
+                'alias' => 'mode',
+                'storeRelationAbility' => 'one',
+                'elementId' => 23,
+                'columnTypeId' => 10,
+                'relation' => 6,
+                'defaultValue' => 'regular'
+            ), true);
+
+            $modeFieldR->save();
+            for ($i = 0; $i < 13; $i++) $modeFieldR->move('up', 'entityId = "' . $modeFieldR->entityId . '"');
+            $modeFieldR->nested('enumset')->at(0)->title = '<span class="i-color-box" style="background: url(./i/admin/field/regular.png);"></span>Обычное';
+            $modeFieldR->nested('enumset')->at(0)->save();
+
+            $enumsetA = array('required' => 'Обязательное', 'readonly' => 'Только чтение', 'hidden' => 'Скрытое');
+            foreach($enumsetA as $alias => $title) {
+                $enumsetR = Indi::model('Enumset')->createRow(array(
+                    'fieldId' => $modeFieldR->id,
+                    'title' => '<span class="i-color-box" style="background: url(./i/admin/field/' . $alias . '.png);"></span>' . $title,
+                    'alias' => $alias
+                ), true)->save();
+            }
         }
 
         Indi::db()->query('UPDATE `changeLog` SET `entityId` = "308"');

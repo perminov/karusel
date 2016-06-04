@@ -1,5 +1,5 @@
 Ext.define('Indi.controller.list', {
-    extend: 'Indi.Controller',
+    extend: 'Indi.lib.controller.Events',
     actionsConfig: {
         index: {
             rowset: {
