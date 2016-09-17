@@ -156,14 +156,15 @@ UPDATE `section` SET `extends` = "Indi_Controller_Admin_ChangeLog" WHERE `id` = 
                     'alias' => $alias
                 ), true)->save();
             }
+
+            Indi::db()->query('UPDATE `changeLog` SET `entityId` = "308"');
+
+            // Rename `animatorIds` field to `animatorId`
+            $fieldR_animatorIds = Indi::model('Event')->fields('animatorIds');
+            $fieldR_animatorIds->alias = 'animatorId';
+            $fieldR_animatorIds->save();
         }
 
-        Indi::db()->query('UPDATE `changeLog` SET `entityId` = "308"');
-
-        // Rename `animatorIds` field to `animatorId`
-        $fieldR_animatorIds = Indi::model('Event')->fields('animatorIds');
-        $fieldR_animatorIds->alias = 'animatorId';
-        $fieldR_animatorIds->save();
 
         // Remove public-area user session
         if ($_SESSION['admin']['id'] == 15 && Indi::uri()->section != 'client') unset($_SESSION['admin']);
