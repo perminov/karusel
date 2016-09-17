@@ -5,7 +5,7 @@ $this->months = array(
     '01' => 'Января', '02' => 'Февраля', '03' => 'Марта', '04' => 'Апреля', '05' => 'Мая', '06' => 'Июня',
     '07' => 'Июля', '08' => 'Августа', '09' => 'Сентября', '10' => 'Октября', '11' => 'Ноября', '12' => 'Декабря'
 );
-$this->row->foreign('districtId,placeId,animatorIds,programId,subprogramId,timeId');
+$this->row->foreign('districtId,placeId,animatorId,programId,subprogramId,timeId');
 $name = 'agreement';
 $value = $this->render('managerCalendarMydistrict/agreementTemplate.php');
 $CKconfig['language'] = Indi::ini('view')->lang;

@@ -20,17 +20,17 @@ class Event_Row extends Indi_Db_Table_Row {
             }
         }
 
-        if (is_array($this->animatorIds)) $this->animatorIds = implode(',', $this->animatorIds);
+        if (is_array($this->animatorId)) $this->animatorId = implode(',', $this->animatorId);
 
         // Рассчитываем стоимость
-        if (!trim($this->animatorIds)) {
+        if (!trim($this->animatorId)) {
             if ($this->subprogramId) {
                 $animatorsCount = $this->foreign('subprogramId')->animatorsCount;
             } else {
                 $animatorsCount = 1;
             }
         } else {
-            $animatorsCount = count(explode(',', $this->animatorIds));
+            $animatorsCount = count(explode(',', $this->animatorId));
         }
         $this->price = Indi::db()->query('
                 SELECT
@@ -83,7 +83,7 @@ class Event_Row extends Indi_Db_Table_Row {
         parent::save();
 
         // Забиваем аниматоров
-        $animators = explode(',', $this->animatorIds);
+        $animators = explode(',', $this->animatorId);
         $eaM = Indi::model('EventAnimator');
         $eaM->fetchAll('`eventId` = "' . $this->id . '"')->delete();
         for ($i = 0; $i < count($animators); $i++) {

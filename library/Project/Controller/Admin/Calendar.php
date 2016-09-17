@@ -57,9 +57,9 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin_Events{
                 if ($manager) {
                     $title .= '<span style="word-break: normal;">' . $data[$i]['clientAgreementNumber'] .'</span>' . ' - ' . $manager . '; ';
                 }
-                if ($data[$i]['animatorIds']) {
+                if ($data[$i]['animatorId']) {
                     $title .= ($data[$i]['subprogramId'] ? $data[$i]['subprogramId'] : $data[$i]['programId']) . ' ';
-                    $animators = explode(', ', $data[$i]['animatorIds']);
+                    $animators = explode(', ', $data[$i]['animatorId']);
                     $lastA = array();
                     foreach ($animators as $animator) {
                         list($lastI) = explode(' ', $animator);
@@ -87,9 +87,9 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin_Events{
                 $data[$i]['end'] = $data[$i]['calendarEnd'];
                 $data[$i]['cid'] = $this->setColor($data[$i]);
                 $title = $this->setExclaim($data[$i]) . $data[$i]['placeId'] . ' ';
-                if ($data[$i]['animatorIds']) {
+                if ($data[$i]['animatorId']) {
                     $title .= ($data[$i]['subprogramId'] ? $data[$i]['subprogramId'] : $data[$i]['programId']) . ' ';
-                    $animators = explode(', ', $data[$i]['animatorIds']);
+                    $animators = explode(', ', $data[$i]['animatorId']);
                     $lastA = array();
                     foreach ($animators as $animator) {
                         list($lastI) = explode(' ', $animator);
@@ -147,15 +147,15 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin_Events{
                 if ($this->subprogramsCount[$item['programId']] > 0) {
                     if (!$item['subprogramId']) {
                         $e = true;
-                    } else if ($this->animatorsCount[$item['subprogramId']] > count(explode(',', $item['animatorIds']))) {
+                    } else if ($this->animatorsCount[$item['subprogramId']] > count(explode(',', $item['animatorId']))) {
                         $e = true;
-                    } else if (!$item['animatorIds']) {
+                    } else if (!$item['animatorId']) {
                         $e = true;
                     } else {
                         $e = false;
                     }
                 } else {
-                    if (!$item['animatorIds']) {
+                    if (!$item['animatorId']) {
                         $e = true;
                     } else {
                         $e = false;

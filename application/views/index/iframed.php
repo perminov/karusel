@@ -398,24 +398,24 @@ $(document).ready(function(){
             if ($('#programId').attr('subprogramsCount') == '0') {
                 //hide('tr-subprogramId');
                 $('#programId').attr('animatorsCount', 1);
-                $('#animatorIds-table').removeClass('disabled');
-                if($('#animatorIds-table').find('span.checkbox.checked').length < parseInt($('#programId').attr('animatorsCount'))) {
-                    $('#animatorIds-table').find('span.checkbox').parents('tr').not('.disabled').show();
+                $('#animatorId-table').removeClass('disabled');
+                if($('#animatorId-table').find('span.checkbox.checked').length < parseInt($('#programId').attr('animatorsCount'))) {
+                    $('#animatorId-table').find('span.checkbox').parents('tr').not('.disabled').show();
                 } else {
-                    $('#animatorIds-table').find('span.checkbox').not('.checked').parent().parent().hide();
+                    $('#animatorId-table').find('span.checkbox').not('.checked').parent().parent().hide();
                 }
             } else {
                 show('tr-subprogramId');
                 if ($('#subprogramId').val() == '0') {
-                    $('#animatorIds-table').addClass('disabled');
+                    $('#animatorId-table').addClass('disabled');
                 } else {
                     var index = Indi.combo.form.store['subprogramId'].ids.indexOf(parseInt($('#subprogramId').val()));
                     $('#programId').attr('animatorsCount', Indi.combo.form.store['subprogramId'].data[index].attrs.animatorsCount);
-                    $('#animatorIds-table').removeClass('disabled');
-                    if($('#animatorIds-table').find('span.checkbox.checked').length < parseInt($('#programId').attr('animatorsCount'))) {
-                        $('#animatorIds-table').find('span.checkbox').parents('tr').not('.disabled').show();
+                    $('#animatorId-table').removeClass('disabled');
+                    if($('#animatorId-table').find('span.checkbox.checked').length < parseInt($('#programId').attr('animatorsCount'))) {
+                        $('#animatorId-table').find('span.checkbox').parents('tr').not('.disabled').show();
                     } else {
-                        $('#animatorIds-table').find('span.checkbox').not('.checked').parent().parent().hide();
+                        $('#animatorId-table').find('span.checkbox').not('.checked').parent().parent().hide();
                     }
                 }
             }

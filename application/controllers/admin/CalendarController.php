@@ -17,9 +17,9 @@ class Admin_CalendarController extends Indi_Controller_Admin_Calendar{
                 if ($manager) {
                     $title .= '<span style="word-break: normal;">' . $data[$i]['clientAgreementNumber'] .'</span>' . ' - ' . $manager . '; ';
                 }
-                if ($data[$i]['animatorIds']) {
+                if ($data[$i]['animatorId']) {
                     $title .= ($data[$i]['subprogramId'] ? $data[$i]['subprogramId'] : $data[$i]['programId']) . ' ';
-                    $animators = explode(', ', $data[$i]['animatorIds']);
+                    $animators = explode(', ', $data[$i]['animatorId']);
                     $lastA = array();
                     foreach ($animators as $animator) {
                         list($lastI) = explode(' ', $animator);

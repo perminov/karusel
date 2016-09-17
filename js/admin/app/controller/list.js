@@ -16,7 +16,7 @@ Ext.define('Indi.controller.list', {
                 filter.store.js = '';
                 return filter;
             },
-            panelDocked$Filter$AnimatorIds: function(filter) {
+            panelDocked$Filter$AnimatorId: function(filter) {
                 filter.store.js = '';
                 return filter;
             }
@@ -148,7 +148,7 @@ Ext.define('Indi.controller.list', {
                             } else if (c.prop('subprogramsCount')) {
                                 c.sbl('subprogramId').show();
                                 top.window.$('.feature-item-5').css('height', '714px');
-                                c.sbl('animatorIds').disable().clearValue();
+                                c.sbl('animatorId').disable().clearValue();
                             } else {
                                 c.sbl('subprogramId').hide();
                                 top.window.$('.feature-item-5').css('height', '669px');
@@ -171,7 +171,7 @@ Ext.define('Indi.controller.list', {
                     }
                 });
             },
-            formItem$AnimatorIds: function(item) {
+            formItem$AnimatorId: function(item) {
                 item.store.js = '';
                 return Ext.merge(item, {
                     allowBlank: false,
