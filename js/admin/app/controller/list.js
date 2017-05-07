@@ -26,7 +26,6 @@ Ext.define('Indi.controller.list', {
                 docked: {
                     inner: {
                         master: [
-                            {alias: 'back'}, {alias: 'close'}, '-',
                             {alias: 'ID'},
                             {alias: 'reload'}, '-',
                             {alias: 'save'}, {alias: 'autosave'}, '-',
@@ -231,8 +230,8 @@ Ext.define('Indi.controller.list', {
                     value: 'Договор на проведение мероприятия'
                 });
             },
-            formItem$Print: function() {
-                var me = this; return Ext.merge(me.callParent(), {
+            formItem$Editor: function() {
+                var me = this; return {
                     editorCfg: {
                         style: 'body {background: url('+ Indi.std + '/i/admin/bg-dogovor.jpg) no-repeat 50% 95%;} ' +
                             '* {font-family:Verdana, Arial, Helvetica, sans-serif; font-size:10.4px; line-height: 12px !important;}'
@@ -242,7 +241,7 @@ Ext.define('Indi.controller.list', {
                             Ext.util.Cookies.set('last-row-id', me.ti().row.id, Ext.Date.add(new Date(), Ext.Date.MONTH, 1), Indi.pre + '/');
                         }
                     }
-                });
+                };
             }
         }
     }

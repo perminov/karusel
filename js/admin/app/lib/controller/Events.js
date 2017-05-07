@@ -5,11 +5,6 @@ Ext.define('Indi.lib.controller.Events', {
             panelDockedInner$Actions$Agreement_InnerHandler: function(action, row, aix, btn) {
                 this.panelDockedInner$Actions_DefaultInnerHandlerLoad(action, row, aix, btn);
             }
-        },
-        form: {
-            south: {
-                height: 25
-            }
         }
     }
 });

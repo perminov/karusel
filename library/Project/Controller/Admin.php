@@ -163,6 +163,9 @@ UPDATE `section` SET `extends` = "Indi_Controller_Admin_ChangeLog" WHERE `id` = 
             $fieldR_animatorIds = Indi::model('Event')->fields('animatorIds');
             $fieldR_animatorIds->alias = 'animatorId';
             $fieldR_animatorIds->save();
+
+            Indi::db()->query('UPDATE `section` SET `toggle` = "n" WHERE `id` IN(394,396)');
+            Indi::db()->query('UPDATE `section2action` SET `profileIds` = CONCAT(`profileIds`, ",16") WHERE `id` IN (1553,1554)');
         }
 
 
