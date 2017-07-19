@@ -131,18 +131,10 @@ Ext.define('Indi.controller.list', {
                     listeners: {
                         enablebysatellite: function(c, d) {
                             if (!c.sbl('programId').prop('subprogramsCount') || !c.sbl('subprogramId').hasZeroValue()) {
-                                Ext.Ajax.request({
-                                    url: Indi.std + '/auxiliary/disabledAnimators/',
-                                    params: {
-                                        timeId: d.timeId,
-                                        date: c.sbl('date').getSubmitValue(),
-                                        placeId: d.placeId,
-                                        animatorsNeededCount: !c.sbl('subprogramId').hasZeroValue()
-                                            ? c.sbl('subprogramId').prop('animatorsCount')
-                                            : 1
-                                    },
+                                Indi.load('/' + me.ti().section.alias + '/form' + (me.ti().row.id ? '/id/' + me.ti().row.id : '') + '/consider/animatorId/', {
+                                    params: d,
                                     success: function(response) {
-                                        var json = Ext.JSON.decode(response.responseText, true);
+                                        var json = response.responseText.json();
                                         if (Ext.isObject(json)) {
                                             c.setDisabledOptions(json.disabled);
                                             c.maxSelected = !c.sbl('subprogramId').hasZeroValue()
@@ -150,19 +142,6 @@ Ext.define('Indi.controller.list', {
                                                 : 1;
                                             c.sbl('price').val(json.price);
                                         }
-                                    }
-                                });
-                                Indi.load('/' + me.ti().section.alias + '/form' + (me.ti().row.id ? '/id/' + me.ti().row.id : '') + '/consider/animatorId/', {
-                                    params: {
-                                        timeId: d.timeId,
-                                        date: c.sbl('date').getSubmitValue(),
-                                        placeId: d.placeId,
-                                        animatorsNeededCount: !c.sbl('subprogramId').hasZeroValue()
-                                            ? c.sbl('subprogramId').prop('animatorsCount')
-                                            : 1
-                                    },
-                                    success: function(response) {
-                                        var json = response.responseText.json();
                                     }
                                 });
                             } else c.disable();

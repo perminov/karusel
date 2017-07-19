@@ -95,6 +95,22 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
         // Check format of `date` param's value
         if (!Indi::rexm('date', $data['date'])) jflush(false, 'Param "date" is not in format "yyyy-mm-dd"');
 
+        // Check `programId` param's value is an integer
+        if (!Indi::rexm('int11', $data['programId']))
+            jflush(false, sprintf('Value "%s" of param "programId" is not an integer', $data['programId']));
+
+        // Check that such `program` entry exists
+        if (!$programR = Indi::model('Program')->fetchRow('`id` = "' . $data['programId'] . '"'))
+            jflush(false, sprintf('No `program` entry having "%s" as `id` found', $data['programId']));
+
+        // Check `subprogramId` param's value is an integer
+        if ($data['subprogramId'] && !Indi::rexm('int11', $data['subprogramId']))
+            jflush(false, sprintf('Value "%s" of param "subprogramId" is not an integer', $data['subprogramId']));
+
+        // Check that such `subprogram` entry exists
+        if ($data['subprogramId'] && !$subprogramR = Indi::model('Subprogram')->fetchRow('`id` = "' . $data['subprogramId'] . '"'))
+            jflush(false, sprintf('No `subprogram` entry having "%s" as `id` found', $data['subprogramId']));
+
         // Declare array for disabled animator ids
         $disabledA = array();
 
@@ -123,16 +139,30 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
 
                 // Load animator's events
                 ->load('event', array_merge(array('FIND_IN_SET("' . $animatorId . '", `animatorId`)'), $where), function(&$r, $sp) {
-
-                // Increase event's duration, to provide a gap for animator between events
-                $r->{$sp['frame']} += ($gap = 1800);
-            });
+                    $r->{$sp['frame']} += ($gap = 1800);
+                });
 
             // If animator is busy - push it's id to $disabled array
             if ($schedule->busy($data['date'] . ' ' . $timeR->title . ':00', $placeR->duration * 60 + $gap, true)) $disabledA[] = $animatorId;
         }
 
+        // Animators qty
+        $aQty = $subprogramR->animatorsCount ?: 1;
+
+        // Get initial price
+        $price = $placeR->foreign('districtId')->{'price' . $aQty};
+
+        // If $data['date'] is not a saturday/sunday and is not a holiday other holiday
+        if (!in(date('N', strtotime($data['date'])), '6,7')
+            && !Indi::model('Holiday')->fetchRow('`title` = "' . $data['date'] . '"')
+            && ($discount = Indi::blocks('work-day-discount'))
+            && ((!$until = Indi::blocks('discount-until-time')) || $timeR->title < $until)) {
+
+            // Get discounted price
+            $price *= (100 - $discount)/100;
+        }
+
         // Flush busy time ids
-        jflush(true, array('disabled' => $disabledA));
+        jflush(true, array('disabled' => $disabledA, 'price' => $price));
     }
 }
