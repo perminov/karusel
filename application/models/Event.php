@@ -1,5 +1,5 @@
 <?php
-class Event extends Indi_Db_Table {
+class Event extends Indi_Db_Table_Schedule {
 
     /**
      * Turn changes logging to 'On' for this model

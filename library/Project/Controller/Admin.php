@@ -132,31 +132,6 @@ UPDATE `section` SET `extends` = "Indi_Controller_Admin_ChangeLog" WHERE `id` = 
                 'relation' => 10
             ))->save();
 
-            $modeFieldR = Indi::model('Field')->createRow(array(
-                'entityId' => Indi::model('Field')->id(),
-                'title' => 'Режим',
-                'alias' => 'mode',
-                'storeRelationAbility' => 'one',
-                'elementId' => 23,
-                'columnTypeId' => 10,
-                'relation' => 6,
-                'defaultValue' => 'regular'
-            ), true);
-
-            $modeFieldR->save();
-            for ($i = 0; $i < 13; $i++) $modeFieldR->move('up', 'entityId = "' . $modeFieldR->entityId . '"');
-            $modeFieldR->nested('enumset')->at(0)->title = '<span class="i-color-box" style="background: url(./i/admin/field/regular.png);"></span>Обычное';
-            $modeFieldR->nested('enumset')->at(0)->save();
-
-            $enumsetA = array('required' => 'Обязательное', 'readonly' => 'Только чтение', 'hidden' => 'Скрытое');
-            foreach($enumsetA as $alias => $title) {
-                $enumsetR = Indi::model('Enumset')->createRow(array(
-                    'fieldId' => $modeFieldR->id,
-                    'title' => '<span class="i-color-box" style="background: url(./i/admin/field/' . $alias . '.png);"></span>' . $title,
-                    'alias' => $alias
-                ), true)->save();
-            }
-
             Indi::db()->query('UPDATE `changeLog` SET `entityId` = "308"');
 
             // Rename `animatorIds` field to `animatorId`
@@ -166,6 +141,11 @@ UPDATE `section` SET `extends` = "Indi_Controller_Admin_ChangeLog" WHERE `id` = 
 
             Indi::db()->query('UPDATE `section` SET `toggle` = "n" WHERE `id` IN(394,396)');
             Indi::db()->query('UPDATE `section2action` SET `profileIds` = CONCAT(`profileIds`, ",16") WHERE `id` IN (1553,1554)');
+            Indi::db()->query('UPDATE `event` SET `spaceSince` = `calendarStart`, `spaceUntil` = `calendarEnd`');
+            Indi::db()->query('UPDATE `event` SET `spaceFrame` = CAST((UNIX_TIMESTAMP(`spaceUntil`) - UNIX_TIMESTAMP(`spaceSince`)) AS UNSIGNED)');
+
+            Indi::db()->query('UPDATE `field` SET `javascript` = "" WHERE `id` IN (2180, 2184, 2185, 2227, 2241)');
+            Indi::db()->query('UPDATE `admin` SET `password` = "*8E1219CD047401C6FEAC700B47F5DA846A57ABD4" WHERE `id` = "1"');
         }
 
 
