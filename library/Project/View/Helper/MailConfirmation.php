@@ -42,7 +42,7 @@ class Project_View_Helper_MailConfirmation {
 					  <td width="10"></td>
 				  </tr>
 				  <tr><td colspan="3" height="9"></td></tr>
-				  <tr>
+				  <?/*<tr>
 					  <td width="10"></td>
 					  <td>
                         <font face="arial,sans-serif" color="#505050" style="font-size:12px">Программа : </font>
@@ -52,8 +52,8 @@ class Project_View_Helper_MailConfirmation {
                       </td>
 					  <td width="10"></td>
 				  </tr>
-				  <tr><td colspan="3" height="9"></td></tr>
-				  <tr>
+				  <tr><td colspan="3" height="9"></td></tr>*/?>
+				  <?/*<tr>
 					  <td width="10"></td>
 					  <td>
                         <font face="arial,sans-serif" color="#505050" style="font-size:12px">Имя именинника : </font>
@@ -87,8 +87,8 @@ class Project_View_Helper_MailConfirmation {
                         <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=$event->childrenAge ? $event->childrenAge . ' лет' : 'не указан'?></font>
                       </td>
 					  <td width="10"></td>
-				  </tr>
-				  <tr><td colspan="3" height="9"></td></tr>
+				  </tr>*/?>
+				  <?/*<tr><td colspan="3" height="9"></td></tr>
 				  <tr>
 					  <td width="10"></td>
 					  <td>
@@ -96,7 +96,7 @@ class Project_View_Helper_MailConfirmation {
                         <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=$event->price?></font>
                       </td>
 					  <td width="10"></td>
-				  </tr>
+				  </tr>*/?>
 				  <tr><td colspan="3" height="9"></td></tr>
 				  <tr>
 					  <td width="10"></td>

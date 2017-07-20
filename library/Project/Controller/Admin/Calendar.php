@@ -24,13 +24,14 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin_Events{
             $endDate = date('Y-m-' . date('t'));
             $endTime = strtotime($endDate);
             $dayOfWeek = date('N', $endTime);
-            Indi::get()->end = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek));
-            Indi::get()->end = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek + 7));
+            Indi::get()->end = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek /* " + 7" - убрать после окончания августа*/));
+            //Indi::get()->end = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek + 7));
         }
         $start = explode('-', Indi::get('start'));
         $end = explode('-', Indi::get('end'));
         $where[] = '`calendarStart` >= "' . $start[2] . '-' . $start[0] . '-' . $start[1]. ' 00:00:00"';
         $where[] = '`calendarEnd` <= "' . $end[2] . '-' . $end[0] . '-' . $end[1]. ' 23:59:59"';
+		//i($this->get, 'a');
         return $where;
     }
 

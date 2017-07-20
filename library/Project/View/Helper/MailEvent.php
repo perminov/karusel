@@ -41,7 +41,7 @@ class Project_View_Helper_MailEvent {
                       </td>
 					  <td width="10"></td>
 				  </tr>
-				  <tr><td colspan="3" height="9"></td></tr>
+				  <?/*<tr><td colspan="3" height="9"></td></tr>
 				  <tr>
 					  <td width="10"></td>
 					  <td>
@@ -106,7 +106,7 @@ class Project_View_Helper_MailEvent {
                         </font>
                       </td>
 					  <td width="10"></td>
-				  </tr>
+				  </tr>*/?>
 				  <tr><td colspan="3" height="9"></td></tr>
 				  <tr>
 					  <td width="10"></td>
@@ -122,7 +122,7 @@ class Project_View_Helper_MailEvent {
                       </td>
 					  <td width="10"></td>
 				  </tr>
-				  <tr><td colspan="3" height="9"></td></tr>
+				  <?/*<tr><td colspan="3" height="9"></td></tr>
 				  <tr>
 					  <td width="10"></td>
 					  <td>
@@ -148,7 +148,7 @@ class Project_View_Helper_MailEvent {
                         <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=$event->clientPassportIssueInfo?></font>
                       </td>
 					  <td width="10"></td>
-				  </tr>
+				  </tr>*/?>
 				  <tr><td colspan="3" height="9"></td></tr>
 				  <tr>
 					  <td width="10"></td>
