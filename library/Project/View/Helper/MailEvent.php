@@ -122,33 +122,6 @@ class Project_View_Helper_MailEvent {
                       </td>
 					  <td width="10"></td>
 				  </tr>
-				  <?/*<tr><td colspan="3" height="9"></td></tr>
-				  <tr>
-					  <td width="10"></td>
-					  <td>
-                        <font face="arial,sans-serif" color="#505050" style="font-size:12px">Адрес: </font>
-                        <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=$event->clientAddress?></font>
-                      </td>
-					  <td width="10"></td>
-				  </tr>
-				  <tr><td colspan="3" height="9"></td></tr>
-				  <tr>
-					  <td width="10"></td>
-					  <td>
-                        <font face="arial,sans-serif" color="#505050" style="font-size:12px">Серия и номер паспорта: </font>
-                        <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=$event->clientPassportNumber?></font>
-                      </td>
-					  <td width="10"></td>
-				  </tr>
-				  <tr><td colspan="3" height="9"></td></tr>
-				  <tr>
-					  <td width="10"></td>
-					  <td>
-                        <font face="arial,sans-serif" color="#505050" style="font-size:12px">Кем и когда выдан: </font>
-                        <font face="arial,sans-serif" color="#000000" style="font-size:12px"><?=$event->clientPassportIssueInfo?></font>
-                      </td>
-					  <td width="10"></td>
-				  </tr>*/?>
 				  <tr><td colspan="3" height="9"></td></tr>
 				  <tr>
 					  <td width="10"></td>

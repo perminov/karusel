@@ -13,17 +13,13 @@ class Admin_ClientController extends Project_Controller_Admin{
             $disabledTimes = $eventM->disabledTimes(Indi::post('placeId'), Indi::post('date'));
             if (in_array(Indi::post('timeId'), $disabledTimes)) die('expiredTime');
 
-            /*$disabledAnimators = $eventM->disabledAnimators(Indi::post('placeId'), Indi::post('date'), Indi::post('timeId'), Indi::post('animatorsCount'));
-            $animatorsCount = Indi::db()->query('SELECT COUNT(`id`) FROM `animator`')->fetchColumn(0);
-            if (Indi::post('animatorsCount') > $animatorsCount - count($disabledAnimators['disabled'])) die('expiredAnimators');*/
-
             parent::saveAction(false);
 
             if ($_SESSION['admin']['id'] == '15') unset($_SESSION);
             
             if (!$this->row->id) die(json_encode(array('error' => $this->row->mismatch())));
 
-            $eventR = $this->row; //Indi::trail()->model->fetchRow('`id` = "' . $this->identifier . '"');
+            $eventR = $this->row;
             
             // Добавляем путь к хелперам уведомлений
             $coreH = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . STD . '/core/library';

@@ -94,23 +94,14 @@
                         }
                     });
                     Ext.onReady(function () {
-                        //Ext.Date.monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
                         Ext.create('Ext.picker.Date', {
-                            //dayNames: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
-                            //monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
                             renderTo:'dateCalendarRender',
                             id:'dateCalendar',
                             width:288,
                             disabledDatesText:'На данную дату все уже забронировано',
-                            //todayText: 'Сегодня',
-                            //ariaTitle: 'Выбрать месяц и год',
                             ariaTitleDateFormat: '<?=$params['displayFormat']?>',
                             longDayFormat: '<?=$params['displayFormat']?>',
                             format: '<?=$params['displayFormat']?>',
-                            //nextText: 'Следующий месяц',
-                            //prevText: 'Предыдущий месяц',
-                            //todayTip: 'Выбрать сегодняшнюю дату',
-                            //startDay: 1,
                             minDate: Ext.Date.add(new Date(), Ext.Date.DAY, 5),
                             maxDate: Ext.Date.add(new Date(), Ext.Date.DAY, 35),
                             handler: function(picker, date) {
@@ -146,112 +137,6 @@
     <td width="50%" id="td-left-timeId">Время:</td>
     <td width="50%" id="td-right-timeId"><?=$this->formCombo('timeId', 'event')?></td>
 </tr>
-
-<?/*<tr class="info" id="tr-programId">
-    <td width="50%" id="td-left-programId">Анимационная программа:</td>
-    <td width="50%" id="td-right-programId"><?=$this->formCombo('programId', 'event')?></td>
-</tr>
-
-<tr class="info" id="tr-subprogramId" style="border-top: 0px;">
-    <td width="50%" id="td-left-subprogramId"></td>
-    <td width="50%" id="td-right-subprogramId"><?=$this->formCombo('subprogramId', 'event')?></td>
-</tr>
-<tr class="info" id="tr-birthChildName">
-    <td width="50%" id="td-left-birthChildName">Имя именинника:</td>
-    <td width="50%" id="td-right-birthChildName">
-    <div class="i-combo-single">
-    <input class="i-combo-keyword" type="text" name="birthChildName" id="birthChildName" value="" oninput="" style="width: 99%;"/>
-    </div>
-    </td>
-</tr>
-<tr class="info" id="tr-birthChildBirthDate"><td width="50%" id="td-left-birthChildBirthDate">Дата рождения:</td>
-<td width="50%" id="td-right-birthChildBirthDate"><div style="position: relative; z-index: 98" id="calendarbirthChildBirthDateDiv" class="calendar-div">
-<input type="text" name="birthChildBirthDate" value="" readonly="readonly" id="birthChildBirthDate" class="calendar-input" onclick="$('#birthChildBirthDateCalendarRender').toggle()"> 
-    <a href="javascript:void(0);" onclick="$('#birthChildBirthDateCalendarRender').toggle();" id="birthChildBirthDateCalendarIcon" class="calendar-trigger">
-        <img src="/i/admin/b_calendar1.png" alt="Календарь" width="34" height="34" border="0" style="vertical-align: top; margin-top: 8px; margin-left: 4px;">
-    </a>		
-<div id="birthChildBirthDateCalendarRender" style="position: absolute; display: none; margin-top: 1px;">
-    <script>
-        $('#birthChildBirthDate').change(function(){
-        });
-        Ext.onReady(function() {
-            Ext.create('Ext.picker.Date', {
-                renderTo: 'birthChildBirthDateCalendarRender',
-                id: 'birthChildBirthDateCalendar',
-                width: 288,
-                disabledDatesText: 'На данную дату все уже забронировано',
-                ariaTitleDateFormat: '<?=$params['displayFormat']?>',
-                longDayFormat: '<?=$params['displayFormat']?>',
-                format: '<?=$params['displayFormat']?>',
-                handler: function(picker, date) {
-                    var selectedDate = Ext.Date.format(date, '<?=$params['displayFormat']?>');
-                    $('#birthChildBirthDate').val(selectedDate);
-                    $('#birthChildBirthDateCalendarRender').toggle();
-                    $('#birthChildBirthDate').change();
-                },
-                listeners: {
-                    render: function(cal) {
-                        $('body').bind('click', function(e) {
-                            if($(e.target).closest('#'+cal.id).length == 0 &&
-                                !($(e.srcElement || e.target).hasClass('calendar-trigger') ||
-                                 $(e.srcElement || e.target).parent().hasClass('calendar-trigger') ||
-                                 $(e.srcElement || e.target).hasClass('calendar-input')
-                                ) &&
-                                $('#'+cal.id+'Render').css('display') != 'none') {
-                                $('#'+cal.id+'Render').hide();
-                            }
-                        });
-                    }
-                }
-            });
-        });
-    </script>
-</div>
-</div></td></tr>
-<tr class="info" id="tr-childrenCount">
-    <td width="50%" id="td-left-childrenCount">Количество детей:</td>
-    <td width="50%" id="td-right-childrenCount">
-        <table cellpadding="0" cellspacing="0">
-            <tr style="border-top: none; height: 20px;">
-                <td style="padding-left: 0px;">        <input type="text" name="childrenCount" id="childrenCount" value="5"
-                                                              style="width: 50px; text-align: right; margin-top: 1px;" maxlength="5"
-                                                              oninput="this.value=number(this.value);" readonly="readonly"
-                                                              onkeydown="if(event.keyCode==38||event.keyCode==40){if(event.keyCode==38)this.value=parseInt(this.value)+1;else if(event.keyCode==40)this.value=parseInt(this.value)-1;}"
-                                                              autocomplete="off"/></td>
-                <td style="padding-right: 5px; padding-left: 5px; padding-top: 8px;">1</td>
-                <td style="padding-top: 10px;">
-                    <div id="childrenCount-slider" style="float: right; height: 35px; overflow: hidden;"></div>
-                    <script>
-                        Ext.onReady(function(){
-                            Ext.create('Ext.slider.Single', {
-                                renderTo: 'childrenCount-slider',
-                                id: 'ext-childrenCount-slider',
-                                hideLabel: true,
-                                useTips: false,
-                                width: 199,
-                                value: 5,
-                                increment: 1,
-                                minValue: 1,
-                                maxValue: 8,
-                                margin: '0 5 0 0',
-                                listeners: {
-                                    change: function(obj, newv, oldv){
-                                        $('#childrenCount').val(newv);
-                                    }
-                                }
-                            });
-                        });
-                    </script>
-                </td>
-                <td id="maxChildrenCount" style="padding-top: 8px;">8</td>
-            </tr>
-        </table>
-    </td>
-</tr>
-<tr class="info" id="tr-childrenAge">
-    <td width="50%" id="td-left-childrenAge">Возраст детей:</td>
-    <td width="50%" id="td-right-childrenAge"><input type="text" name="childrenAge" id="childrenAge" value="" oninput=""style="width: 50px;" maxlength="5"/></td>
-</tr>*/?>
 <tr class="info" id="tr-clientTitle">
     <td width="50%" id="td-left-clientTitle">Ваше имя:</td>
     <td width="50%" id="td-right-clientTitle"><input type="text" name="clientTitle" id="clientTitle" value="" oninput=""
@@ -317,12 +202,10 @@ $(document).ready(function(){
         $('input[type="reset"]').click(function(){
             $('#districtId').val(0).change();
             $('input[type="submit"]').removeAttr('disabled');
-            //top.window.$('iframe[name="form-frame"]').height(704);
         });
         $('input[type="submit"]').click(function(){
             var data = {};
-            var fields = ['districtId', 'placeId', 'date', 'timeId', /*'programId', 'subprogramId',
-                'birthChildName', 'birthChildBirthDate', 'childrenCount', 'childrenAge',*/ 'clientTitle',
+            var fields = ['districtId', 'placeId', 'date', 'timeId', 'clientTitle',
                 'clientPhone', 'clientEmail', 'price'];
             var error = false;
             var inp;
@@ -354,39 +237,12 @@ $(document).ready(function(){
 
             if (error == false) {
                 <?$this->blocks['request-saved'] = str_replace(array('[', ']'), array('<', '>'), $this->blocks['request-saved']);?>
-                //data.animatorsNeededCount = parseInt($('#programId').attr('animatorsCount'));
                 $.post(Indi.std+'/admin/client/save/', data, function (response) {
                     top.window.$('iframe[name="form-frame"]').height(664);
                     if (response == 'ok') {
 						$('form[name=event]').hide();
                         $('#confirmation').html('<?=$this->blocks['request-saved']?>'.replace('%clientTitle%', $('#clientTitle').val()).replace('%addr%', $('#districtId').attr('address')).replace('%date%', $('#date').val()).replace('%time%', $('#timeId-keyword').val()));
                         $('#confirmation').show();
-						/*Ext.MessageBox.show({
-							title:"Сообщение",
-							msg:,
-							buttons:Ext.MessageBox.OK,
-							icon:Ext.MessageBox.INFO,
-							modal: true,
-							fn: function(btn){
-								/*if (btn == 'yes') {
-									$('input[type="reset"]').click();
-									$('form[name=event]').show();
-									top.window.$.scrollTo('.feature-item-4', 500, {offset: {top: -100}});
-								} else {*/
-                                    /*if (!top.window.location.toString().match('iframed')) {
-                                        top.window.$('.eight.columns').hide();
-                                        top.window.$('.four.columns').last().width('100%');
-                                        top.window.$('#celebrate-list div li').width(306).css('display', 'inline-table');
-                                        top.window.$('.four.columns .feature-item-4').height('auto');
-                                        top.window.$('.four.columns .feature-item-4 h3').html(top.window.$('.four.columns .feature-item-4 h3').html().replace(/<br>/ig, ' '));
-                                        top.window.$('#celebrate-list div li').width(306);
-                                        top.window.$.scrollTo('.feature-item-4', 500, {offset: {top: -200}});
-                                    }*/
-								//}
-								//top.window.$('iframe[name="form-frame"]').height(704);
-								//$('input[type="submit"]').attr('disabled', 'disabled');
-							//}
-						//});*/
                     } else {
                         Ext.MessageBox.show({
                             title:"Сообщение",
@@ -396,7 +252,6 @@ $(document).ready(function(){
                             icon:Ext.MessageBox.WARNING,
                             modal: true,
                             fn: function(){
-                                //top.window.$('iframe[name="form-frame"]').height(704);
                             }
                         });
                     }
@@ -417,43 +272,6 @@ $(document).ready(function(){
         } else {
             Indi.combo.form.toggle('timeId', true);
         }
-        /*if ($('#timeId').val() != "0") {
-            Indi.combo.form.toggle('programId', false);
-        } else {
-            Indi.combo.form.toggle('programId', true);
-        }*/
-        /*if (!isNaN($('#programId').attr('subprogramsCount'))) {
-            if ($('#programId').attr('subprogramsCount') == '0') {
-                //hide('tr-subprogramId');
-                $('#programId').attr('animatorsCount', 1);
-                $('#animatorId-table').removeClass('disabled');
-                if($('#animatorId-table').find('span.checkbox.checked').length < parseInt($('#programId').attr('animatorsCount'))) {
-                    $('#animatorId-table').find('span.checkbox').parents('tr').not('.disabled').show();
-                } else {
-                    $('#animatorId-table').find('span.checkbox').not('.checked').parent().parent().hide();
-                }
-            } else {
-                show('tr-subprogramId');
-                if ($('#subprogramId').val() == '0') {
-                    $('#animatorId-table').addClass('disabled');
-                } else {
-                    var index = Indi.combo.form.store['subprogramId'].ids.indexOf(parseInt($('#subprogramId').val()));
-                    $('#programId').attr('animatorsCount', Indi.combo.form.store['subprogramId'].data[index].attrs.animatorsCount);
-                    $('#animatorId-table').removeClass('disabled');
-                    if($('#animatorId-table').find('span.checkbox.checked').length < parseInt($('#programId').attr('animatorsCount'))) {
-                        $('#animatorId-table').find('span.checkbox').parents('tr').not('.disabled').show();
-                    } else {
-                        $('#animatorId-table').find('span.checkbox').not('.checked').parent().parent().hide();
-                    }
-                }
-            }
-        } else {
-            //hide('tr-subprogramId');
-        }*/
-        //$('form[name=event]').css('visibility', 'visible');
-        /*setTimeout(function(){
-            hide('tr-subprogramId');
-        }, 100);*/
         window.Indi.combo.form.store.timeIdBackup = Indi.copy(window.Indi.combo.form.store.timeId);
 		if (top.window.location.search == '?test') {
 			Ext.onReady(function(){
