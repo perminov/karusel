@@ -1,5 +1,5 @@
-<link rel="stylesheet" type="text/css" href="/library/extjs4iframe/resources/css/ext-all.css"/>
-<link rel="stylesheet" type="text/css" href="/css/iframed.css"/>
+<link rel="stylesheet" type="text/css" href="/library/extjs4iframe/resources/css/ext-all<?=!$this->get['iframed']?'-mobile':''?>.css"/>
+<link rel="stylesheet" type="text/css" href="/css/iframed<?=!$this->get['iframed']?'-mobile':''?>.css"/>
 <script>var STD = '<?=$_SERVER['STD']?>';</script>
 <script type="text/javascript" src="/library/extjs4/ext-all.js"></script>
 <script type="text/javascript" src="/library/extjs4/ext-lang-ru.js"></script>
@@ -17,7 +17,18 @@
     window.publicTimes = [];
     Ext.require(['*']);
 </script>
-
+<?if (!$this->get['iframed']){?>
+<center>
+<div style="background: rgba(108, 200, 230, 0.65); width: 621px; padding: 20px;  margin-top: 20px; border-radius: 18px 18px 18px 18px;">
+<h3 style="  font-family: 'Days', sans-serif;   margin: 0 0 -2px;
+  font-size: 24px;
+  color: #fff;
+  font-weight: normal;
+  line-height: 1;
+  text-align: center;
+  margin-bottom: 5px;
+  text-transform: uppercase;" class="feature-header dr">Заявка на проведение праздника</h3>
+<?}?>
 <form action="/admin/client/save/" name="event" method="post" enctype="multipart/form-data" row-id="" style="">
 <table celpadding=0 cellspacing=0 border="0" width="100%">
 
@@ -28,15 +39,20 @@
     
     </tr>
 <tr id="tr-placeId" style="border-top: 0px;">
-    <td width="50%" id="td-left-placeId"></td>
+    <td width="50%" id="td-left-placeId">
+    
+    
+   
+    
+    </td>
     <td width="50%" id="td-right-placeId"><?=$this->formCombo('placeId', 'event')?></td>
 </tr>
 
 
 
 <tr id="tr-date">
-    <td width="50%" id="td-left-date">Дата:</td>
-    <td width="50%" id="td-right-date">
+        <td width="50%" id="td-left-date">Дата:</td>
+        <td width="25%" id="td-right-date">
     <!-- ext-all -->
         <div style="position: relative; z-index: 99" id="calendardateDiv" class="calendar-div">
         <input type="text"name="date" value="" id="date" class="calendar-input" readonly="readonly" onclick="$('#dateCalendarRender').toggle()">
@@ -120,16 +136,18 @@
                         });
                     });
                 </script>
+                
             </div>
         </div>
     </td>
+    
 </tr>
 <tr class="info" id="tr-timeId">
     <td width="50%" id="td-left-timeId">Время:</td>
     <td width="50%" id="td-right-timeId"><?=$this->formCombo('timeId', 'event')?></td>
 </tr>
 
-<tr class="info" id="tr-programId">
+<?/*<tr class="info" id="tr-programId">
     <td width="50%" id="td-left-programId">Анимационная программа:</td>
     <td width="50%" id="td-right-programId"><?=$this->formCombo('programId', 'event')?></td>
 </tr>
@@ -233,7 +251,7 @@
 <tr class="info" id="tr-childrenAge">
     <td width="50%" id="td-left-childrenAge">Возраст детей:</td>
     <td width="50%" id="td-right-childrenAge"><input type="text" name="childrenAge" id="childrenAge" value="" oninput=""style="width: 50px;" maxlength="5"/></td>
-</tr>
+</tr>*/?>
 <tr class="info" id="tr-clientTitle">
     <td width="50%" id="td-left-clientTitle">Ваше имя:</td>
     <td width="50%" id="td-right-clientTitle"><input type="text" name="clientTitle" id="clientTitle" value="" oninput=""
@@ -251,7 +269,7 @@
 </tr>
 </table>
 <table class="buttons" style=" solid; width: 100%;" cellpadding="0" id="iframe-form-buttons">
-    <tr>
+    <tr style="display: none;">
         
         <td type="save" width="50%">
             Стоимость, руб:
@@ -284,6 +302,10 @@
     </tr>
 </table>
 </form>
+<div id="confirmation" style="margin-top: 20px; display: none;"></div>
+<?if (!$this->get['iframed']){?>
+</div></center>
+<?}?>
 
 <script>
 $(document).ready(function(){
@@ -295,12 +317,12 @@ $(document).ready(function(){
         $('input[type="reset"]').click(function(){
             $('#districtId').val(0).change();
             $('input[type="submit"]').removeAttr('disabled');
-            top.window.$('iframe[name="form-frame"]').height(704);
+            //top.window.$('iframe[name="form-frame"]').height(704);
         });
         $('input[type="submit"]').click(function(){
             var data = {};
-            var fields = ['districtId', 'placeId', 'date', 'timeId', 'programId', 'subprogramId',
-                'birthChildName', 'birthChildBirthDate', 'childrenCount', 'childrenAge', 'clientTitle',
+            var fields = ['districtId', 'placeId', 'date', 'timeId', /*'programId', 'subprogramId',
+                'birthChildName', 'birthChildBirthDate', 'childrenCount', 'childrenAge',*/ 'clientTitle',
                 'clientPhone', 'clientEmail', 'price'];
             var error = false;
             var inp;
@@ -329,36 +351,42 @@ $(document).ready(function(){
                 }
                 data[fields[i]] = value;
             }
+
             if (error == false) {
-                data.animatorsNeededCount = parseInt($('#programId').attr('animatorsCount'));
+                <?$this->blocks['request-saved'] = str_replace(array('[', ']'), array('<', '>'), $this->blocks['request-saved']);?>
+                //data.animatorsNeededCount = parseInt($('#programId').attr('animatorsCount'));
                 $.post(STD+'/admin/client/save/', data, function (response) {
                     top.window.$('iframe[name="form-frame"]').height(664);
                     if (response == 'ok') {
 						$('form[name=event]').hide();
-						Ext.MessageBox.show({
+                        $('#confirmation').html('<?=$this->blocks['request-saved']?>'.replace('%clientTitle%', $('#clientTitle').val()).replace('%addr%', $('#districtId').attr('address')).replace('%date%', $('#date').val()).replace('%time%', $('#timeId-keyword').val()));
+                        $('#confirmation').show();
+						/*Ext.MessageBox.show({
 							title:"Сообщение",
-							msg:'<?=$this->blocks['request-saved']?>',
-							buttons:Ext.MessageBox.YESNO,
+							msg:,
+							buttons:Ext.MessageBox.OK,
 							icon:Ext.MessageBox.INFO,
 							modal: true,
 							fn: function(btn){
-								if (btn == 'yes') {
+								/*if (btn == 'yes') {
 									$('input[type="reset"]').click();
 									$('form[name=event]').show();
 									top.window.$.scrollTo('.feature-item-4', 500, {offset: {top: -100}});
-								} else {
-									top.window.$('.eight.columns').hide();
-									top.window.$('.four.columns').last().width('100%');
-									top.window.$('#celebrate-list div li').width(306).css('display', 'inline-table');
-									top.window.$('.four.columns .feature-item-4').height('auto');
-									top.window.$('.four.columns .feature-item-4 h3').html(top.window.$('.four.columns .feature-item-4 h3').html().replace(/<br>/ig, ' '));
-									top.window.$('#celebrate-list div li').width(306);
-									top.window.$.scrollTo('.feature-item-4', 500, {offset: {top: -200}});
-								}
+								} else {*/
+                                    /*if (!top.window.location.toString().match('iframed')) {
+                                        top.window.$('.eight.columns').hide();
+                                        top.window.$('.four.columns').last().width('100%');
+                                        top.window.$('#celebrate-list div li').width(306).css('display', 'inline-table');
+                                        top.window.$('.four.columns .feature-item-4').height('auto');
+                                        top.window.$('.four.columns .feature-item-4 h3').html(top.window.$('.four.columns .feature-item-4 h3').html().replace(/<br>/ig, ' '));
+                                        top.window.$('#celebrate-list div li').width(306);
+                                        top.window.$.scrollTo('.feature-item-4', 500, {offset: {top: -200}});
+                                    }*/
+								//}
 								//top.window.$('iframe[name="form-frame"]').height(704);
 								//$('input[type="submit"]').attr('disabled', 'disabled');
-							}
-						});
+							//}
+						//});*/
                     } else {
                         Ext.MessageBox.show({
                             title:"Сообщение",
@@ -368,7 +396,7 @@ $(document).ready(function(){
                             icon:Ext.MessageBox.WARNING,
                             modal: true,
                             fn: function(){
-                                top.window.$('iframe[name="form-frame"]').height(704);
+                                //top.window.$('iframe[name="form-frame"]').height(704);
                             }
                         });
                     }
@@ -389,12 +417,12 @@ $(document).ready(function(){
         } else {
             Indi.combo.form.toggle('timeId', true);
         }
-        if ($('#timeId').val() != "0") {
+        /*if ($('#timeId').val() != "0") {
             Indi.combo.form.toggle('programId', false);
         } else {
             Indi.combo.form.toggle('programId', true);
-        }
-        if (!isNaN($('#programId').attr('subprogramsCount'))) {
+        }*/
+        /*if (!isNaN($('#programId').attr('subprogramsCount'))) {
             if ($('#programId').attr('subprogramsCount') == '0') {
                 //hide('tr-subprogramId');
                 $('#programId').attr('animatorsCount', 1);
@@ -421,18 +449,18 @@ $(document).ready(function(){
             }
         } else {
             //hide('tr-subprogramId');
-        }
+        }*/
         //$('form[name=event]').css('visibility', 'visible');
-        setTimeout(function(){
+        /*setTimeout(function(){
             hide('tr-subprogramId');
-        }, 100);
+        }, 100);*/
         window.Indi.combo.form.store.timeIdBackup = Indi.copy(window.Indi.combo.form.store.timeId);
 		if (top.window.location.search == '?test') {
 			Ext.onReady(function(){
 				Ext.MessageBox.show({
 					title:"Сообщение",
 					msg:'<?=$this->blocks['request-saved']?>',
-					buttons:Ext.MessageBox.YESNO,
+					buttons:Ext.MessageBox.OK,
 					icon:Ext.MessageBox.INFO,
 					modal: true,
 					fn: function(btn){

@@ -24,12 +24,14 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
             $endDate = date('Y-m-' . date('t'));
             $endTime = strtotime($endDate);
             $dayOfWeek = date('N', $endTime);
-            $this->get['end'] = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek));
+            $this->get['end'] = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek /* " + 7" - убрать после окончания августа*/));
+            //$this->get['end'] = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek  + 7));
         }
         $start = explode('-', $this->get['start']);
         $end = explode('-', $this->get['end']);
         $where[] = '`calendarStart` >= "' . $start[2] . '-' . $start[0] . '-' . $start[1]. ' 00:00:00"';
         $where[] = '`calendarEnd` <= "' . $end[2] . '-' . $end[0] . '-' . $end[1]. ' 23:59:59"';
+		//i($this->get, 'a');
         return $where;
     }
 
@@ -38,7 +40,7 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin{
      */
     public function saveAction(){
         parent::saveAction(false);
-        i($this->post);
+        //i($this->post);
         if (array_key_exists('confirm', $this->get)) {
             die(json_encode(array('id' => $this->identifier)));
         }

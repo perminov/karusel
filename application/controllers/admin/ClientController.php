@@ -13,9 +13,9 @@ class Admin_ClientController extends Project_Controller_Admin{
             $disabledTimes = $eventM->disabledTimes($this->post['placeId'], $this->post['date']);
             if (in_array($this->post['timeId'], $disabledTimes)) die('expiredTime');
 
-            $disabledAnimators = $eventM->disabledAnimators($this->post['placeId'], $this->post['date'], $this->post['timeId'], $this->post['animatorsCount']);
+            /*$disabledAnimators = $eventM->disabledAnimators($this->post['placeId'], $this->post['date'], $this->post['timeId'], $this->post['animatorsCount']);
             $animatorsCount = $this->db->query('SELECT COUNT(`id`) FROM `animator`')->fetchColumn(0);
-            if ($this->post['animatorsCount'] > $animatorsCount - count($disabledAnimators['disabled'])) die('expiredAnimators');
+            if ($this->post['animatorsCount'] > $animatorsCount - count($disabledAnimators['disabled'])) die('expiredAnimators');*/
 
             parent::saveAction(false);
 

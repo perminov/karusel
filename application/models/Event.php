@@ -83,12 +83,12 @@ class Event extends Indi_Db_Table{
     }
 
     public function disabledAnimators($placeId, $date, $timeId, $animatorsNeededCount, $eventId = null){
-        $disabledA = $this->getAdapter()->query('
+        $disabledA = $this->getAdapter()->query($sql = '
             SELECT
               `e`.`date`,
               `t`.`id` AS `timeId`,
               `t`.`title` AS `start`,
-              SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL 150 MINUTE), 1, 5) AS `end`,
+              SUBSTR(TIME(DATE_ADD(CONCAT(`e`.`date`, " ", `t`.`title`, ":00"), INTERVAL 150 MINUTE)), 1, 5) AS `end`,              
               GROUP_CONCAT(DISTINCT `ea`.`animatorId`) AS `disabled`
             FROM
               `time` `t`,
@@ -104,8 +104,8 @@ class Event extends Indi_Db_Table{
               AND `e`.`timeId` = `ot`.`id`
               AND `ea`.`eventId` = `e`.`id`
               AND (
-                  (`t`.`title` <= `ot`.`title` AND `ot`.`title` < SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL 150 MINUTE), 1, 5)) OR
-                  (`t`.`title` < SUBSTR(DATE_ADD(TIME(`ot`.`title`), INTERVAL 150 MINUTE), 1, 5) AND SUBSTR(DATE_ADD(TIME(`ot`.`title`), INTERVAL 150 MINUTE), 1, 5) <= SUBSTR(DATE_ADD(TIME(`t`.`title`), INTERVAL 150 MINUTE), 1, 5))
+                  (`t`.`title` <= `ot`.`title` AND `ot`.`title` < SUBSTR(TIME(DATE_ADD(CONCAT(`e`.`date`, " ", `t`.`title`, ":00"), INTERVAL 150 MINUTE)), 1, 5)) OR
+                  (`t`.`title` < SUBSTR(TIME(DATE_ADD(CONCAT(`e`.`date`, " ", `ot`.`title`, ":00"), INTERVAL 150 MINUTE)), 1, 5) AND SUBSTR(TIME(DATE_ADD(CONCAT(`e`.`date`, " ", `ot`.`title`, ":00"), INTERVAL 150 MINUTE)), 1, 5) <= SUBSTR(TIME(DATE_ADD(CONCAT(`e`.`date`, " ", `t`.`title`, ":00"), INTERVAL 150 MINUTE)), 1, 5))
               )
             GROUP BY CONCAT(`date`,`t`.`title`)
         ')->fetchColumn(4);
