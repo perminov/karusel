@@ -105,10 +105,16 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
         parent::save();
     }
 
+    /**
+     *
+     */
     public function setSpaceSince() {
         $this->spaceSince = $this->date . ' ' . $this->foreign('timeId')->title . ':00';
     }
 
+    /**
+     *
+     */
     public function setSpaceUntil() {
         $this->spaceUntil = date('Y-m-d H:i:s', strtotime($this->spaceSince) + $this->foreign('placeId')->duration * 60);
     }

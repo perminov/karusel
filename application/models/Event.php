@@ -8,7 +8,7 @@ class Event extends Indi_Db_Table_Schedule {
      */
     protected $_changeLog = array(
         'toggle' => true,
-        'ignore' => 'price,clientAgreementNumber,title,birthChildAge,requestBy,requestByManagerId,requestDate,calendarStart,calendarEnd'
+        'ignore' => 'price,clientAgreementNumber,title,birthChildAge,requestBy,requestByManagerId,requestDate,calendarStart,calendarEnd,spaceSince,spaceUntil,spaceFrame'
     );
 
     /**
