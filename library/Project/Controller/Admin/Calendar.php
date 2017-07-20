@@ -172,36 +172,4 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin_Events{
             
         return $n . ($e ? '<span style="color:red; font-weight: bold;">!</span> ' : '');
     }
-    
-    public function confirmAction(){
-        if ($this->row->manageStatus != '240#0000ff') {
-            $response = 'already';
-        } else if (Indi::post('managePrepay')){
-            $this->row->managePrepay = Indi::post('managePrepay');
-            $this->row->manageManagerId = Indi::post('manageManagerId') ? Indi::post('manageManagerId') : $_SESSION['admin']['id'];
-            $this->row->manageStatus = '#00ff00';
-            $this->row->manageDate = date('Y-m-d');
-            $this->row->save();
-            $this->row->setAgreementNumber();
-            $response = 'Заявка отмечена как подтвержденная';
-        }
-        die($response);
-    }
-
-    public function agreementAction(){
-        if (Indi::uri()->check && $this->row->manageStatus == '240#0000ff') {
-            die('not-confirmed');
-        }
-    }    
-    
-	public function cancelAction(){
-		if ($this->row->manageStatus != '120#00ff00') {
-			$response = 'forbidden';
-		} else {
-			$this->row->manageStatus = '#ff9900';
-			$this->row->save();
-			$response = 'ok';
-		}
-		die($response);
-	}
 }

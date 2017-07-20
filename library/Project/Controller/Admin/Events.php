@@ -156,4 +156,42 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
         // Flush busy time ids
         jflush(true, array('disabled' => $disabledA, 'price' => $price));
     }
+
+    public function confirmAction(){
+        if ($this->row->manageStatus != '240#0000ff') {
+            $response = 'already';
+        } else if (Indi::post('managePrepay')){
+            $this->row->managePrepay = Indi::post('managePrepay');
+            $this->row->manageManagerId = Indi::post('manageManagerId') ?: $_SESSION['admin']['id'];
+            $this->row->manageStatus = '#00ff00';
+            $this->row->manageDate = date('Y-m-d');
+            $this->row->save();
+            $this->row->setAgreementNumber();
+            $response = 'Заявка отмечена как подтвержденная';
+        } else {
+            $managerRs = Indi::model('Manager')->fetchAll();
+            $options = array(); foreach($managerRs as $managerR) $options[] = '<option value="' . $managerR->id . '"' . ($managerR->id == $_SESSION['admin']['id'] ? ' selected="selected"' : '') .'>' . $managerR->title . '</option>';
+            $response = '<span id="msgbox-prepay"></span><select id="manageManagerId">' . implode('', $options) . '</select><br/><br/><br/>';
+        }
+        die($response);
+    }
+
+    public function cancelAction(){
+        if ($this->row->manageStatus != '120#00ff00') {
+            $response = 'forbidden';
+        } else {
+            $this->row->manageStatus = '#ff9900';
+            $this->row->save();
+            $response = 'ok';
+        }
+        die($response);
+    }
+
+    public function agreementAction(){
+        if (Indi::uri()->check && $this->row->manageStatus == '240#0000ff') {
+            die('not-confirmed');
+        }
+        Indi::trail()->view->mode = 'view';
+        //if (Indi::uri()->checkConfirmed) die($this->row->manageStatus != '120#00ff00' ? 'not-confirmed': 'ok');
+    }
 }

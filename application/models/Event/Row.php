@@ -80,20 +80,7 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
             SELECT DATE_ADD(TIMESTAMP("' . $this->calendarStart . '"), INTERVAL ' . $placeR->duration . ' MINUTE)
         ')->fetchColumn(0);
 
-        parent::save();
-
-        // Забиваем аниматоров
-        $animators = explode(',', $this->animatorId);
-        $eaM = Indi::model('EventAnimator');
-        $eaM->fetchAll('`eventId` = "' . $this->id . '"')->delete();
-        for ($i = 0; $i < count($animators); $i++) {
-            if ($animators[$i]) {
-                $eaR = $eaM->createRow();
-                $eaR->eventId = $this->id;
-                $eaR->animatorId = $animators[$i];
-                $eaR->save();
-            }
-        }
+        return parent::save();
     }
 
     public function setAgreementNumber(){

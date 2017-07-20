@@ -34,19 +34,4 @@ class Project_Controller_Admin_EventsGrid extends Project_Controller_Admin_Event
         }
         parent::adjustGridData($data);
     }
-	public function cancelAction(){
-		if ($this->row->manageStatus != '120#00ff00') {
-			$response = 'forbidden';
-		} else {
-			$this->row->manageStatus = '#ff9900';
-			$this->row->save();
-			$response = 'ok';
-		}
-		die($response);
-	}
-
-    public function agreementAction(){
-        Indi::trail()->view->mode = 'view';
-        //if (Indi::uri()->checkConfirmed) die($this->row->manageStatus != '120#00ff00' ? 'not-confirmed': 'ok');
-    }
 }

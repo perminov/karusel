@@ -17,14 +17,4 @@ class Admin_AuxiliaryController extends Indi_Controller_Auxiliary {
         }
         die(json_encode($disabled));
     }
-
-    public function disabledAnimatorsAction() {
-        $info = Indi::model('Event')->disabledAnimators(
-            Indi::post('placeId'),
-            Indi::post('date'),
-            Indi::post('timeId'),
-            Indi::post('animatorsNeededCount'),
-            $this->eventId);
-        die(json_encode($info));
-    }
 }
