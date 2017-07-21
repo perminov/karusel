@@ -47,6 +47,9 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
             )
         ), $data);
 
+        // Get desired space frame
+        $frame = $rowA['placeId']->duration . 'm';
+
         // Create schedule
         $schedule = Indi::schedule($data['since'], $data['until'])
             ->daily('10:00:00', '20:00:00')
@@ -57,7 +60,7 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
             ));
 
         // Flush disabled dates
-        jflush(true, array('disabledDates' => $schedule->busyDates($rowA['placeId']->duration . 'm')));
+        jflush(true, array('disabledDates' => $schedule->busyDates($frame)));
     }
 
     public function formActionITimeId($data) {
@@ -84,11 +87,14 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
                 '`manageStatus` != "036#ff9900"'
             ));
 
+        // Get desired space frame
+        $frame = $rowA['placeId']->duration . 'm';
+
         // Check that startDate is not busy
-        if (in($data['date'], $schedule->busyDates($rowA['placeId']->duration . 'm'))) jflush(false, 'Выберите другую дату');
+        if (in($data['date'], $schedule->busyDates($frame))) jflush(false, 'Выберите другую дату');
 
         // Get busy hours
-        $hourA = $schedule->busyHours($rowA['placeId']->duration . 'm', $data['date'], '30m');
+        $hourA = $schedule->busyHours($frame, $data['date'], '30m');
 
         // Get disabled ids
         $timeIdA = Indi::model('Time')->fetchAll('FIND_IN_SET(`title`, "' . im($hourA) . '")')->column('id');

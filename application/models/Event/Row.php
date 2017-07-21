@@ -1,86 +1,119 @@
 <?php
 class Event_Row extends Indi_Db_Table_Row_Schedule {
+
+    public function validate() {
+
+        // Create schedule
+        $schedule = Indi::schedule('month', $this->date)
+            ->daily('10:00:00', '20:00:00')
+            ->load('event', array(
+                '`placeId` = "' . $this->placeId . '"',
+                '`id` != "' . $this->id . '"',
+                '`manageStatus` != "036#ff9900"'
+            ));
+
+        // Get desired space frame
+        $frame = $this->foreign('placeId')->duration . 'm';
+
+        // Get busy dates
+        $busyDateA = $schedule->busyDates($frame);
+
+        // If current `date` is a totally busy date - set mismatch message
+        if (in($this->date, $busyDateA)) $this->mflush('date', 'Эта дата полностью занята');
+
+        // Get busy hours
+        $hourA = $schedule->busyHours($frame, $this->date, '30m');
+
+        // Get disabled ids
+        $busyTimeIdA = Indi::model('Time')->fetchAll('FIND_IN_SET(`title`, "' . im($hourA) . '")')->column('id');
+
+        // If current `timeId` is a totally busy time - set mismatch message
+        if (in($this->timeId, $busyTimeIdA)) $this->mflush('time', 'Это время занято');
+
+        // General WHERE clause
+        $where = array(
+            '`manageStatus` != "036#ff9900"',
+            '`placeId` != "' . $this->placeId . '"',
+            '`id` != "' . $this->id . '"',
+        );
+
+        // Gap, in seconds
+        $gap = 1800;
+
+        // If `animatorId` prop not yet set
+        // Foreach animator, involved in events at date, specified by $data['date']
+        $busyAnimatorA = array(); if ($this->animatorId) foreach (ar($this->animatorId) as $animatorId) {
+
+            // Create schedule, set daily active hours and load animator's events
+            $schedule = Indi::schedule('week', $this->date)
+                ->daily('10:00:00', '20:30:00')
+                ->load('event', array_merge(array('FIND_IN_SET("' . $animatorId . '", `animatorId`)'), $where), function(&$r, $sp) {
+                    $r->{$sp['frame']} += ($gap = 1800);
+                });
+
+            // If animator is busy - push it's id to $busyAnimatorA array
+            if ($schedule->busy(
+                $this->date . ' ' . $this->foreign('timeId')->title . ':00',
+                $this->foreign('placeId')->duration * 60 + $gap,
+                true
+            )) $busyAnimatorA[] = $animatorId;
+        }
+
+        // If one or more of selected animators are busy - flush error message
+        if (count($busyAnimatorA)) $this->mflush('animatorId', 'Уже занятые аниматоры: '
+            . $this->foreign('animatorId')->select($busyAnimatorA)->column('title', ', '));
+
+        $this->mflush('asd', 'asd');
+    }
+
+    /**
+     * @return int|mixed
+     */
     public function save() {
 
-        // Формируем title
-        $districtR = $this->foreign('districtId');
-        $placeR = $this->foreign('placeId');
-        $timeR = $this->foreign('timeId');
-        $title = array();
-        $title[] = '[' . $this->date . ', ' . $timeR->title . ']';
-        $title[] = $districtR->code . ': ' . $placeR->title;
-        $this->title = implode(' ', $title);
+        // Set `title`
+        $this->title = sprintf('[%s, %s] %s: %s', $this->date, $this->foreign('timeId')->title,
+            $this->foreign('districtId')->code, $this->foreign('placeId')->title);
 
-        // Рассчитываем возраст именинника
-        if ($this->_modified['birthChildBirthDate']) {
-            if ($this->_modified['birthChildBirthDate'] == '0000-00-00') {
-                $this->birthChildAge = 0;
-            } else {
-                $this->birthChildAge = date('Y') - date('Y', strtotime($this->_modified['birthChildBirthDate']));
-            }
+        // Set child age
+        if ($this->isModified('birthChildBirthDate')) $this->birthChildAge
+            = $this->zero('birthChildBirthDate') ? 0 : date('Y') - $this->date('birthChildBirthDate', 'Y');
+
+        // Animators qty
+        $aQty = $this->foreign('subprogramId')->animatorsCount ?: 1;
+
+        // Get initial price
+        $this->price = $this->foreign('placeId')->foreign('districtId')->{'price' . $aQty};
+
+        // If event date is not a saturday/sunday and is not an other holiday
+        if (!in(date('N', strtotime($this->date)), '6,7')
+            && !Indi::model('Holiday')->fetchRow('`title` = "' . $this->date . '"')
+            && ($discount = Indi::blocks('work-day-discount'))
+            && ((!$until = Indi::blocks('discount-until-time')) || $this->foreign('timeId')->title < $until)) {
+
+            // Apply discount
+            $this->price *= 1 - $discount/100;
         }
 
-        if (is_array($this->animatorId)) $this->animatorId = implode(',', $this->animatorId);
-
-        // Рассчитываем стоимость
-        if (!trim($this->animatorId)) {
-            if ($this->subprogramId) {
-                $animatorsCount = $this->foreign('subprogramId')->animatorsCount;
-            } else {
-                $animatorsCount = 1;
-            }
-        } else {
-            $animatorsCount = count(explode(',', $this->animatorId));
-        }
-        $this->price = Indi::db()->query('
-                SELECT
-                  CAST((IF("'. $animatorsCount . '" = "1", `price1`, `price2`) -
-                  IF("'. $animatorsCount . '" = "1",
-
-                    `price1` *
-                      IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $this->date . '") NOT IN(5,6) AND IF(ISNULL(`s`.`detailsString`), 0, 1) AND IF(ISNULL(`s2`.`detailsString`), 1, `t`.`title` < `s2`.`detailsString`), 1, 0) *
-                      (IF(ISNULL(`s`.`detailsString`), 0, CAST(`s`.`detailsString` AS DECIMAL))/100),
-
-                    `price2` *
-                      IF(ISNULL(`h`.`title`) AND WEEKDAY("' . $this->date . '") NOT IN(5,6) AND IF(ISNULL(`s`.`detailsString`), 0, 1) AND IF(ISNULL(`s2`.`detailsString`), 1, `t`.`title` < `s2`.`detailsString`), 1, 0) *
-                      (IF(ISNULL(`s`.`detailsString`), 0, CAST(`s`.`detailsString` AS DECIMAL))/100)
-
-                  )) AS DECIMAL)
-                  AS `price`
-                FROM
-                  `district` `d`,
-                  `place` `p`,
-                  `time` `t`
-                  LEFT JOIN `holiday` `h` ON (`h`.`title` = "' . $this->date . '")
-                  LEFT JOIN `staticblock` `s` ON (`s`.`alias` = "work-day-discount" AND `s`.`toggle` = "y")
-                  LEFT JOIN `staticblock` `s2` ON (`s2`.`alias` = "discount-until-time" AND `s2`.`toggle` = "y")
-                WHERE 1
-                  AND `p`.`id` = "' . $this->placeId . '"
-                  AND `d`.`id` = `p`.`districtId`
-                  AND `t`.`id` = "' . $this->timeId . '"
-            ')->fetchColumn(0);
-
-        // Для новых завок указываем кто их создал и когда
-        if (!$this->id) {
-            if ($_SESSION['admin']['alternate'] == 'manager') {
-                $this->requestBy = 'manager';
-                $this->requestByManagerId = $_SESSION['admin']['id'];
-                $this->requestDate = date('Y-m-d H:i:s');
-            } else {
-                $this->requestBy = 'client';
-                $this->requestDate = date('Y-m-d H:i:s');
-            }
-        } else {
-            unset($this->_modified['requestBy'], $this->_modified['requestByManagerId'], $this->_modified['requestDate']);
-        }
-
-        // Формируем calendarStart и calendarEnd
-        $this->calendarStart = $this->date . ' ' . $timeR->title . ':00';
-        $this->calendarEnd = Indi::db()->query('
-            SELECT DATE_ADD(TIMESTAMP("' . $this->calendarStart . '"), INTERVAL ' . $placeR->duration . ' MINUTE)
-        ')->fetchColumn(0);
-
+        // Call parent
         return parent::save();
+    }
+
+    /**
+     * Set info about whether a manager created this entry, or some another kind of user
+     */
+    public function onBeforeInsert() {
+        $m = Indi::admin()->alternate == 'manager';
+        $this->requestByManagerId = $m ? Indi::admin()->id : 0;
+        $this->requestBy = $m ? 'manager' : 'client';
+        $this->requestDate = date('Y-m-d H:i:s');
+    }
+
+    /**
+     * Prevent creation info from being modified for existing entries
+     */
+    public function onBeforeUpdate() {
+        foreach (ar('requestBy,requestByManagerId,requestDate') as $prop) unset($this->_modified[$prop]);
     }
 
     /**
