@@ -2,6 +2,11 @@
 class Project_Controller_Admin_Events extends Project_Controller_Admin {
 
     /**
+     * @var bool
+     */
+    protected $_isRowsetSeparate = true;
+
+    /**
      *
      */
     public function adjustActionCfg() {
@@ -238,7 +243,20 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
     }
 
     /**
-     *
+     * Delete event
+     */
+    public function deleteAction() {
+
+        // Check that current `manageStatus` is appropriate for event to be deleted
+        if (in($this->row->manageStatus, '120#00ff00'))
+            jflush(false, 'Нельзя удалять мероприятия, имеющие статус "Подтвержденное"');
+
+        // Call parent
+        $this->callParent();
+    }
+
+    /**
+     * Show agreement
      */
     public function agreementAction() {
         Indi::trail()->view->mode = 'view';
