@@ -216,22 +216,31 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
         jflush(true);
     }
 
-    public function cancelAction(){
-        if ($this->row->manageStatus != '120#00ff00') {
-            $response = 'forbidden';
-        } else {
-            $this->row->manageStatus = '#ff9900';
-            $this->row->save();
-            $response = 'ok';
-        }
-        die($response);
+    /**
+     * Cancel event
+     */
+    public function cancelAction() {
+
+        // Check that current `manageStatus` is appropriate for event to be cancelled
+        if (!in($this->row->manageStatus, '120#00ff00,240#0000ff'))
+            jflush(false, 'Отменять можно только мероприятия со статусом "Подтвержденное" или "Предварительное"');
+
+        // Change `manageStatus` to  'cancelled'
+        $this->row->manageStatus = '036#ff9900';
+        $this->row->save();
+
+        // Flush success with affected data
+        jflush(array(
+            'success' => true,
+            'msg' => sprintf('Статус мероприятия изменен на "%s"', $this->row->foreign('manageStatus')->title),
+            'affected' => $this->affected()
+        ));
     }
 
-    public function agreementAction(){
-        if (Indi::uri()->check && $this->row->manageStatus == '240#0000ff') {
-            die('not-confirmed');
-        }
+    /**
+     *
+     */
+    public function agreementAction() {
         Indi::trail()->view->mode = 'view';
-        //if (Indi::uri()->checkConfirmed) die($this->row->manageStatus != '120#00ff00' ? 'not-confirmed': 'ok');
     }
 }
