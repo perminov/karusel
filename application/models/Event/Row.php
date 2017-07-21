@@ -83,13 +83,29 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
         return parent::save();
     }
 
-    public function setAgreementNumber(){
-        // Конструируем номер договора
+    /**
+     * Confirm event
+     */
+    public function confirm($managerId, $prepay){
+
+        // Shortcut for event's district
         $districtR = $this->foreign('districtId');
-        $this->clientAgreementNumber = $districtR->code . str_pad($districtR->lastAgreement + 1, 4, '0', STR_PAD_LEFT);
+
+        // Assign confirmation-related props
+        $this->assign(array(
+            'managePrepay' => $prepay,
+            'manageManagerId' => $managerId,
+            'manageStatus' => '120#00ff00',
+            'manageDate' => date('Y-m-d'),
+            'clientAgreementNumber' => $districtR->code . str_pad($districtR->lastAgreement + 1, 4, '0', STR_PAD_LEFT)
+        ));
+
+        // Save assigned props
+        parent::save();
+
+        // Increment agreement counter
         $districtR->lastAgreement++;
         $districtR->save();
-        parent::save();
     }
 
     /**

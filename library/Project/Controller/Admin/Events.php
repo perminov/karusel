@@ -1,9 +1,30 @@
 <?php
 class Project_Controller_Admin_Events extends Project_Controller_Admin {
 
+    /**
+     *
+     */
     public function adjustActionCfg() {
         $this->actionCfg['mode']['agreement'] = 'row';
         $this->actionCfg['view']['agreement'] = 'print';
+    }
+
+    /**
+     *
+     */
+    public function preDispatch() {
+
+        // Set `manageStatus` as 'done' for yesterday and older events with status 'confirmed'
+        if (Indi::uri()->action == 'index' && Indi::uri()->json) Indi::db()->query('
+            UPDATE `event`
+            SET `manageStatus` = "000#980000"
+            WHERE 1
+              AND `manageStatus` = "120#00ff00"
+              AND `date` < CURDATE()
+        ');
+
+        // Call parent
+        parent::preDispatch();
     }
 
     public function formActionIDate($data) {
@@ -157,23 +178,42 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
         jflush(true, array('disabled' => $disabledA, 'price' => $price));
     }
 
-    public function confirmAction(){
-        if ($this->row->manageStatus != '240#0000ff') {
-            $response = 'already';
-        } else if (Indi::post('managePrepay')){
-            $this->row->managePrepay = Indi::post('managePrepay');
-            $this->row->manageManagerId = Indi::post('manageManagerId') ?: $_SESSION['admin']['id'];
-            $this->row->manageStatus = '#00ff00';
-            $this->row->manageDate = date('Y-m-d');
-            $this->row->save();
-            $this->row->setAgreementNumber();
-            $response = 'Заявка отмечена как подтвержденная';
-        } else {
-            $managerRs = Indi::model('Manager')->fetchAll();
-            $options = array(); foreach($managerRs as $managerR) $options[] = '<option value="' . $managerR->id . '"' . ($managerR->id == $_SESSION['admin']['id'] ? ' selected="selected"' : '') .'>' . $managerR->title . '</option>';
-            $response = '<span id="msgbox-prepay"></span><select id="manageManagerId">' . implode('', $options) . '</select><br/><br/><br/>';
+    /**
+     * Confirm event
+     */
+    public function confirmAction() {
+
+        // If current event's status is not 'preview' - flush error message
+        if ($this->row->manageStatus != '240#0000ff') jflush(false, 'Подтверждать можно только предварительные заявки');
+
+        // Else if $_POST data is given
+        else if (count($data = Indi::post())) {
+
+            // Check data
+            jcheck(array(
+                'manageManagerId' => array(
+                    'req' => true,
+                    'rex' => 'int11',
+                    'key' => 'Manager'
+                ),
+                'managePrepay' => array(
+                    'rex' => 'int11'
+                )
+            ), $data);
+
+            // Confirm event
+            $this->row->confirm($data['manageManagerId'], $data['managePrepay']);
+
+            // Assign row's grid data into 'affected' key within $response and flush success
+            jflush(array(
+                'success' => true,
+                'msg' => sprintf('Статус мероприятия изменен на "%s"', $this->row->foreign('manageStatus')->title),
+                'affected' => $this->affected()
+            ));
         }
-        die($response);
+
+        // Flush success
+        jflush(true);
     }
 
     public function cancelAction(){
