@@ -1,3 +1,0 @@
-<?php
-class Admin_ManagerGridOtherdistrictsController extends Project_Controller_Admin_EventsGrid{
-}
