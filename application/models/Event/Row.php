@@ -186,13 +186,13 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
         return parent::save();
     }
 
-    public function price() {
+    public function price($data = array()) {
 
         // Check
         $this->mcheck(array(
             'programId' => array('rex' => 'int11', 'key' => true),
             'subprogramId' => array('rex' => 'int11', 'key' => true)
-        ));
+        ), $data);
 
         // Animators qty
         $aQty = $this->foreign('subprogramId')->animatorsCount ?: 1;

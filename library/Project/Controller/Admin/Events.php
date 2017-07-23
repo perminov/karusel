@@ -47,7 +47,7 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
     public function formActionIAnimatorId($data) {
 
         // Flush busy time ids
-        jflush(true, array('disabled' => $this->row->busyAnimators($data), 'price' => $this->row->price()));
+        jflush(true, array('disabled' => $this->row->busyAnimators($data), 'price' => $this->row->price($data)));
     }
 
     /**
