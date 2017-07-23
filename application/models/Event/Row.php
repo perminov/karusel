@@ -157,7 +157,7 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
         $this->busyTimes();
 
         // If `programId` is non-zero - check that event's animators are not busy
-        if (!$this->zero('programId')) $this->busyAnimators();
+        if (!$this->zero('animatorId')) $this->busyAnimators();
 
         // Call parent
         return $this->callParent();
