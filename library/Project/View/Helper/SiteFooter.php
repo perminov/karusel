@@ -1,6 +1,7 @@
 <?php
 class Indi_View_Helper_SiteFooter {
 	public function siteFooter(){
+        return;
 		ob_start();?>
 	  </div>
 	</td>

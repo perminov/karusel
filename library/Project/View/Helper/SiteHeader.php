@@ -1,15 +1,16 @@
 <?php
 class Project_View_Helper_SiteHeader {
 	public function siteHeader(){
+        return;
 		ob_start();?>
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
     <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <?=$this->view->siteFavicon()?>
-        <title><?=$this->view->seoTDK('title')?></title>
-        <meta name="description" content="<?=$this->view->seoTDK('description')?>">
-        <meta name="keywords" content="<?=$this->view->seoTDK('keyword')?>">
+        <?=Indi::view()->siteFavicon()?>
+        <title><?=Indi::view()->siteMetatag('title')?></title>
+        <meta name="description" content="<?=Indi::view()->siteMetatag('description')?>">
+        <meta name="keywords" content="<?=Indi::view()->siteMetatag('keyword')?>">
         <link rel="stylesheet" type="text/css" href="/css/style.css">
         <link rel="stylesheet" type="text/css" href="/css/adjust.css">
         <link rel="stylesheet" type="text/css" href="/library/extjs4/resources/css/ext-all.css"/>

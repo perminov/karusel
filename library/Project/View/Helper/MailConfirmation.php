@@ -4,10 +4,9 @@ class Project_View_Helper_MailConfirmation {
         $districtR = $event->foreign('districtId');
         $placeR = $event->foreign('placeId');
         $timeR = $event->foreign('timeId');
-        $programR = $event->foreign('programId');
-        $subprogramR = $event->foreign('subprogramId');
+        $user = (object) array('title' => $event->clientTitle);
         ob_start();?>
-		<?=$this->view->mailHeader($client, 'Вы оставили заявку', 'Вы оставили заявку на проведение детского празника на сайте ' . ucfirst($_SERVER['HTTP_HOST']), '')?>
+		<?=Indi::view()->mailHeader($user, 'Вы оставили заявку', 'Вы оставили заявку на проведение детского празника на сайте ' . ucfirst($_SERVER['HTTP_HOST']), '')?>
           <tr>
             <td>
               <table width="100%" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse; border-spacing: 0;" bgcolor="#ececec">
@@ -70,7 +69,7 @@ class Project_View_Helper_MailConfirmation {
               </table>
             </td>
           </tr>
-		  <?=$this->view->mailFooter($client, 'Вам нужно будет придти по указанному адресу для внесения предоплаты и подписания договора на проведение данного мероприятия.')?>
+		  <?=Indi::view()->mailFooter($user, 'Вам нужно будет придти по указанному адресу для внесения предоплаты и подписания договора на проведение данного мероприятия.')?>
 		<?$xhtml = ob_get_clean();
 		return $xhtml;
 	}
