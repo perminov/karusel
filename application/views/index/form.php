@@ -1,6 +1,4 @@
-﻿<?/*<option value="0"></option>
-<?foreach($this->row->getComboData('timeId') as $o){?><option value="<?=$o->id?>"><?=$o->title?></option><?}?>*/?>
-<link rel="stylesheet" href="/library/jquery-ui-1.12.1/jquery-ui.min.css"/>
+﻿<link rel="stylesheet" href="/library/jquery-ui-1.12.1/jquery-ui.min.css"/>
 <link rel="stylesheet" href="/library/select2/select2.min.css"/>
 <link rel="stylesheet" href="/css/iform.css"/>
 <link rel="stylesheet" href="/css/form.css"/>
