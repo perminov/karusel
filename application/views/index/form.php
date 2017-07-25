@@ -107,9 +107,15 @@ $(function(){
         monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
         dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
         firstDay: 1,
+        buttonImage: "<?=STD?>/i/b_calendar.png",
+        buttonImageOnly: true,
+        minDate: 5,
+        maxDate: 35,
+        buttonText: 'day',
+        showOn: 'both',
         beforeShowDay: function(date) {
             var date = jQuery.datepicker.formatDate('yy-mm-dd', date),
-                show = $(this).data('disabledDates').indexOf(date) == -1,
+                show = $(this).data('disabledDates') && $(this).data('disabledDates').indexOf(date) == -1,
                 tip = show ? '' : 'Эта дата полностью занята';
             return [show, '', tip];
         },
