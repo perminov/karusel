@@ -14,7 +14,7 @@
 <tr>
     <td>Место проведения мероприятия:</td>
     <td><select name="districtId">
-        <?foreach($this->row->getComboData('districtId') as $o){?><option value="<?=$o->id?>"><?=$o->title?></option><?}?>
+        <?foreach($this->row->getComboData('districtId') as $o){?><option value="<?=$o->id?>"<?=$o->id==$this->row->districtId?' selected="selected"':''?>><?=$o->title?></option><?}?>
     </select></td>
 </tr>
 <tr>
@@ -152,6 +152,14 @@ $(function(){
         allowClear: true
     }).change(function(){
         timeId_update();
+    });
+
+    $('form[name="event"] input[type="reset"]').click(function(){
+        $('select.select2-hidden-accessible').each(function(){
+            if ($(this).attr('name') == 'districtId') return;
+            $(this).data('select2').val(0);
+            $(this).data('select2').trigger('change');
+        });
     });
 
     $('form[name="event"]').iform();
