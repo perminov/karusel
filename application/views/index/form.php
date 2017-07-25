@@ -1,12 +1,4 @@
-﻿<link rel="stylesheet" href="/library/jquery-ui-1.12.1/jquery-ui.min.css"/>
-<link rel="stylesheet" href="/library/select2/select2.min.css"/>
-<link rel="stylesheet" href="/css/iform.css"/>
-<link rel="stylesheet" href="/css/form.css"/>
-<script src="/js/jquery-1.10.2.min.js"></script>
-<script src="/library/jquery-ui-1.12.1/jquery-ui.min.js"></script>
-<script std="<?=STD?>" src="/js/indi.js"></script>
-<script src="/library/select2/select2.min.js"></script>
-<form action="/index/save/" name="event" data-row="event-<?=(int)$this->row->id?>" method="post" enctype="multipart/form-data">
+﻿<form action="/index/save/" name="event" data-row="event-<?=(int)$this->row->id?>" method="post" enctype="multipart/form-data">
 <table celpadding="0" cellspacing="0" border="0" width="100%">
 <col width="50%">
 <tr>
