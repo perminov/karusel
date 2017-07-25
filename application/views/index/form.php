@@ -2,8 +2,8 @@
 <?foreach($this->row->getComboData('timeId') as $o){?><option value="<?=$o->id?>"><?=$o->title?></option><?}?>*/?>
 <link rel="stylesheet" href="/library/jquery-ui-1.12.1/jquery-ui.min.css"/>
 <link rel="stylesheet" href="/library/select2/select2.min.css"/>
-<link rel="stylesheet" href="/css/form.css"/>
 <link rel="stylesheet" href="/css/iform.css"/>
+<link rel="stylesheet" href="/css/form.css"/>
 <script src="/js/jquery-1.10.2.min.js"></script>
 <script src="/library/jquery-ui-1.12.1/jquery-ui.min.js"></script>
 <script std="<?=STD?>" src="/js/indi.js"></script>
@@ -85,6 +85,11 @@ $(function(){
             data: dataA,
             allowClear: true,
             minimumResultsForSearch: Infinity
+        });
+
+        // Bind error destroy on click
+        timeId.next('.select2').click(function(){
+            $(this).ierror(false);
         });
     };
 

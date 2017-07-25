@@ -28,6 +28,19 @@ class IndexController extends Indi_Controller_Front {
 
     public function saveAction() {
 
+        // Convert date format
+        if (Indi::post('date')) Indi::post()->date = date('Y-m-d', strtotime(Indi::post('date')));
+
+        // Check params, and show error messages on-by-one, if detected
+        $this->row->mcheck(array(
+            'placeId' => array('req' => true),
+            'date' => array('req' => true, 'rex' => 'date'),
+            'timeId' => array('req' => true),
+            'clientTitle' => array('req' => true),
+            'clientPhone' => array('req' => true),
+            'clientEmail' => array('req' => true, 'rex' => 'email'),
+        ), Indi::post());
+
         // Set required fields
         $form = array(
             'required' => 'districtId,placeId,date,timeId,clientTitle,clientPhone,clientEmail',

@@ -139,3 +139,7 @@ input, select, .select2 {
 .select2-container--default.select2-container--disabled .select2-selection--single {
     background: transparent;
 }
+.i-field-error {
+    border-radius: 3px;
+    margin-top: 5px;
+}
