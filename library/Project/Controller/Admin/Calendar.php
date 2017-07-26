@@ -21,7 +21,7 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
 
                 // Set initial title
                 $title .= $client . ' ' . $data[$i]['clientPhone'] . ' ';
-                $title .= '<span style="word-break: normal;">' . $data[$i]['childrenCount'] . '/' . $data[$i]['childrenAge'] . '</span>; ';
+                $title .= '<span style="word-break: normal;">' . $data[$i]['childrenCount'] . '/' . ($data[$i]['childrenAge'] ?: '?') . '</span>; ';
 
                 // Append manager and agreement number
                 if ($manager = array_shift(explode(' ', $data[$i]['manageManagerId'])))
