@@ -22,9 +22,9 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
         // Set `manageStatus` as 'done' for yesterday and older events with status 'confirmed'
         if (Indi::uri()->action == 'index' && Indi::uri()->json) Indi::db()->query('
             UPDATE `event`
-            SET `manageStatus` = "000#980000"
+            SET `manageStatus` = "archive"
             WHERE 1
-              AND `manageStatus` = "120#00ff00"
+              AND `manageStatus` = "confirmed"
               AND `date` < CURDATE()
         ');
 
@@ -56,7 +56,7 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
     public function confirmAction() {
 
         // If current event's status is not 'preview' - flush error message
-        if ($this->row->manageStatus != '240#0000ff') jflush(false, 'Подтверждать можно только предварительные заявки');
+        if ($this->row->manageStatus != 'preview') jflush(false, 'Подтверждать можно только предварительные заявки');
 
         // Else if $_POST data is given
         else if (count($data = Indi::post())) {
@@ -94,11 +94,11 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
     public function cancelAction() {
 
         // Check that current `manageStatus` is appropriate for event to be cancelled
-        if (!in($this->row->manageStatus, '120#00ff00,240#0000ff'))
+        if (!in($this->row->manageStatus, 'confirmed,preview'))
             jflush(false, 'Отменять можно только мероприятия со статусом "Подтвержденное" или "Предварительное"');
 
         // Change `manageStatus` to  'cancelled'
-        $this->row->manageStatus = '036#ff9900';
+        $this->row->manageStatus = 'cancelled';
         $this->row->save();
 
         // Flush success with affected data
@@ -115,7 +115,7 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
     public function deleteAction() {
 
         // Check that current `manageStatus` is appropriate for event to be deleted
-        if (in($this->row->manageStatus, '120#00ff00'))
+        if (in($this->row->manageStatus, 'confirmed'))
             jflush(false, 'Нельзя удалять мероприятия, имеющие статус "Подтвержденное"');
 
         // Call parent

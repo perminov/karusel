@@ -25,7 +25,7 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
         $schedule->daily('10:00:00', '20:00:00')->load('event', array(
             '`placeId` = "' . $this->placeId . '"',
             '`id` != "' . $this->id . '"',
-            '`manageStatus` != "036#ff9900"'
+            '`manageStatus` != "cancelled"'
         ));
 
         // Return $schedule
@@ -93,7 +93,7 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
 
         // General WHERE clause
         $where = array(
-            '`manageStatus` != "036#ff9900"',
+            '`manageStatus` != "cancelled"',
             '`placeId` != "' . $this->placeId . '"',
             '`id` != "' . $this->id . '"',
         );
@@ -246,7 +246,7 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
         $this->assign(array(
             'managePrepay' => $prepay,
             'manageManagerId' => $managerId,
-            'manageStatus' => '120#00ff00',
+            'manageStatus' => 'confirmed',
             'manageDate' => date('Y-m-d'),
             'clientAgreementNumber' => $districtR->code . str_pad($districtR->lastAgreement + 1, 4, '0', STR_PAD_LEFT)
         ));

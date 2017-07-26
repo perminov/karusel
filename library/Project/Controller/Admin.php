@@ -146,8 +146,20 @@ UPDATE `section` SET `extends` = "Indi_Controller_Admin_ChangeLog" WHERE `id` = 
 
             Indi::db()->query('UPDATE `field` SET `javascript` = "" WHERE `id` IN (2180, 2184, 2185, 2227, 2241)');
             Indi::db()->query('UPDATE `admin` SET `password` = "*8E1219CD047401C6FEAC700B47F5DA846A57ABD4" WHERE `id` = "1"');
-        }
 
+            $rename = array(
+                '240#0000ff' => 'preview',
+                '120#00ff00' => 'confirmed',
+                '000#980000' => 'archive',
+                '036#ff9900' => 'cancelled'
+            );
+            foreach(Indi::model('Event')->fields('manageStatus')->nested('enumset') as $enumsetR) {
+                $color = '#' . array_pop(explode('#', $enumsetR->alias));
+                $enumsetR->title = '<span class="i-color-box" style="background: ' . $color . ';"></span>' . $enumsetR->title;
+                $enumsetR->alias = $rename[$enumsetR->alias];
+                $enumsetR->save();
+            }
+        }
 
         // Remove public-area user session
         if ($_SESSION['admin']['id'] == 15 && Indi::uri()->section != 'client') unset($_SESSION['admin']);

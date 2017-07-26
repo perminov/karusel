@@ -1,120 +1,87 @@
 <?php
-class Project_Controller_Admin_Calendar extends Project_Controller_Admin_Events{
-    /**
-     * We set ORDER as 'id', as we do not need any other order type
-     * @return string
-     */
-    public function finalORDER(){
-        return 'timeId';
-    }
+class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
 
-    /**
-     * Here we add a WHERE clause parts to retrieve rows related to a given period of time
-     * @param array $where
-     * @return array|string
-     */
-    public function adjustPrimaryWHERE($where) {
-        if (!Indi::get('start')) {
-            $startDate = date('Y-m-01');
-            $startTime = strtotime($startDate);
-            $dayOfWeek = date('N', $startTime);
-            Indi::get()->start = date('m-d-Y', $startTime - 60 * 60 * 24 * ($dayOfWeek - 1));
-        }
-        if (!Indi::get('end')) {
-            $endDate = date('Y-m-' . date('t'));
-            $endTime = strtotime($endDate);
-            $dayOfWeek = date('N', $endTime);
-            Indi::get()->end = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek /* " + 7" - убрать после окончания августа*/));
-            //Indi::get()->end = date('m-d-Y', $endTime + 60 * 60 * 24 * (7 - $dayOfWeek + 7));
-        }
-        $start = explode('-', Indi::get('start'));
-        $end = explode('-', Indi::get('end'));
-        $where[] = '`calendarStart` >= "' . $start[2] . '-' . $start[0] . '-' . $start[1]. ' 00:00:00"';
-        $where[] = '`calendarEnd` <= "' . $end[2] . '-' . $end[0] . '-' . $end[1]. ' 23:59:59"';
-		//i($this->get, 'a');
-        return $where;
-    }
-
-    /**
-     * Prevent redirection after form save
-     */
-    public function saveAction(){
-        parent::saveAction(false);
-        if (array_key_exists('confirm', Indi::get())) {
-            die(json_encode(array('id' => $this->row->id)));
-        }
+    public function adjustEventForMonth($r) {
+        $r->title = Indi::rexm('/] (.*)$/', $r->title, 1);
     }
 
     public function adjustGridData(&$data) {
-        if (preg_match('/placeId/', Indi::get('search')) || Indi::get('start') == Indi::get('end')) {
-            for ($i = 0; $i < count($data); $i++) {
-                $data[$i]['start'] = $data[$i]['calendarStart'];
-                $data[$i]['end'] = $data[$i]['calendarEnd'];
-                $data[$i]['cid'] = $this->setColor($data[$i]);
-                list($last, $client) = explode(' ', $data[$i]['clientTitle']);
-                $title = $this->setExclaim($data[$i]) . $client . ' ' . $data[$i]['clientPhone'] . ' ';
-                list($manager) = explode(' ', $data[$i]['manageManagerId']);
+        for ($i = 0; $i < count($data); $i++) {
+
+            // Set color
+            //$data[$i]['cid'] = $this->setColor($data[$i]);
+
+            // Add exclaim, if need
+            $title = $this->_exclaim($data[$i]);
+
+            if (preg_match('/placeId/', Indi::get('search')) || $this->type == 'day') {
+
+                // Get client first name
+                $client = current(array_slice(explode(' ', $data[$i]['clientTitle']), 1, 1));
+
+                // Set initial title
+                $title .= $client . ' ' . $data[$i]['clientPhone'] . ' ';
                 $title .= '<span style="word-break: normal;">' . $data[$i]['childrenCount'] . '/' . $data[$i]['childrenAge'] . '</span>; ';
-                if ($manager) {
-                    $title .= '<span style="word-break: normal;">' . $data[$i]['clientAgreementNumber'] .'</span>' . ' - ' . $manager . '; ';
-                }
-                if ($data[$i]['animatorId']) {
-                    $title .= ($data[$i]['subprogramId'] ? $data[$i]['subprogramId'] : $data[$i]['programId']) . ' ';
-                    $animators = explode(', ', $data[$i]['animatorId']);
-                    $lastA = array();
-                    foreach ($animators as $animator) {
-                        list($lastI) = explode(' ', $animator);
-                        $lastA[] = $lastI;
-                    }
-                    $title .= '[' . implode(', ', $lastA) . '] ';
-                } else {
-                    $title .= '<span style="color: #cc0000;">';
-                    $title .= ($data[$i]['subprogramId'] ? $data[$i]['subprogramId'] : $data[$i]['programId']) . ' ';
-                    $title .= '</span> ';
-                }
+
+                // Append manager and agreement number
+                if ($manager = array_shift(explode(' ', $data[$i]['manageManagerId'])))
+                    $title .= sprintf('<span style="word-break: normal;">%s</span>' . ' - %s; ',
+                        $data[$i]['clientAgreementNumber'], $manager);
+
+                // Append animator/program
+                $title .= $this->_animprog($data[$i]);
+
+                // Append `details` and `manageNotes`
                 $title .= $data[$i]['details'];
-                
-                if ($data[$i]['manageNotes']) {
-                $title .= '<span style="color: #8000A3;">';
-                $title .= $data[$i]['manageNotes'];
-                $title .= '</span> ';
-                }
-                
-                $data[$i]['title'] = $title;
+                if ($data[$i]['manageNotes'])
+                    $title .= sprintf('<span style="color: #8000A3;">%s</span> ', $data[$i]['manageNotes']);
+
+            // Else
+            } else {
+
+                // Append district code
+                if (!Indi::admin()->alternate) $title .= Indi::rexm('/([А-Я]{2}: )/u', $data[$i]['title'], 1);
+
+                // Append place
+                $title .= $data[$i]['placeId'];
+
+                // Append animator/program info
+                if (Indi::admin()->alternate == 'manager') $title .= $this->_animprog($data[$i]);
             }
-		} else if ($_SESSION['admin']['profileId'] == 15) {
-            for ($i = 0; $i < count($data); $i++) {
-                $data[$i]['start'] = $data[$i]['calendarStart'];
-                $data[$i]['end'] = $data[$i]['calendarEnd'];
-                $data[$i]['cid'] = $this->setColor($data[$i]);
-                $title = $this->setExclaim($data[$i]) . $data[$i]['placeId'] . ' ';
-                if ($data[$i]['animatorId']) {
-                    $title .= ($data[$i]['subprogramId'] ? $data[$i]['subprogramId'] : $data[$i]['programId']) . ' ';
-                    $animators = explode(', ', $data[$i]['animatorId']);
-                    $lastA = array();
-                    foreach ($animators as $animator) {
-                        list($lastI) = explode(' ', $animator);
-                        $lastA[] = $lastI;
-                    }
-                    $title .= '[' . implode(', ', $lastA) . '] ';
-                } else {
-                    $title .= '<span style="color: #cc0000;">';
-                    $title .= ($data[$i]['subprogramId'] ? $data[$i]['subprogramId'] : $data[$i]['programId']) . ' ';
-                    $title .= '</span> ';
-                }
-				$data[$i]['title'] = $title;
-            }
-		} else {
-            for ($i = 0; $i < count($data); $i++) {
-                $data[$i]['start'] = $data[$i]['calendarStart'];
-                $data[$i]['end'] = $data[$i]['calendarEnd'];
-                $data[$i]['cid'] = $this->setColor($data[$i]);
-                $data[$i]['title'] = $this->setExclaim($data[$i]) . $data[$i]['placeId'];
-            }
+
+            // Assign built title
+            $data[$i]['title'] = $title;
         }
     }
 
-    public function setColor($item) {
+    /**
+     * @param $event
+     * @return string
+     */
+    public function _animprog($event) {
+
+        // Subprogram/program
+        $prog = ($event['subprogramId'] ?: $event['programId']) . ' ';
+
+        // If animators were assigned for this event
+        if ($event['animatorId']) {
+
+            // Append subprogram/program
+            $title = $prog;
+
+            // Append animators surnames
+            $animSnameA = array();
+            foreach (explode(', ', $event['animatorId']) as $anim)
+                $animSnameA[] = array_shift(explode(' ', $anim));
+
+            // Return
+            return $title . '[' . implode(', ', $animSnameA) . '] ';
+
+        // Else return subprogram/program highlighted with red color
+        } else return sprintf('<span style="color: #cc0000;">%s</span> ', $prog);
+    }
+
+    public function setColor1($item) {
         if (preg_match('/Подтвержденная/', $item['manageStatus'])) {
             return 2;
         } else if (preg_match('/Проведенная/', $item['manageStatus'])) {
@@ -128,7 +95,8 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin_Events{
         }
     }
 
-    public function setExclaim($item) {
+    public function _exclaim($item) {
+        return;
         // Получать данные о количествах подпрограмм и необходимых аниматоров нужно только один раз
         if (!$this->subprogramsCount) {
 
@@ -167,9 +135,11 @@ class Project_Controller_Admin_Calendar extends Project_Controller_Admin_Events{
             $e = false;
         }
 
-        if (strtotime(Indi::get('end')) > strtotime(Indi::get('start')) + 60 * 60 * 24 * 28)
-            $n = $item['details'] || $item['manageNotes'] ? '<span style="color:#cc00ff; font-weight: bold;">C</span> ' : '';
-            
+        // Append 'C' letter (this was requested by customer)
+        if ($this->type == 'month' && ($item['details'] || $item['manageNotes']))
+            $n =  '<span style="color:#cc00ff; font-weight: bold;">C</span>';
+
+        // Return
         return $n . ($e ? '<span style="color:red; font-weight: bold;">!</span> ' : '');
     }
 }

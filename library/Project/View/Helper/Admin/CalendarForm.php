@@ -16,7 +16,7 @@ class Indi_View_Helper_Admin_CalendarForm {
         $actionA = Indi::trail()->actions->toArray();
         $a = array();
         foreach ($actionA as $actionI) {
-            if ($actionI['alias'] == 'save' && ($this->view->row->manageStatus != '000#980000' || !$_SESSION['admin']['alternate'])) {
+            if ($actionI['alias'] == 'save' && ($this->view->row->manageStatus != 'archive' || !$_SESSION['admin']['alternate'])) {
                 $a[] = "{
                     text: 'Сохранить',
                     handler: function(){
@@ -26,7 +26,7 @@ class Indi_View_Helper_Admin_CalendarForm {
                     id: 'button-save'
                 }";
             }
-            if ($actionI['alias'] == 'delete' && $this->view->row->id && ($this->view->row->manageStatus == '240#0000ff' || !$_SESSION['admin']['alternate'])) {
+            if ($actionI['alias'] == 'delete' && $this->view->row->id && ($this->view->row->manageStatus == 'preview' || !$_SESSION['admin']['alternate'])) {
                 $a[] = "{
                     text: 'Удалить',
                     handler: function(){
@@ -50,7 +50,7 @@ class Indi_View_Helper_Admin_CalendarForm {
                     id: 'button-delete'
                 }";
             }
-            if ($actionI['alias'] == 'confirm' && $this->view->row->id && $this->view->row->manageStatus == '240#0000ff') {
+            if ($actionI['alias'] == 'confirm' && $this->view->row->id && $this->view->row->manageStatus == 'preview') {
                 $managerRs = Indi::model('Manager')->fetchAll();
                 $options = array(); foreach($managerRs as $managerR) $options[] = array('id' => $managerR->id, 'title' => $managerR->title);
                 $a[] = "{
@@ -209,7 +209,7 @@ class Indi_View_Helper_Admin_CalendarForm {
                         top.window.Indi.load(Indi.pre + '/" . Indi::trail()->section->alias . "/agreement/id/" . $this->view->row->id . "/ph/' + Indi.trail.item().section.primaryHash + '/aix/' + aix + '/', true);
                     },
                     id: 'button-agreement',
-                    hidden: " . ($this->view->row->manageStatus == '240#0000ff' ? 'true' : 'false') . "
+                    hidden: " . ($this->view->row->manageStatus == 'preview' ? 'true' : 'false') . "
                 }";
             }
             if ($actionI['alias'] == 'cancel' && $this->view->row->id) {
@@ -234,7 +234,7 @@ class Indi_View_Helper_Admin_CalendarForm {
 						)
                     },
                     id: 'button-cancel',
-                    hidden: " . ($this->view->row->manageStatus == '120#00ff00' ? 'false' : 'true') . "
+                    hidden: " . ($this->view->row->manageStatus == 'confirmed' ? 'false' : 'true') . "
                 }";
             }
         }
