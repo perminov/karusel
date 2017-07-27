@@ -1,0 +1,1 @@
+<?=Indi::view()->same('list')?>
