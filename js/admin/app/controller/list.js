@@ -7,22 +7,8 @@ Ext.define('Indi.controller.list', {
             }
         },
         form: {
-            panel: {
-                docked: {
-                    inner: {
-                        master: [
-                            {alias: 'ID'},
-                            {alias: 'reload'}, '-',
-                            {alias: 'save'}, {alias: 'autosave'}, '-',
-                            {alias: 'reset'}, '-',
-                            {alias: 'prev'}, {alias: 'sibling'}, {alias: 'next'}, '-',
-                            {alias: 'agreement'}, '-',
-                            {alias: 'create'}, '-',
-                            {alias: 'nested'}, '->',
-                            {alias: 'offset'}, {alias: 'found'}
-                        ]
-                    }
-                }
+            panelDockedInner$Actions$Agreement: {
+                iconCls: '!i-btn-icon-print'
             },
             formItem$Date: function(item) {
                 var me = this;
