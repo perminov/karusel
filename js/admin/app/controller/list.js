@@ -137,6 +137,7 @@ Ext.define('Indi.controller.list', {
             formItem$Editor: function() {
                 var me = this; return {
                     editorCfg: {
+                        readOnly: true,
                         style: 'body {background: url('+ Indi.std + '/i/admin/bg-dogovor.jpg) no-repeat 50% 95%;} ' +
                             '* {font-family:Verdana, Arial, Helvetica, sans-serif; font-size:10.4px; line-height: 12px !important;}'
                     },
