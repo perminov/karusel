@@ -77,7 +77,9 @@ UPDATE `section2action` SET `toggle` = "n" WHERE `id` IN (1615, 1622, 1603, 1621
 UPDATE `field` SET `elementId` = "23" WHERE `id` = "2185";
 UPDATE `section` SET `extends` = "Indi_Controller_Admin_ChangeLog" WHERE `id` = "389";
 UPDATE `action` SET `alias` = "print" WHERE `alias` = "agreement";
-
+UPDATE `event` SET `finalPrice` = `price` WHERE `modifiedPrice` = "0";
+UPDATE `event` SET `finalPrice` = `modifiedPrice` WHERE `modifiedPrice` > "0";
+UPDATE `grid` SET `fieldId` = "2287" WHERE `fieldId` = "2198";
         <?
             $sql = explode(";\n", ob_get_clean());
             foreach ($sql as $sqlI) if (trim($sqlI))Indi::db()->query($sqlI);

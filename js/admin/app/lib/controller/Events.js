@@ -60,6 +60,7 @@ Ext.define('Indi.lib.controller.Events', {
     },
     actionsConfig: {
         index: {
+            gridColumn$FinalPrice: {summaryType: 'sum'},
             panelDockedInner$Actions$Confirm_InnerHandler: function(action,row, aix, btn) {
                 var me = this;
                 this.panelDockedInner$Actions_DefaultInnerHandlerLoad(action, row, aix, btn, {

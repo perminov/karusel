@@ -213,6 +213,9 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
             $this->price *= 1 - $discount/100;
         }
 
+        // Set `finalPrice`
+        $this->finalPrice = $this->modifiedPrice ?: $this->price;
+
         // Return price
         return $this->price;
     }
