@@ -21,10 +21,8 @@ UPDATE `field` SET `defaultValue` = REPLACE(`defaultValue`, 'loadContent(grid.in
 
 UPDATE `action` SET `javascript` = REPLACE(`javascript`, 'grid.indi.href', 'indi.trail.item().section.href');
 UPDATE `action` SET `javascript` = REPLACE(`javascript`, 'grid.store', 'indi.action.index.store');
-UPDATE `section` SET `toggle` = "n" WHERE `id` IN (387, 400);
 UPDATE `section` SET `javascript` = "Indi.ready(function(){
 Indi.action.index.options.grid.firstColumnWidthFraction = 0.23;}, 'action.index');" WHERE `id` IN (388, 402, 403);
-UPDATE `section` SET `title` = "Мероприятия" WHERE `id` = 401;
 UPDATE `action` SET `javascript` = REPLACE(`javascript`, '"color-box"', '"i-color-box"');
 UPDATE `adjustment` SET `was` = REPLACE(`was`, '"color-box"', '"i-color-box"'), `now` = REPLACE(`now`, '"color-box"', '"i-color-box"');
 UPDATE `action` SET `javascript` = REPLACE(`javascript`, '</span> Подтвержденная', '</span>');
@@ -78,6 +76,7 @@ UPDATE `section2action` SET `move` = "1386" WHERE `id` = "1616";
 UPDATE `section2action` SET `toggle` = "n" WHERE `id` IN (1615, 1622, 1603, 1621);
 UPDATE `field` SET `elementId` = "23" WHERE `id` = "2185";
 UPDATE `section` SET `extends` = "Indi_Controller_Admin_ChangeLog" WHERE `id` = "389";
+UPDATE `action` SET `alias` = "print" WHERE `alias` = "agreement";
 
         <?
             $sql = explode(";\n", ob_get_clean());
