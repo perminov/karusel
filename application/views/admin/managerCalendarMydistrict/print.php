@@ -6,8 +6,8 @@ $this->months = array(
     '07' => 'Июля', '08' => 'Августа', '09' => 'Сентября', '10' => 'Октября', '11' => 'Ноября', '12' => 'Декабря'
 );
 $this->row->foreign('districtId,placeId,animatorId,programId,subprogramId,timeId');
-$name = 'agreement';
-$value = $this->render('managerCalendarMydistrict/agreementTemplate.php');
+$name = 'print';
+$value = $this->render('managerCalendarMydistrict/printTemplate.php');
 $CKconfig['language'] = Indi::ini('view')->lang;
 $customParams = array('width','height','bodyClass','style','script','sourceStripper');
 foreach($customParams as $customParam) {
@@ -102,7 +102,7 @@ $xhtml  = '</table>';
 $title[] = I_BACK;
 $action[] = "top.window.Ext.getCmp('i-action-form-topbar-button-back').handler();";
 $title[] = 'Распечатать';
-$action[] = 'CKEDITOR.tools.callFunction(9, CKEDITOR.instances.agreement)';
+$action[] = 'CKEDITOR.tools.callFunction(9, CKEDITOR.instances.print)';
 echo $this->buttons($title, $action);
 $xhtml .= '</form>';
 

@@ -9,14 +9,6 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
     /**
      *
      */
-    public function adjustActionCfg() {
-        $this->actionCfg['mode']['agreement'] = 'row';
-        $this->actionCfg['view']['agreement'] = 'print';
-    }
-
-    /**
-     *
-     */
     public function preDispatch() {
 
         // Set `manageStatus` as 'done' for yesterday and older events with status 'confirmed'
@@ -120,12 +112,5 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
 
         // Call parent
         $this->callParent();
-    }
-
-    /**
-     * Show agreement
-     */
-    public function agreementAction() {
-        Indi::trail()->view->mode = 'view';
     }
 }

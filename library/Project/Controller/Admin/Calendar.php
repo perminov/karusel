@@ -8,9 +8,6 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
     public function adjustGridData(&$data) {
         for ($i = 0; $i < count($data); $i++) {
 
-            // Set color
-            //$data[$i]['cid'] = $this->setColor($data[$i]);
-
             // Add exclaim, if need
             $title = $this->_exclaim($data[$i]);
 

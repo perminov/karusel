@@ -67,9 +67,6 @@ Ext.define('Indi.lib.controller.Events', {
                         me._btn$Confirm(response, row)
                     }
                 });
-            },
-            panelDockedInner$Actions$Agreement_InnerHandler: function(action, row, aix, btn) {
-                this.panelDockedInner$Actions_DefaultInnerHandlerLoad(action, row, aix, btn);
             }
         }
     }

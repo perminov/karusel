@@ -1,15 +1,7 @@
 Ext.define('Indi.controller.list', {
     extend: 'Indi.lib.controller.Events',
     actionsConfig: {
-        index: {
-            panelDockedInner$Actions$Agreement: {
-                iconCls: '!i-btn-icon-print'
-            }
-        },
         form: {
-            panelDockedInner$Actions$Agreement: {
-                iconCls: '!i-btn-icon-print'
-            },
             formItem$Date: function(item) {
                 var me = this;
                 return Ext.merge(item, {
@@ -134,25 +126,9 @@ Ext.define('Indi.controller.list', {
                         }
                     }
                 });
-            },
-            panelDockedInner$Agreement: function() {
-
-                // Here we check if 'save' action is in the list of allowed actions
-                var me = this;
-
-                // 'Save' item config
-                return {
-                    id: me.panelDockedInnerBid() + 'agreement',
-                    xtype: 'button',
-                    tooltip: 'Договор',
-                    iconCls: 'i-btn-icon-print',
-                    handler: function() {
-                        me.goto(me.other('agreement'));
-                    }
-                }
             }
         },
-        agreement: {
+        print: {
             formItemXSpan: function() {
                 return Ext.merge(this.callParent(), {
                     value: 'Договор на проведение мероприятия'

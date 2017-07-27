@@ -1,1 +1,0 @@
-<?include($_SERVER['DOCUMENT_ROOT'] . STD . '/www/application/views/admin/managerCalendarMydistrict/agreement.php');
