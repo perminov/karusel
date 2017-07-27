@@ -5,12 +5,18 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
         $r->title = Indi::rexm('/] (.*)$/', $r->title, 1);
     }
 
+    /*
+     *
+     */
     public function adjustGridData(&$data) {
+
+        // Foreach data item
         for ($i = 0; $i < count($data); $i++) {
 
             // Add exclaim, if need
-            $title = $this->_exclaim($data[$i]);
+            $title = $this->_exclaim($data[$i], $i);
 
+            // If 'Place' filter is used, or calendar type is 'day'
             if (preg_match('/placeId/', Indi::get('search')) || $this->type == 'day') {
 
                 // Get client first name
@@ -78,58 +84,38 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
         } else return sprintf('<span style="color: #cc0000;">%s</span> ', $prog);
     }
 
-    public function setColor1($item) {
-        if (preg_match('/Подтвержденная/', $item['manageStatus'])) {
-            return 2;
-        } else if (preg_match('/Проведенная/', $item['manageStatus'])) {
-            return 4;
-        } else if (preg_match('/Отмененная/', $item['manageStatus'])) {
-            return 5;
-        } else if ($item['requestBy'] == 'Заказчиком') {
-            return 3;
-        } else {
-            return 1;
-        }
-    }
+    /**
+     * Set exclaim
+     *
+     * @param $item
+     * @param $i
+     * @return string
+     */
+    public function _exclaim($item, $i) {
 
-    public function _exclaim($item) {
-        return;
-        // Получать данные о количествах подпрограмм и необходимых аниматоров нужно только один раз
-        if (!$this->subprogramsCount) {
+        // Set no exclaim, by default
+        $e = false;
 
-            // Получаем данные о том, сколько подпрограмм в каждой программе
-            $programA = Indi::db()->query('SELECT `title`, `subprogramsCount` FROM `program`')->fetchAll();
-            foreach($programA as $programI) $this->subprogramsCount[$programI['title']] = $programI['subprogramsCount'];
+        // If event is confirmed
+        if ($item['$keys']['manageStatus'] == 'confirmed') {
 
-            // Получаем данные о том, сколько аниматоров в каждой подпрограмме
-            $subprogramA = Indi::db()->query('SELECT `title`, `animatorsCount` FROM `subprogram`')->fetchAll();
-            foreach($subprogramA as $subprogramI) $this->animatorsCount[$subprogramI['title']] = $subprogramI['animatorsCount'];
-        }
+            // If no program yet chosen - set $e to `true`, else
+            if (!$item['programId']) $e = true; else {
 
-        if ($item['cid'] == 2) {
-            if (!$item['programId']) {
-                $e = true;
-            } else {
-                if ($this->subprogramsCount[$item['programId']] > 0) {
-                    if (!$item['subprogramId']) {
-                        $e = true;
-                    } else if ($this->animatorsCount[$item['subprogramId']] > count(explode(',', $item['animatorId']))) {
-                        $e = true;
-                    } else if (!$item['animatorId']) {
-                        $e = true;
-                    } else {
-                        $e = false;
-                    }
-                } else {
-                    if (!$item['animatorId']) {
-                        $e = true;
-                    } else {
-                        $e = false;
-                    }
+                // If no animators yet assigned
+                if (!$item['animatorId']) $e = true;
+
+                // If event's program has subprograms
+                else if ($this->rowset->at($i)->foreign('programId')->subprogramsCount > 0) {
+
+                    // If no subprogram yet specified - set exclaim
+                    if (!$item['subprogramId']) $e = true;
+
+                    // Else
+                    else if ($this->rowset->at($i)->foreign('subprogramId')->animatorsCount
+                        > count(ar($item['animatorId']))) $e = true;
                 }
             }
-        } else {
-            $e = false;
         }
 
         // Append 'C' letter (this was requested by customer)
