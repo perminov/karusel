@@ -118,7 +118,7 @@ Ext.define('Indi.controller.list', {
                                             c.maxSelected = !c.sbl('subprogramId').hasZeroValue()
                                                 ? c.sbl('subprogramId').prop('animatorsCount')
                                                 : 1;
-                                            c.sbl('price').val(json.price);
+                                            if (c.sbl('price')) c.sbl('price').val(json.price);
                                         }
                                     }
                                 });

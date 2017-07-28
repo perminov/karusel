@@ -2,7 +2,7 @@ Ext.define('Indi.lib.controller.Events', {
     extend: 'Indi.lib.controller.Controller',
     actionsSharedConfig: {
         _btn$Confirm: function(response, row, success) {
-            var me = this;
+            var me = this, uid = Indi.user.uid.split('-');
             Ext.MessageBox.show({
                 title: 'Подтверждение мероприятия',
                 msg: 'Укажите менеджера, заключившего договор с клиентом и размер предоплаты',
@@ -16,7 +16,7 @@ Ext.define('Indi.lib.controller.Events', {
                         xtype: 'combo.auto',
                         fieldLabel: 'Менеджер',
                         name: 'manageManagerId',
-                        value: (me.ti().row && me.ti().row.manageManagerId) || ''
+                        value: uid[0] == '15' ? uid[1] : ''
                     }, {
                         xtype: 'numberfield',
                         name: 'managePrepay',
@@ -30,7 +30,7 @@ Ext.define('Indi.lib.controller.Events', {
                     }],
                     listeners: {
                         afterrender: function(form) {
-                            form.up('messagebox').msgButtons['ok'].setDisabled(true);
+                            if (uid[0] != '15') form.up('messagebox').msgButtons['ok'].setDisabled(true);
                             this.items.each(function(item){
                                 if (item.xtype == 'combo.auto') item.loadStore();
                             });

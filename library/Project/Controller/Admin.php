@@ -140,7 +140,7 @@ UPDATE `grid` SET `fieldId` = "2287" WHERE `fieldId` = "2198";
             $fieldR_animatorIds->alias = 'animatorId';
             $fieldR_animatorIds->save();
 
-            Indi::db()->query('UPDATE `section` SET `toggle` = "n" WHERE `id` IN(394,396)');
+            Indi::db()->query('UPDATE `section` SET `toggle` = "n" WHERE `id` IN(396)');
             Indi::db()->query('UPDATE `section2action` SET `profileIds` = CONCAT(`profileIds`, ",16") WHERE `id` IN (1553,1554)');
             Indi::db()->query('UPDATE `event` SET `spaceSince` = `calendarStart`, `spaceUntil` = `calendarEnd`');
             Indi::db()->query('UPDATE `event` SET `spaceFrame` = CAST((UNIX_TIMESTAMP(`spaceUntil`) - UNIX_TIMESTAMP(`spaceSince`)) AS UNSIGNED)');
@@ -160,6 +160,10 @@ UPDATE `grid` SET `fieldId` = "2287" WHERE `fieldId` = "2198";
                 $enumsetR->alias = $rename[$enumsetR->alias];
                 $enumsetR->save();
             }
+
+            Indi::model('Entity')->fetchRow('`id` = "310"')->delete();
+            Indi::model('Section')->fetchRow('`id` = "397"')->delete();
+            Indi::db()->query('UPDATE `field` SET `elementId` = "23" WHERE `id` = "2202"');
         }
 
         // Remove public-area user session
