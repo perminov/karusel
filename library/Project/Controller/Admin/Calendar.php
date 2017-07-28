@@ -238,4 +238,48 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
         // Call parent
         $this->callParent();
     }
+
+    /**
+     * Calc value of a special 'color' prop
+     *
+     * @param $r
+     * @return null
+     */
+    public function detectEventColor($r) {
+
+        // Get primary color prop
+        $prop = $this->colors['field'];
+
+        // Return
+        return $r->requestBy == 'client' && $r->$prop == 'preview' ? $r->requestBy : $r->$prop;
+    }
+
+    /**
+     * Adjust colors
+     *
+     * @param $info
+     * @return array|void
+     */
+    public function adjustColors(&$info) {
+
+        // Set empty info
+        if (!$info) $info = array('field' => '', 'colors' => array());
+
+        // Append one more color definition
+        $info['colors']['client'] = '#F4D4FC';
+    }
+
+    /**
+     *
+     */
+    public function adjustColorsCss($option, $color, &$css) {
+
+        // No adjustment for non-client option
+        if ($option != 'client') return;
+
+        // Apply more detailed custom color definition
+        $css['background-color'] = '#F4D4FC';
+        $css['border-color'] = '#D77BED';
+        $css['color'] = '#C4088C';
+    }
 }
