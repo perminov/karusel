@@ -12,7 +12,7 @@ class Project_Controller_Admin extends Indi_Controller_Admin{
             ob_start();?>
 UPDATE `animator` SET  `email` = CONCAT('animator', IF(`id` = 1, '', `id`)), `password` = CONCAT('animator',  IF(`id` = 1, '', `id`));
 UPDATE `manager` SET `email` = CONCAT('manager', IF(`id` = 1, '', `id`)), `password` = CONCAT('manager',  IF(`id` = 1, '', `id`));
-UPDATE `admin` SET `email` = 'admin', `password` = 'admin' WHERE `email` = 'vmikhalko';
+UPDATE `admin` SET `email` = 'admin', `password` = PASSWORD('admin') WHERE `email` = 'vmikhalko';
 
 UPDATE `action` SET `javascript` = REPLACE(`javascript`, 'loadContent(grid.indi.href', 'indi.load(indi.trail.item().section.href');
 UPDATE `action` SET `javascript` = REPLACE(`javascript`, 'grid.indi.msgbox.confirm.title', "indi.lang.I_ACTION_DELETE_CONFIRM_TITLE");
