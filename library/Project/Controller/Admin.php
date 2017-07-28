@@ -73,7 +73,7 @@ UPDATE `section2action` SET `move` = "1375" WHERE `id` = "1603";
 UPDATE `section2action` SET `move` = "1374" WHERE `id` = "1604";
 UPDATE `section2action` SET `move` = "1387" WHERE `id` = "1615";
 UPDATE `section2action` SET `move` = "1386" WHERE `id` = "1616";
-UPDATE `section2action` SET `toggle` = "n" WHERE `id` IN (1615, 1622, 1603, 1621);
+UPDATE `section2action` SET `toggle` = "y" WHERE `id` IN (1631, 1632, 1633, 1634, 1635);
 UPDATE `field` SET `elementId` = "23" WHERE `id` = "2185";
 UPDATE `section` SET `extends` = "Indi_Controller_Admin_ChangeLog" WHERE `id` = "389";
 UPDATE `action` SET `alias` = "print" WHERE `alias` = "agreement";

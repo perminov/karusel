@@ -176,7 +176,7 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
         if ($this->row->manageStatus != 'preview') jflush(false, 'Подтверждать можно только предварительные заявки');
 
         // Else if $_POST data is given
-        else if (count($data = Indi::post())) {
+        else if (array_key_exists('manageManagerId', $data = Indi::post())) {
 
             // Check data
             jcheck(array(
@@ -232,8 +232,8 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
     public function deleteAction() {
 
         // Check that current `manageStatus` is appropriate for event to be deleted
-        if (in($this->row->manageStatus, 'confirmed'))
-            jflush(false, 'Нельзя удалять мероприятия, имеющие статус "Подтвержденное"');
+        if (in($this->row->manageStatus, 'confirmed,archive'))
+            jflush(false, 'Нельзя удалять мероприятия, имеющие статус "Подтвержденное" или "Проведенное"');
 
         // Call parent
         $this->callParent();

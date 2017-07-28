@@ -1,7 +1,7 @@
 Ext.define('Indi.lib.controller.Events', {
     extend: 'Indi.lib.controller.Controller',
     actionsSharedConfig: {
-        _btn$Confirm: function(response, row) {
+        _btn$Confirm: function(response, row, success) {
             var me = this;
             Ext.MessageBox.show({
                 title: 'Подтверждение мероприятия',
@@ -48,10 +48,7 @@ Ext.define('Indi.lib.controller.Events', {
                         url: response.request.options.url,
                         method: 'POST',
                         params: this.down('form').getForm().getValues(),
-                        success: function(response) {
-                            var json = Ext.JSON.decode(response.responseText, true);
-                            me.affectRecord(row, json);
-                        }
+                        success: success
                     });
                 },
                 scope: Ext.MessageBox
@@ -65,9 +62,60 @@ Ext.define('Indi.lib.controller.Events', {
                 var me = this;
                 this.panelDockedInner$Actions_DefaultInnerHandlerLoad(action, row, aix, btn, {
                     success: function(response) {
-                        me._btn$Confirm(response, row)
+                        me._btn$Confirm(response, row, function(response) {
+                            var json = Ext.JSON.decode(response.responseText, true);
+                            if (me.affectRecord) me.affectRecord(row, json);
+                        })
                     }
                 });
+            }
+        },
+        form: {
+            panelDockedInner$Actions$Confirm: {
+                handler: function(btn) {
+                    var me = btn.ctx();
+                    me.goto(me.other('confirm'), false, {success: function(response){
+                        me._btn$Confirm(response, me.ti().row, function() {
+                            Ext.Msg.on('hide', function(){
+                                Ext.getCmp(this.panelDockedInnerBid() + 'reload').press();
+                            }, me, {single: true, delay: 500});
+                        });
+                    }})
+                }
+            },
+            panelDockedInner$Actions$Cancel: {
+                handler: function(btn) {
+                    var me = btn.ctx();
+                    me.goto(me.other('cancel'), false, {success: function(){
+                        Ext.Msg.on('hide', function(){
+                            Ext.getCmp(this.panelDockedInnerBid() + 'reload').press();
+                        }, me, {single: true, delay: 500});
+                    }});
+                }
+            }
+        },
+        print: {
+            panelDockedInner$Actions$Confirm: {
+                handler: function(btn) {
+                    var me = btn.ctx();
+                    me.goto(me.other('confirm'), false, {success: function(response){
+                        me._btn$Confirm(response, me.ti().row, function() {
+                            Ext.Msg.on('hide', function(){
+                                Ext.getCmp(this.panelDockedInnerBid() + 'reload').press();
+                            }, me, {single: true, delay: 500});
+                        });
+                    }})
+                }
+            },
+            panelDockedInner$Actions$Cancel: {
+                handler: function(btn) {
+                    var me = btn.ctx();
+                    me.goto(me.other('cancel'), false, {success: function(){
+                        Ext.Msg.on('hide', function(){
+                            Ext.getCmp(this.panelDockedInnerBid() + 'reload').press();
+                        }, me, {single: true, delay: 500});
+                    }});
+                }
             }
         }
     }
