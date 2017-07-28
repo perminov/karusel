@@ -1,3 +1,3 @@
 Ext.define('Indi.controller.managerGridMydistrict', {
-    extend: 'Indi.controller.list'
+    extend: 'Indi.lib.controller.Events'
 });
