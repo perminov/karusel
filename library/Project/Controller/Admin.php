@@ -10,9 +10,9 @@ class Project_Controller_Admin extends Indi_Controller_Admin{
             ignore_user_abort(1);
 
             ob_start();?>
-UPDATE `animator` SET  `email` = CONCAT('animator', IF(`id` = 1, '', `id`)), `password` = CONCAT('animator',  IF(`id` = 1, '', `id`));
-UPDATE `manager` SET `email` = CONCAT('manager', IF(`id` = 1, '', `id`)), `password` = CONCAT('manager',  IF(`id` = 1, '', `id`));
-UPDATE `admin` SET `email` = 'admin', `password` = PASSWORD('admin') WHERE `email` = 'vmikhalko';
+#UPDATE `animator` SET  `email` = CONCAT('animator', IF(`id` = 1, '', `id`)), `password` = CONCAT('animator',  IF(`id` = 1, '', `id`));
+#UPDATE `manager` SET `email` = CONCAT('manager', IF(`id` = 1, '', `id`)), `password` = CONCAT('manager',  IF(`id` = 1, '', `id`));
+#UPDATE `admin` SET `email` = 'admin', `password` = PASSWORD('admin') WHERE `email` = 'vmikhalko';
 
 UPDATE `action` SET `javascript` = REPLACE(`javascript`, 'loadContent(grid.indi.href', 'indi.load(indi.trail.item().section.href');
 UPDATE `action` SET `javascript` = REPLACE(`javascript`, 'grid.indi.msgbox.confirm.title', "indi.lang.I_ACTION_DELETE_CONFIRM_TITLE");
@@ -35,10 +35,10 @@ UPDATE `section` SET `filter` = '`districtId` = "<?='<?=Indi::admin()->districtI
 UPDATE `section` SET `filter` = '`districtId` != "<?='<?=Indi::admin()->districtId?>'?>"' WHERE `id` IN (393,403);
 UPDATE `profile` SET `home` = "" WHERE `id` = "15";
 UPDATE `profile` SET `home` = "" WHERE `id` = "16";
-UPDATE `event` SET `clientPhone` = CONCAT(SUBSTRING(`clientPhone`, 1, CHAR_LENGTH(`clientPhone`) - 4), '****') WHERE CHAR_LENGTH(`clientPhone`) > 0;
-UPDATE `event` SET `clientPassportNumber` = CONCAT(SUBSTRING(`clientPassportNumber`, 1, LENGTH(`clientPassportNumber`) - 6), '******');
-UPDATE `event` SET `clientPassportIssueInfo` = CONCAT(SUBSTRING(`clientPassportIssueInfo`, 1, 3), REPEAT('*', CHAR_LENGTH(`clientPassportIssueInfo`) - 3));
-UPDATE `event` SET `clientAddress` = CONCAT(SUBSTRING(`clientAddress`, 1, CHAR_LENGTH(`clientAddress`) - 6), '******');
+#UPDATE `event` SET `clientPhone` = CONCAT(SUBSTRING(`clientPhone`, 1, CHAR_LENGTH(`clientPhone`) - 4), '****') WHERE CHAR_LENGTH(`clientPhone`) > 0;
+#UPDATE `event` SET `clientPassportNumber` = CONCAT(SUBSTRING(`clientPassportNumber`, 1, LENGTH(`clientPassportNumber`) - 6), '******');
+#UPDATE `event` SET `clientPassportIssueInfo` = CONCAT(SUBSTRING(`clientPassportIssueInfo`, 1, 3), REPEAT('*', CHAR_LENGTH(`clientPassportIssueInfo`) - 3));
+#UPDATE `event` SET `clientAddress` = CONCAT(SUBSTRING(`clientAddress`, 1, CHAR_LENGTH(`clientAddress`) - 6), '******');
 UPDATE `search` SET `defaultValue` = "<?='<?=$_SESSION[\'admin\'][\'id\']?>'?>" WHERE `id` = "140";
 UPDATE `field` SET `javascript` = REPLACE(`javascript`, 'auxillary', 'auxiliary');
 UPDATE `search` SET `filter` = "`districtId` = '<?='<?=Indi::admin()->districtId?>'?>'" WHERE `id` = "141";
@@ -55,14 +55,14 @@ UPDATE `field` SET `title` = "Локейшен" WHERE `id` = "2168";
 INSERT INTO `disabledField` SET `sectionId` = "382", `fieldId` = "2168", `displayInForm` = "1";
 UPDATE `adjustment` SET `was` = REPLACE(`was`, "</span> ", "</span>"), `now` = REPLACE(`now`, "</span> ", "</span>");
 
-UPDATE `adjustment` SET `was` = CONCAT(SUBSTRING(`was`, 1, CHAR_LENGTH(`was`) - 4), '****') WHERE `fieldId` = "2196" AND CHAR_LENGTH(`was`) > 0;
-UPDATE `adjustment` SET `now` = CONCAT(SUBSTRING(`now`, 1, CHAR_LENGTH(`now`) - 4), '****') WHERE `fieldId` = "2196" AND CHAR_LENGTH(`now`) > 0;
-UPDATE `adjustment` SET `was` = CONCAT(SUBSTRING(`was`, 1, LENGTH(`was`) - 6), '******') WHERE `fieldId` = "2194";
-UPDATE `adjustment` SET `now` = CONCAT(SUBSTRING(`now`, 1, LENGTH(`now`) - 6), '******') WHERE `fieldId` = "2194";
-UPDATE `adjustment` SET `was` = CONCAT(SUBSTRING(`was`, 1, 3), REPEAT('*', CHAR_LENGTH(`was`) - 3)) WHERE `fieldId` = "2195";
-UPDATE `adjustment` SET `now` = CONCAT(SUBSTRING(`now`, 1, 3), REPEAT('*', CHAR_LENGTH(`now`) - 3)) WHERE `fieldId` = "2195";
-UPDATE `adjustment` SET `was` = CONCAT(SUBSTRING(`was`, 1, CHAR_LENGTH(`was`) - 6), '******') WHERE `fieldId` = "2223";
-UPDATE `adjustment` SET `now` = CONCAT(SUBSTRING(`now`, 1, CHAR_LENGTH(`now`) - 6), '******') WHERE `fieldId` = "2223";
+#UPDATE `adjustment` SET `was` = CONCAT(SUBSTRING(`was`, 1, CHAR_LENGTH(`was`) - 4), '****') WHERE `fieldId` = "2196" AND CHAR_LENGTH(`was`) > 0;
+#UPDATE `adjustment` SET `now` = CONCAT(SUBSTRING(`now`, 1, CHAR_LENGTH(`now`) - 4), '****') WHERE `fieldId` = "2196" AND CHAR_LENGTH(`now`) > 0;
+#UPDATE `adjustment` SET `was` = CONCAT(SUBSTRING(`was`, 1, LENGTH(`was`) - 6), '******') WHERE `fieldId` = "2194";
+#UPDATE `adjustment` SET `now` = CONCAT(SUBSTRING(`now`, 1, LENGTH(`now`) - 6), '******') WHERE `fieldId` = "2194";
+#UPDATE `adjustment` SET `was` = CONCAT(SUBSTRING(`was`, 1, 3), REPEAT('*', CHAR_LENGTH(`was`) - 3)) WHERE `fieldId` = "2195";
+#UPDATE `adjustment` SET `now` = CONCAT(SUBSTRING(`now`, 1, 3), REPEAT('*', CHAR_LENGTH(`now`) - 3)) WHERE `fieldId` = "2195";
+#UPDATE `adjustment` SET `was` = CONCAT(SUBSTRING(`was`, 1, CHAR_LENGTH(`was`) - 6), '******') WHERE `fieldId` = "2223";
+#UPDATE `adjustment` SET `now` = CONCAT(SUBSTRING(`now`, 1, CHAR_LENGTH(`now`) - 6), '******') WHERE `fieldId` = "2223";
 
 INSERT INTO `search` SET `sectionId` = "389", `fieldId` = "2209", alt = "За период";
 UPDATE `search` SET `filter` = "`districtId` = '<?='<?=Indi::admin()->districtId?>'?>'" WHERE `id` = "141";
@@ -82,7 +82,7 @@ UPDATE `event` SET `finalPrice` = `modifiedPrice` WHERE `modifiedPrice` > "0";
 UPDATE `grid` SET `fieldId` = "2287" WHERE `fieldId` = "2198";
         <?
             $sql = explode(";\n", ob_get_clean());
-            foreach ($sql as $sqlI) if (trim($sqlI))Indi::db()->query($sqlI);
+            foreach ($sql as $sqlI) if (trim($sqlI) && !preg_match('/^#/', $sqlI))Indi::db()->query($sqlI);
             $t1 = new Admin_TemporaryController();
             $t1->titlesAction('vkenguru', false);
             $t1->deprecatedAction(false);

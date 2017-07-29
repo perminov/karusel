@@ -263,6 +263,31 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
     }
 
     /**
+     * Ignore `mobile` and `workphone` while fixing types of data, got from PDO
+     *
+     * @param array $data
+     * @return array
+     */
+    public function fixTypes(array $data) {
+
+        // Foreach prop check
+        foreach ($data as $k => $v) if (!in($k, 'clientPhone')){
+
+            // If prop's value is a string, containing integer value - force value type to be integer, not string
+            if (preg_match(Indi::rex('int11'), $v)) $data[$k] = (int) $v;
+
+            // Else if prop's value is a string, containing decimal value - force value type to be float, not string
+            else if (preg_match(Indi::rex('decimal112'), $v)) $data[$k] = (float) $v;
+
+            // Else if prop's value is a string, containing relative src - prepend STD
+            else if ($m = Indi::rexm('~\burl\((/[^/]+)~', $v)) $data[$k] = preg_replace('~\burl\((/[^/]+)~', 'url(' . STD . '$1', $v);
+        }
+
+        // Return
+        return $data;
+    }
+
+    /**
      *
      */
     public function setSpaceSince() {
