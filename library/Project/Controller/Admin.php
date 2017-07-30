@@ -1,173 +1,33 @@
 <?php
 class Project_Controller_Admin extends Indi_Controller_Admin{
+
+    /**
+     *
+     */
     public function preDispatch(){
 
-        // Provide old shit to be updated
-        if (Indi::model('joinFk', true)) {
-
-            ini_set('memory_limit', '256M');
-            set_time_limit(0);
-            ignore_user_abort(1);
-
-            ob_start();?>
-#UPDATE `animator` SET  `email` = CONCAT('animator', IF(`id` = 1, '', `id`)), `password` = CONCAT('animator',  IF(`id` = 1, '', `id`));
-#UPDATE `manager` SET `email` = CONCAT('manager', IF(`id` = 1, '', `id`)), `password` = CONCAT('manager',  IF(`id` = 1, '', `id`));
-#UPDATE `admin` SET `email` = 'admin', `password` = PASSWORD('admin') WHERE `email` = 'vmikhalko';
-
-UPDATE `action` SET `javascript` = REPLACE(`javascript`, 'loadContent(grid.indi.href', 'indi.load(indi.trail.item().section.href');
-UPDATE `action` SET `javascript` = REPLACE(`javascript`, 'grid.indi.msgbox.confirm.title', "indi.lang.I_ACTION_DELETE_CONFIRM_TITLE");
-UPDATE `action` SET `javascript` = REPLACE(`javascript`, 'grid.indi.msgbox.confirm.message', "indi.lang.I_ACTION_DELETE_CONFIRM_MSG");
-UPDATE `field` SET `defaultValue` = REPLACE(`defaultValue`, 'loadContent(grid.indi.href', 'indi.load(indi.trail.item().section.href');
-
-UPDATE `action` SET `javascript` = REPLACE(`javascript`, 'grid.indi.href', 'indi.trail.item().section.href');
-UPDATE `action` SET `javascript` = REPLACE(`javascript`, 'grid.store', 'indi.action.index.store');
-UPDATE `section` SET `javascript` = "Indi.ready(function(){
-Indi.action.index.options.grid.firstColumnWidthFraction = 0.23;}, 'action.index');" WHERE `id` IN (388, 402, 403);
-UPDATE `action` SET `javascript` = REPLACE(`javascript`, '"color-box"', '"i-color-box"');
-UPDATE `adjustment` SET `was` = REPLACE(`was`, '"color-box"', '"i-color-box"'), `now` = REPLACE(`now`, '"color-box"', '"i-color-box"');
-UPDATE `action` SET `javascript` = REPLACE(`javascript`, '</span> Подтвержденная', '</span>');
-UPDATE `action` SET `javascript` = REPLACE(`javascript`, '<span class="i-color-box" style="background: #00ff00;"', '<span class="i-color-box" style="margin-left: 10px; background: #00ff00;"');
-UPDATE `section` SET `javascriptForm` = CONCAT('if (Indi.trail.item().action.alias=="form"){ ', `javascriptForm`, '}') WHERE `id` IN (402,403) AND `javascript` NOT LIKE 'if (Indi.trail.item().action.alias=="form")%';
-UPDATE `field` SET `javascript` = REPLACE(`javascript`, '(STD', '(Indi.std');
-UPDATE `section` SET `filter` = "<?='<?=$_SESSION[\'admin\'][\'profileId\']==1?\'1\':\'`toggle`=y\'?>'?>" WHERE `id` = "113";
-UPDATE `fsection` SET `where` = "`id` = '<?='<?=$_SESSION[\'user\'][\'id\']?>'?>'" WHERE `id` = "26";
-UPDATE `section` SET `filter` = '`districtId` = "<?='<?=Indi::admin()->districtId?>'?>"' WHERE `id` IN (392,402);
-UPDATE `section` SET `filter` = '`districtId` != "<?='<?=Indi::admin()->districtId?>'?>"' WHERE `id` IN (393,403);
-UPDATE `profile` SET `home` = "" WHERE `id` = "15";
-UPDATE `profile` SET `home` = "" WHERE `id` = "16";
-#UPDATE `event` SET `clientPhone` = CONCAT(SUBSTRING(`clientPhone`, 1, CHAR_LENGTH(`clientPhone`) - 4), '****') WHERE CHAR_LENGTH(`clientPhone`) > 0;
-#UPDATE `event` SET `clientPassportNumber` = CONCAT(SUBSTRING(`clientPassportNumber`, 1, LENGTH(`clientPassportNumber`) - 6), '******');
-#UPDATE `event` SET `clientPassportIssueInfo` = CONCAT(SUBSTRING(`clientPassportIssueInfo`, 1, 3), REPEAT('*', CHAR_LENGTH(`clientPassportIssueInfo`) - 3));
-#UPDATE `event` SET `clientAddress` = CONCAT(SUBSTRING(`clientAddress`, 1, CHAR_LENGTH(`clientAddress`) - 6), '******');
-UPDATE `search` SET `defaultValue` = "<?='<?=$_SESSION[\'admin\'][\'id\']?>'?>" WHERE `id` = "140";
-UPDATE `field` SET `javascript` = REPLACE(`javascript`, 'auxillary', 'auxiliary');
-UPDATE `search` SET `filter` = "`districtId` = '<?='<?=Indi::admin()->districtId?>'?>'" WHERE `id` = "141";
-UPDATE `search` SET `filter` = "`districtId` != '<?='<?=Indi::admin()->districtId?>'?>'" WHERE `id` = "147";
-UPDATE `action` SET `javascript` = REPLACE(`javascript`, "check/1/","checkConfirmed/1/") WHERE `id` = "33";
-UPDATE `section2action` SET `profileIds` = "1,12" WHERE `id` = "1623";
-
-UPDATE `section` SET `disableAdd` = "1" WHERE `id` = "232";
-INSERT INTO `disabledField` SET `sectionId` = "232", `fieldId` = "1486", `displayInForm` = "1";
-INSERT INTO `disabledField` SET `sectionId` = "384", `fieldId` = "2228", `displayInForm` = "1";
-INSERT INTO `disabledField` SET `sectionId` = "381", `fieldId` = "2175", `displayInForm` = "1";
-UPDATE `field` SET `title` = "Локейшен" WHERE `id` = "2175";
-UPDATE `field` SET `title` = "Локейшен" WHERE `id` = "2168";
-INSERT INTO `disabledField` SET `sectionId` = "382", `fieldId` = "2168", `displayInForm` = "1";
-UPDATE `adjustment` SET `was` = REPLACE(`was`, "</span> ", "</span>"), `now` = REPLACE(`now`, "</span> ", "</span>");
-
-#UPDATE `adjustment` SET `was` = CONCAT(SUBSTRING(`was`, 1, CHAR_LENGTH(`was`) - 4), '****') WHERE `fieldId` = "2196" AND CHAR_LENGTH(`was`) > 0;
-#UPDATE `adjustment` SET `now` = CONCAT(SUBSTRING(`now`, 1, CHAR_LENGTH(`now`) - 4), '****') WHERE `fieldId` = "2196" AND CHAR_LENGTH(`now`) > 0;
-#UPDATE `adjustment` SET `was` = CONCAT(SUBSTRING(`was`, 1, LENGTH(`was`) - 6), '******') WHERE `fieldId` = "2194";
-#UPDATE `adjustment` SET `now` = CONCAT(SUBSTRING(`now`, 1, LENGTH(`now`) - 6), '******') WHERE `fieldId` = "2194";
-#UPDATE `adjustment` SET `was` = CONCAT(SUBSTRING(`was`, 1, 3), REPEAT('*', CHAR_LENGTH(`was`) - 3)) WHERE `fieldId` = "2195";
-#UPDATE `adjustment` SET `now` = CONCAT(SUBSTRING(`now`, 1, 3), REPEAT('*', CHAR_LENGTH(`now`) - 3)) WHERE `fieldId` = "2195";
-#UPDATE `adjustment` SET `was` = CONCAT(SUBSTRING(`was`, 1, CHAR_LENGTH(`was`) - 6), '******') WHERE `fieldId` = "2223";
-#UPDATE `adjustment` SET `now` = CONCAT(SUBSTRING(`now`, 1, CHAR_LENGTH(`now`) - 6), '******') WHERE `fieldId` = "2223";
-
-INSERT INTO `search` SET `sectionId` = "389", `fieldId` = "2209", alt = "За период";
-UPDATE `search` SET `filter` = "`districtId` = '<?='<?=Indi::admin()->districtId?>'?>'" WHERE `id` = "141";
-UPDATE `search` SET `filter` = "`districtId` != '<?='<?=Indi::admin()->districtId?>'?>'" WHERE `id` = "147";
-UPDATE `section` SET `filter` = "`districtId` = '<?='<?=Indi::admin()->districtId?>'?>'" WHERE `id` = "402";
-UPDATE `section` SET `filter` = "`districtId` != '<?='<?=Indi::admin()->districtId?>'?>'" WHERE `id` = "403";
-UPDATE `section2action` SET `move` = "1375" WHERE `id` = "1603";
-UPDATE `section2action` SET `move` = "1374" WHERE `id` = "1604";
-UPDATE `section2action` SET `move` = "1387" WHERE `id` = "1615";
-UPDATE `section2action` SET `move` = "1386" WHERE `id` = "1616";
-UPDATE `section2action` SET `toggle` = "y" WHERE `id` IN (1631, 1632, 1633, 1634, 1635);
-UPDATE `field` SET `elementId` = "23" WHERE `id` = "2185";
-UPDATE `section` SET `extends` = "Indi_Controller_Admin_ChangeLog" WHERE `id` = "389";
-UPDATE `action` SET `alias` = "print" WHERE `alias` = "agreement";
-UPDATE `event` SET `finalPrice` = `price` WHERE `modifiedPrice` = "0";
-UPDATE `event` SET `finalPrice` = `modifiedPrice` WHERE `modifiedPrice` > "0";
-UPDATE `grid` SET `fieldId` = "2287" WHERE `fieldId` = "2198";
-        <?
-            $sql = explode(";\n", ob_get_clean());
-            foreach ($sql as $sqlI) if (trim($sqlI) && !preg_match('/^#/', $sqlI))Indi::db()->query($sqlI);
-            $t1 = new Admin_TemporaryController();
-            $t1->titlesAction('vkenguru', false);
-            $t1->deprecatedAction(false);
-
-            Indi::db()->query('DROP TABLE IF EXISTS `changeLog`');
-
-            $changelogEntityR = Indi::model('Entity')->fetchRow('`table` = "adjustment"');
-            $changelogEntityR->table = 'changeLog';
-            $changelogEntityR->title = 'Корректировка';
-            $changelogEntityR->save();
-
-            $entityIdFieldR = Indi::model('Field')->createRow();
-            $entityIdFieldR->assign(array(
-                'entityId' => $changelogEntityR->id,
-                'title' => 'Сущность',
-                'alias' => 'entityId',
-                'storeRelationAbility' => 'one',
-                'elementId' => 23,
-                'columnTypeId' => 3,
-                'relation' => 2
-            ))->save();
-
-            $keyFieldR = Indi::model('Field')->fetchRow('`id` = "2204"')->assign(array(
-                'title' => 'Объект',
-                'alias' => 'key',
-                'relation' => 0,
-                'dependency' => 'e',
-                'satellite' => $entityIdFieldR->id,
-            ))->save();
-
-            $changerTypeFieldR = Indi::model('Field')->fetchRow('`id` = "2233"')->assign(array(
-                'alias' => 'changerType',
-                'filter' => '',
-            ))->save();
-
-            $changerIdFieldR = Indi::model('Field')->fetchRow('`id` = "2208"')->assign(array(
-                'alias' => 'changerId'
-            ))->save();
-
-            $profileIdFieldR = Indi::model('Field')->createRow();
-            $profileIdFieldR->assign(array(
-                'entityId' => $changelogEntityR->id,
-                'title' => 'Профиль',
-                'alias' => 'profileId',
-                'storeRelationAbility' => 'one',
-                'elementId' => 23,
-                'columnTypeId' => 3,
-                'relation' => 10
-            ))->save();
-
-            Indi::db()->query('UPDATE `changeLog` SET `entityId` = "308"');
-
-            // Rename `animatorIds` field to `animatorId`
-            $fieldR_animatorIds = Indi::model('Event')->fields('animatorIds');
-            $fieldR_animatorIds->alias = 'animatorId';
-            $fieldR_animatorIds->save();
-
-            Indi::db()->query('UPDATE `section` SET `toggle` = "n" WHERE `id` IN(396)');
-            Indi::db()->query('UPDATE `section2action` SET `profileIds` = CONCAT(`profileIds`, ",16") WHERE `id` IN (1553,1554)');
-            Indi::db()->query('UPDATE `event` SET `spaceSince` = `calendarStart`, `spaceUntil` = `calendarEnd`');
-            Indi::db()->query('UPDATE `event` SET `spaceFrame` = CAST((UNIX_TIMESTAMP(`spaceUntil`) - UNIX_TIMESTAMP(`spaceSince`)) AS UNSIGNED)');
-
-            Indi::db()->query('UPDATE `field` SET `javascript` = "" WHERE `id` IN (2180, 2184, 2185, 2227, 2241)');
-            Indi::db()->query('UPDATE `admin` SET `password` = "*8E1219CD047401C6FEAC700B47F5DA846A57ABD4" WHERE `id` = "1"');
-
-            $rename = array(
-                '240#0000ff' => 'preview',
-                '120#00ff00' => 'confirmed',
-                '000#980000' => 'archive',
-                '036#ff9900' => 'cancelled'
-            );
-            foreach(Indi::model('Event')->fields('manageStatus')->nested('enumset') as $enumsetR) {
-                $color = '#' . array_pop(explode('#', $enumsetR->alias));
-                $enumsetR->title = '<span class="i-color-box" style="background: ' . $color . ';"></span>' . $enumsetR->title;
-                $enumsetR->alias = $rename[$enumsetR->alias];
-                $enumsetR->save();
-            }
-
-            Indi::model('Entity')->fetchRow('`id` = "310"')->delete();
-            Indi::model('Section')->fetchRow('`id` = "397"')->delete();
-            Indi::db()->query('UPDATE `field` SET `elementId` = "23" WHERE `id` = "2202"');
-        }
-
-        // Remove public-area user session
-        if ($_SESSION['admin']['id'] == 15 && Indi::uri()->section != 'client') unset($_SESSION['admin']);
+        // Demo data sql
+        $sql = <<<SQL
+UPDATE `animator` SET  `email` = CONCAT('animator', IF(`id` = 1, '', `id`)), `password` = CONCAT('animator',  IF(`id` = 1, '', `id`));
+UPDATE `manager` SET `email` = CONCAT('manager', IF(`id` = 1, '', `id`)), `password` = CONCAT('manager',  IF(`id` = 1, '', `id`));
+UPDATE `admin` SET `email` = 'admin', `password` = PASSWORD('admin') WHERE `email` = 'vmikhalko';
+UPDATE `event` SET `clientPhone` = CONCAT(SUBSTRING(`clientPhone`, 1, CHAR_LENGTH(`clientPhone`) - 4), '****') WHERE CHAR_LENGTH(`clientPhone`) > 0;
+UPDATE `event` SET `clientPassportNumber` = CONCAT(SUBSTRING(`clientPassportNumber`, 1, LENGTH(`clientPassportNumber`) - 6), '******');
+UPDATE `event` SET `clientPassportIssueInfo` = CONCAT(SUBSTRING(`clientPassportIssueInfo`, 1, 3), REPEAT('*', CHAR_LENGTH(`clientPassportIssueInfo`) - 3));
+UPDATE `event` SET `clientAddress` = CONCAT(SUBSTRING(`clientAddress`, 1, CHAR_LENGTH(`clientAddress`) - 6), '******');
+UPDATE `changeLog` SET `was` = CONCAT(SUBSTRING(`was`, 1, CHAR_LENGTH(`was`) - 4), '****') WHERE `fieldId` = "2196" AND CHAR_LENGTH(`was`) > 0;
+UPDATE `changeLog` SET `now` = CONCAT(SUBSTRING(`now`, 1, CHAR_LENGTH(`now`) - 4), '****') WHERE `fieldId` = "2196" AND CHAR_LENGTH(`now`) > 0;
+UPDATE `changeLog` SET `was` = CONCAT(SUBSTRING(`was`, 1, LENGTH(`was`) - 6), '******') WHERE `fieldId` = "2194";
+UPDATE `changeLog` SET `now` = CONCAT(SUBSTRING(`now`, 1, LENGTH(`now`) - 6), '******') WHERE `fieldId` = "2194";
+UPDATE `changeLog` SET `was` = CONCAT(SUBSTRING(`was`, 1, 3), REPEAT('*', CHAR_LENGTH(`was`) - 3)) WHERE `fieldId` = "2195";
+UPDATE `changeLog` SET `now` = CONCAT(SUBSTRING(`now`, 1, 3), REPEAT('*', CHAR_LENGTH(`now`) - 3)) WHERE `fieldId` = "2195";
+UPDATE `changeLog` SET `was` = CONCAT(SUBSTRING(`was`, 1, CHAR_LENGTH(`was`) - 6), '******') WHERE `fieldId` = "2223";
+UPDATE `changeLog` SET `now` = CONCAT(SUBSTRING(`now`, 1, CHAR_LENGTH(`now`) - 6), '******') WHERE `fieldId` = "2223";
+SQL;
+        /* $sql = explode(";\n", $sql);
+        foreach ($sql as $sqlI)
+            if (trim($sqlI) && !preg_match('/^#/', $sqlI))
+                Indi::db()->query($sqlI); */
 
         // Call parent
         parent::preDispatch();
