@@ -282,4 +282,17 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
         $css['border-color'] = '#D77BED';
         $css['color'] = '#C4088C';
     }
+
+    /**
+     * Include additional props to be prepared to view
+     *
+     * @return array|mixed
+     */
+    public function affected4grid() {
+        return array_unique(array_merge($this->row->affected(),
+            ar('clientTitle,clientPhone,childrenCount,childrenAge,manageManagerId'),
+            ar('clientAgreementNumber,details,manageNotes,placeId,subprogramId'),
+            ar('programId,animatorId,title,manageStatus')
+        ));
+    }
 }

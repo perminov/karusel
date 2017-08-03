@@ -38,7 +38,7 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
         $schedule = $this->schedule($data);
 
         // Get desired space frame
-        $frame = $this->foreign('placeId')->duration . 'm';
+        $frame = $this->duration . 'm';
 
         // Get busy dates
         $busyA = $schedule->busyDates($frame);
@@ -56,7 +56,7 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
         $schedule = $this->schedule($data);
 
         // Get desired space frame
-        $frame = $this->foreign('placeId')->duration . 'm';
+        $frame = $this->duration . 'm';
 
         // Get busy hours
         $busyA = $schedule->busyHours($frame, $this->date, '30m');
@@ -136,7 +136,7 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
             // If animator is busy - push it's id to $busyAnimatorA array
             if ($schedule->busy(
                 $this->date . ' ' . $this->foreign('timeId')->title . ':00',
-                $this->foreign('placeId')->duration * 60 + Indi::registry('gap'), true
+                $this->duration * 60 + Indi::registry('gap'), true
             )) $busyA[] = $animatorId;
         }
 
@@ -170,6 +170,27 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
 
         // Check types
         $this->scratchy(true);
+
+        // If event start is going to be moved
+        if ($this->delta('spaceSince')) {
+
+            // Separate shortcuts to date and time, stored in `spaceSince`
+            $date = $this->date('spaceSince');
+            $time = $this->date('spaceSince', 'H:i');
+
+            // If modified value of `spaceSince` points to date, that differs from `date` - update `date`
+            if ($this->_original['date'] != $date) $this->date = $date;
+
+            // If modified value of `spaceSince` points to time, that differs from time of `timeId` - update `timeId`
+            if ($this->foreign('timeId')->title != $time)
+                $this->timeId = Indi::model('Time')->fetchRow('`title` = "' . $time . '"')->id;
+
+        // Else if event duration is going to be changed
+        } else if ($this->delta('spaceUntil')) {
+
+            // Update duration
+            $this->duration += $this->delta('spaceUntil') / 60;
+        }
 
         // Set `title`
         $this->title = sprintf('[%s, %s] %s: %s', $this->date, $this->foreign('timeId')->title,
@@ -298,6 +319,6 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
      *
      */
     public function setSpaceUntil() {
-        $this->spaceUntil = date('Y-m-d H:i:s', strtotime($this->spaceSince) + $this->foreign('placeId')->duration * 60);
+        $this->spaceUntil = date('Y-m-d H:i:s', strtotime($this->spaceSince) + $this->duration * 60);
     }
 }
