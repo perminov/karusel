@@ -99,7 +99,7 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
         );
 
         // Gap, in seconds
-        Indi::registry('gap', 1800);
+        Indi::registry('gap', 0);
 
         // If $data arg is given
         if (func_num_args()) {
@@ -125,7 +125,7 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
 
             // Create schedule, set daily active hours and load animator's events
             $schedule = Indi::schedule('week', $this->date)
-                ->daily('10:00:00', '20:' . (Indi::registry('gap')/60) . ':00')
+                ->daily('10:00:00', '20:' . (str_pad(Indi::registry('gap')/60, 2, '0', STR_PAD_LEFT)) . ':00')
                 ->load('event', $where, function(&$r, $sp) {
                     $r->{$sp['frame']} += Indi::registry('gap');
                 });

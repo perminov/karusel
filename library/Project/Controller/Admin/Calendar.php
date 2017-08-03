@@ -46,7 +46,7 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
                 if (!Indi::admin()->alternate) $title .= Indi::rexm('/([А-Я]{2}: )/u', $data[$i]['title'], 1);
 
                 // Append place
-                $title .= $data[$i]['placeId'];
+                $title .= $data[$i]['placeId'] . ' ';
 
                 // Append animator/program info
                 if (Indi::admin()->alternate == 'manager') $title .= $this->_animprog($data[$i]);
