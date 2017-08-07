@@ -12,6 +12,16 @@ class Event extends Indi_Db_Table_Schedule {
     );
 
     /**
+     * Daily hours, open for event scheduling
+     *
+     * @var array
+     */
+    protected $_daily = array(
+        'since' => '10:00:00',
+        'until' => '20:00:00'
+    );
+
+    /**
      * @var string
      */
     protected $_rowClass = 'Event_Row';

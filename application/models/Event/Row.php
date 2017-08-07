@@ -21,8 +21,11 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
             ? Indi::schedule($this->since, $this->until)
             : Indi::schedule('month', $this->date);
 
+        // Get daily working hours
+        $daily = $this->model()->daily();
+
         // Set daily working hours and load existing events
-        $schedule->daily('10:00:00', '20:00:00')->load('event', array(
+        $schedule->daily($daily['since'], $daily['until'])->load('event', array(
             '`placeId` = "' . $this->placeId . '"',
             '`id` != "' . $this->id . '"',
             '`manageStatus` != "cancelled"'
@@ -98,8 +101,8 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
             '`id` != "' . $this->id . '"',
         );
 
-        // Gap, in seconds
-        Indi::registry('gap', 0);
+        // Get daily hours
+        $daily = $this->model()->daily();
 
         // If $data arg is given
         if (func_num_args()) {
@@ -124,11 +127,9 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
             $where[] = 'FIND_IN_SET("' . $animatorId . '", `animatorId`)';
 
             // Create schedule, set daily active hours and load animator's events
-            $schedule = Indi::schedule('week', $this->date)
-                ->daily('10:00:00', '20:' . (str_pad(Indi::registry('gap')/60, 2, '0', STR_PAD_LEFT)) . ':00')
-                ->load('event', $where, function(&$r, $sp) {
-                    $r->{$sp['frame']} += Indi::registry('gap');
-                });
+            $schedule = Indi::schedule('week', $this->date, '30m')
+                ->daily($daily['since'], $daily['until'])
+                ->load('event', $where);
 
             // Remove animator-related clause
             array_pop($where);
@@ -136,7 +137,7 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
             // If animator is busy - push it's id to $busyAnimatorA array
             if ($schedule->busy(
                 $this->date . ' ' . $this->foreign('timeId')->title . ':00',
-                $this->duration * 60 + Indi::registry('gap'), true
+                $this->duration * 60, true, true
             )) $busyA[] = $animatorId;
         }
 
