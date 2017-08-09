@@ -78,6 +78,9 @@ Ext.define('Indi.lib.controller.Events', {
                     considerOn: [{
                         name: 'placeId',
                         required: true
+                    }, {
+                        name: 'duration',
+                        required: true
                     }],
                     listeners: {
                         boundchange: function(c) {
@@ -111,6 +114,9 @@ Ext.define('Indi.lib.controller.Events', {
                         required: true
                     }, {
                         name: 'placeId',
+                        required: true
+                    }, {
+                        name: 'duration',
                         required: true
                     }],
                     listeners: {
@@ -175,6 +181,9 @@ Ext.define('Indi.lib.controller.Events', {
                         required: true
                     }, {
                         name: 'subprogramId'
+                    }, {
+                        name: 'duration',
+                        required: true
                     }],
                     listeners: {
                         enablebysatellite: function(c, d) {

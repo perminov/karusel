@@ -13,6 +13,9 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
             array_key_exists('since', $data) ? 'since,until' : 'date' => array(
                 'req' => true,
                 'rex' => 'date'
+            ),
+            'duration' => array(
+                'rex' => 'int11'
             )
         ), $data);
 
@@ -91,6 +94,9 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
                 'req' => true,
                 'rex' => 'int11',
                 'key' => 'Time'
+            ),
+            'duration' => array(
+                'rex' => 'int11'
             )
         ), $data);
 
