@@ -22,14 +22,14 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
             : Indi::schedule('month', $this->date);
 
         // Get daily working hours
-        $daily = $this->model()->daily();
+        $daily = $this->daily();
 
         // Set daily working hours and load existing events
-        $schedule->daily($daily['since'], $daily['until'])->load('event', array(
+        $schedule->load('event', array(
             '`placeId` = "' . $this->placeId . '"',
             '`id` != "' . $this->id . '"',
             '`manageStatus` != "cancelled"'
-        ));
+        ))->daily($daily['since'], $daily['until']);
 
         // Return $schedule
         return $schedule;
@@ -71,7 +71,7 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
         if (func_num_args()) return $busyTimeIdA;
 
         // Else if current `timeId` is a totally busy time - set mismatch message
-        if (in($this->timeId, $busyTimeIdA)) $this->mflush('timeId', 'Это время занято');
+        if (in($this->timeId, $busyTimeIdA)) $this->mflush('timeId', 'Это время недоступно');
     }
 
     public function busyAnimators($data = array()) {
@@ -102,7 +102,7 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
         );
 
         // Get daily hours
-        $daily = $this->model()->daily();
+        $daily = $this->daily();
 
         // If $data arg is given
         if (func_num_args()) {
@@ -128,8 +128,8 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
 
             // Create schedule, set daily active hours and load animator's events
             $schedule = Indi::schedule('week', $this->date, '30m')
-                ->daily($daily['since'], $daily['until'])
-                ->load('event', $where);
+                ->load('event', $where)
+                ->daily($daily['since'], $daily['until']);
 
             // Remove animator-related clause
             array_pop($where);
