@@ -1,5 +1,5 @@
 <?php
-class Event_Row extends Indi_Db_Table_Row_Schedule {
+class Event_Row extends Indi_Db_Table_Row {
 
     public function schedule($data = array()) {
 
@@ -173,31 +173,7 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
     /**
      * @return int|mixed
      */
-    public function save() {
-
-        // Check types
-        $this->scratchy(true);
-
-        // If event start is going to be moved
-        if ($this->delta('spaceSince')) {
-
-            // Separate shortcuts to date and time, stored in `spaceSince`
-            $date = $this->date('spaceSince');
-            $time = $this->date('spaceSince', 'H:i');
-
-            // If modified value of `spaceSince` points to date, that differs from `date` - update `date`
-            if ($this->_original['date'] != $date) $this->date = $date;
-
-            // If modified value of `spaceSince` points to time, that differs from time of `timeId` - update `timeId`
-            if ($this->foreign('timeId')->title != $time)
-                $this->timeId = Indi::model('Time')->fetchRow('`title` = "' . $time . '"')->id;
-
-        // Else if event duration is going to be changed
-        } else if ($this->delta('spaceUntil')) {
-
-            // Update duration
-            $this->duration += $this->delta('spaceUntil') / 60;
-        }
+    public function onBeforeSave() {
 
         // Set `title`
         $this->title = sprintf('[%s, %s] %s: %s', $this->date, $this->foreign('timeId')->title,
@@ -209,9 +185,6 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
 
         // Set price
         $this->price();
-
-        // Call parent
-        return parent::save();
     }
 
     public function price($data = array()) {
@@ -313,19 +286,5 @@ class Event_Row extends Indi_Db_Table_Row_Schedule {
 
         // Return
         return $data;
-    }
-
-    /**
-     *
-     */
-    public function setSpaceSince() {
-        $this->spaceSince = $this->date . ' ' . $this->foreign('timeId')->title . ':00';
-    }
-
-    /**
-     *
-     */
-    public function setSpaceUntil() {
-        $this->spaceUntil = date('Y-m-d H:i:s', strtotime($this->spaceSince) + $this->duration * 60);
     }
 }

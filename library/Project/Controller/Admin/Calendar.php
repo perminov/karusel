@@ -10,6 +10,9 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
      */
     public function adjustGridData(&$data) {
 
+        // If calendar can't be used - return
+        if (!$this->spaceFields) return;
+
         // Foreach data item
         for ($i = 0; $i < count($data); $i++) {
 
