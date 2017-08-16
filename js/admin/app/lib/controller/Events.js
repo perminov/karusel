@@ -210,7 +210,8 @@ Ext.define('Indi.lib.controller.Events', {
                 handler: function(btn) {
                     var me = btn.ctx();
                     me.goto(me.other('confirm'), false, {success: function(response){
-                        me._btn$Confirm(response, me.ti().row, function() {
+                        me._btn$Confirm(response, me.ti().row, function(response) {
+                            me.affectRecord(response);
                             Ext.Msg.on('hide', function(){
                                 Ext.getCmp(this.panelDockedInnerBid() + 'reload').press();
                             }, me, {single: true, delay: 500});
@@ -221,7 +222,8 @@ Ext.define('Indi.lib.controller.Events', {
             panelDockedInner$Actions$Cancel: {
                 handler: function(btn) {
                     var me = btn.ctx();
-                    me.goto(me.other('cancel'), false, {success: function(){
+                    me.goto(me.other('cancel'), false, {success: function(response){
+                        me.affectRecord(response);
                         Ext.Msg.on('hide', function(){
                             Ext.getCmp(this.panelDockedInnerBid() + 'reload').press();
                         }, me, {single: true, delay: 500});
@@ -253,7 +255,8 @@ Ext.define('Indi.lib.controller.Events', {
                 handler: function(btn) {
                     var me = btn.ctx();
                     me.goto(me.other('confirm'), false, {success: function(response){
-                        me._btn$Confirm(response, me.ti().row, function() {
+                        me._btn$Confirm(response, me.ti().row, function(response) {
+                            me.affectRecord(response);
                             Ext.Msg.on('hide', function(){
                                 Ext.getCmp(this.panelDockedInnerBid() + 'reload').press();
                             }, me, {single: true, delay: 500});
@@ -264,7 +267,8 @@ Ext.define('Indi.lib.controller.Events', {
             panelDockedInner$Actions$Cancel: {
                 handler: function(btn) {
                     var me = btn.ctx();
-                    me.goto(me.other('cancel'), false, {success: function(){
+                    me.goto(me.other('cancel'), false, {success: function(response){
+                        me.affectRecord(response);
                         Ext.Msg.on('hide', function(){
                             Ext.getCmp(this.panelDockedInnerBid() + 'reload').press();
                         }, me, {single: true, delay: 500});
