@@ -55,6 +55,32 @@ Ext.define('Indi.lib.controller.Events', {
             });
         }
     },
+    actionsSharedConfig$Row: {
+        panelDockedInner$Actions$Confirm: {
+            handler: function(btn) {
+                var me = btn.ctx();
+                me.goto(me.other('confirm'), false, {success: function(response){
+                    me._btn$Confirm(response, me.ti().row, function(response) {
+                        me.affectRecord(response);
+                        Ext.Msg.on('hide', function(){
+                            Ext.getCmp(this.panelDockedInnerBid() + 'reload').press();
+                        }, me, {single: true, delay: 500});
+                    });
+                }})
+            }
+        },
+        panelDockedInner$Actions$Cancel: {
+            handler: function(btn) {
+                var me = btn.ctx();
+                me.goto(me.other('cancel'), false, {success: function(response){
+                    me.affectRecord(response);
+                    Ext.Msg.on('hide', function(){
+                        Ext.getCmp(this.panelDockedInnerBid() + 'reload').press();
+                    }, me, {single: true, delay: 500});
+                }});
+            }
+        }
+    },
     actionsConfig: {
         index: {
             gridColumn$FinalPrice: {summaryType: 'sum'},
@@ -205,30 +231,6 @@ Ext.define('Indi.lib.controller.Events', {
                         }
                     }
                 });
-            },
-            panelDockedInner$Actions$Confirm: {
-                handler: function(btn) {
-                    var me = btn.ctx();
-                    me.goto(me.other('confirm'), false, {success: function(response){
-                        me._btn$Confirm(response, me.ti().row, function(response) {
-                            me.affectRecord(response);
-                            Ext.Msg.on('hide', function(){
-                                Ext.getCmp(this.panelDockedInnerBid() + 'reload').press();
-                            }, me, {single: true, delay: 500});
-                        });
-                    }})
-                }
-            },
-            panelDockedInner$Actions$Cancel: {
-                handler: function(btn) {
-                    var me = btn.ctx();
-                    me.goto(me.other('cancel'), false, {success: function(response){
-                        me.affectRecord(response);
-                        Ext.Msg.on('hide', function(){
-                            Ext.getCmp(this.panelDockedInnerBid() + 'reload').press();
-                        }, me, {single: true, delay: 500});
-                    }});
-                }
             }
         },
         print: {
@@ -250,30 +252,6 @@ Ext.define('Indi.lib.controller.Events', {
                         }
                     }
                 };
-            },
-            panelDockedInner$Actions$Confirm: {
-                handler: function(btn) {
-                    var me = btn.ctx();
-                    me.goto(me.other('confirm'), false, {success: function(response){
-                        me._btn$Confirm(response, me.ti().row, function(response) {
-                            me.affectRecord(response);
-                            Ext.Msg.on('hide', function(){
-                                Ext.getCmp(this.panelDockedInnerBid() + 'reload').press();
-                            }, me, {single: true, delay: 500});
-                        });
-                    }})
-                }
-            },
-            panelDockedInner$Actions$Cancel: {
-                handler: function(btn) {
-                    var me = btn.ctx();
-                    me.goto(me.other('cancel'), false, {success: function(response){
-                        me.affectRecord(response);
-                        Ext.Msg.on('hide', function(){
-                            Ext.getCmp(this.panelDockedInnerBid() + 'reload').press();
-                        }, me, {single: true, delay: 500});
-                    }});
-                }
             }
         }
     }
