@@ -134,7 +134,9 @@ class Event_Row extends Indi_Db_Table_Row {
 
             // Create schedule, set daily active hours and load animator's events
             $schedule = Indi::schedule('week', $this->date)
-                ->load('event', $where)
+                ->load('event', $where, function($r){
+                    $r->spaceFrame = _2sec('1h');
+                })
                 ->daily($daily['since'], $daily['until']);
 
             // Remove animator-related clause
@@ -143,7 +145,7 @@ class Event_Row extends Indi_Db_Table_Row {
             // If animator is busy - push it's id to $busyAnimatorA array
             if ($schedule->busy(
                 $this->date . ' ' . $this->foreign('timeId')->title . ':00',
-                $this->duration * 60, true, true
+                _2sec('1h'), true, true
             )) $busyA[] = $animatorId;
         }
 
