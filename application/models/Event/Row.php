@@ -133,7 +133,7 @@ class Event_Row extends Indi_Db_Table_Row {
             $where[] = 'FIND_IN_SET("' . $animatorId . '", `animatorId`)';
 
             // Create schedule, set daily active hours and load animator's events
-            $schedule = Indi::schedule('week', $this->date, '30m')
+            $schedule = Indi::schedule('week', $this->date)
                 ->load('event', $where)
                 ->daily($daily['since'], $daily['until']);
 
