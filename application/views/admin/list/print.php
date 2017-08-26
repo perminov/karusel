@@ -123,8 +123,8 @@
             <div style="text-align: center;"><strong>Заказчик</strong></div>
             <strong><?=$this->row->clientTitle?> </strong><br />
             Адрес: <?=str_pad($this->row->clientAddress, 180, ' ', STR_PAD_RIGHT)?><br />
-            Паспорт: серия&nbsp; <?=substr($this->row->clientPassportNumber, 0, 4)?>
-            номер &nbsp;<?=substr($this->row->clientPassportNumber, 4)?><br />
+            Паспорт: серия&nbsp; <?=Indi::demo(false) ? $this->row->clientPassportNumber : substr($this->row->clientPassportNumber, 0, 4)?>
+            номер &nbsp;<?=Indi::demo(false) ? $this->row->clientPassportNumber : substr($this->row->clientPassportNumber, 4)?><br />
             выдан &nbsp;<?=str_pad($this->row->clientPassportIssueInfo, 150, ' ', STR_PAD_RIGHT)?><br />
             телефон: <?=$this->row->clientPhone?>
             <br /><br /><br />
