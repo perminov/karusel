@@ -17,7 +17,7 @@ class Project_Controller_Admin extends Indi_Controller_Admin{
                 $sql = <<<SQL
 UPDATE `animator` SET  `email` = CONCAT('animator', IF(`id` = 1, '', `id`)), `password` = CONCAT('animator',  IF(`id` = 1, '', `id`));
 UPDATE `manager` SET `email` = CONCAT('manager', IF(`id` = 1, '', `id`)), `password` = CONCAT('manager',  IF(`id` = 1, '', `id`));
-UPDATE `manager` SET `email` = `manager`, `password` = "manager" LIMIT 1;
+UPDATE `manager` SET `email` = "manager", `password` = "manager" LIMIT 1;
 UPDATE `admin` SET `email` = 'admin', `password` = PASSWORD('admin') WHERE `email` = 'vmikhalko';
 SQL;
                 // Run queries
