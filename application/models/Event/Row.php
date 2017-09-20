@@ -159,6 +159,9 @@ class Event_Row extends Indi_Db_Table_Row {
 
     public function validate() {
 
+        // Skip custom validation if needed
+        if ($this->noValidate) return $this->callParent();
+
         // Check that event's date is not busy
         $this->busyDates();
 
