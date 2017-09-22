@@ -284,7 +284,7 @@ class Event_Row extends Indi_Db_Table_Row {
      *
      */
     public function setClientAgreementNumber() {
-        $this->clientAgreementNumber = $this->foreign('districtId')->code . $this->clientAgmtIdx;
+        $this->clientAgreementNumber = $this->clientAgmtIdx ? $this->foreign('districtId')->code . $this->clientAgmtIdx : '';
     }
 
     /**
