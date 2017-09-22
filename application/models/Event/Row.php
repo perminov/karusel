@@ -183,6 +183,9 @@ class Event_Row extends Indi_Db_Table_Row {
         // Set `title`
         $this->setTitle();
 
+        // Set client agreement number
+        $this->setClientAgreementNumber();
+
         // Set child age
         if ($this->isModified('birthChildBirthDate')) $this->birthChildAge
             = $this->zero('birthChildBirthDate') ? 0 : date('Y') - $this->date('birthChildBirthDate', 'Y');
