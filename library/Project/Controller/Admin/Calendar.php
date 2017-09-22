@@ -46,7 +46,7 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
             } else {
 
                 // Append district code
-                if (!Indi::admin()->alternate) $title .= Indi::rexm('/([А-Я]{2}: )/u', $data[$i]['title'], 1);
+                if (!Indi::admin()->alternate) $title .= Indi::rexm('/([А-ЯA-Z]{2}: )/u', $data[$i]['title'], 1);
 
                 // Append place
                 $title .= $data[$i]['placeId'] . ' ';
