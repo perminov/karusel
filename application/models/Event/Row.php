@@ -266,8 +266,11 @@ class Event_Row extends Indi_Db_Table_Row {
             'manageManagerId' => $managerId,
             'manageStatus' => 'confirmed',
             'manageDate' => date('Y-m-d'),
-            'clientAgreementNumber' => $districtR->code . str_pad($districtR->lastAgreement + 1, 4, '0', STR_PAD_LEFT)
+            'clientAgmtIdx' => str_pad($districtR->lastAgreement + 1, 4, '0', STR_PAD_LEFT),
         ));
+
+        // Set client agreement number
+        $this->setClientAgreementNumber();
 
         // Save assigned props
         parent::save();
@@ -275,6 +278,13 @@ class Event_Row extends Indi_Db_Table_Row {
         // Increment agreement counter
         $districtR->lastAgreement++;
         $districtR->save();
+    }
+
+    /**
+     *
+     */
+    public function setClientAgreementNumber() {
+        $this->clientAgreementNumber = $this->foreign('districtId')->code . $this->clientAgmtIdx;
     }
 
     /**
