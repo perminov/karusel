@@ -181,8 +181,7 @@ class Event_Row extends Indi_Db_Table_Row {
     public function onBeforeSave() {
 
         // Set `title`
-        $this->title = sprintf('[%s, %s] %s: %s', $this->date, $this->foreign('timeId')->title,
-            $this->foreign('districtId')->code, $this->foreign('placeId')->title);
+        $this->setTitle();
 
         // Set child age
         if ($this->isModified('birthChildBirthDate')) $this->birthChildAge
@@ -190,6 +189,16 @@ class Event_Row extends Indi_Db_Table_Row {
 
         // Set price
         $this->price();
+    }
+
+    /**
+     * Setting title is wrapped into a separate method because `title` field depend on localized fields
+     */
+    public function setTitle() {
+
+        // Set `title`
+        $this->title = sprintf('[%s, %s] %s: %s', $this->date, $this->foreign('timeId')->title,
+            $this->foreign('districtId')->code, $this->foreign('placeId')->title);
     }
 
     public function price($data = array()) {
