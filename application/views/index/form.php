@@ -44,6 +44,7 @@
 </form>
 <script>
 $(function(){
+	$('[name="clientPhone"]').mask('+7 (000) 000-00-00');
     var timeId_update = function(disabled){
         var timeId = $('form[name="event"] select[name="timeId"]'),
             placeId = $('form[name="event"] select[name="placeId"]'),

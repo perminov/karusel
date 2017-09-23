@@ -14,6 +14,7 @@ class Project_View_Helper_SiteHeader {
         <link rel="stylesheet" href="/css/iform.css"/>
         <link rel="stylesheet" href="/css/form.css"/>
         <script src="/js/jquery-1.10.2.min.js"></script>
+        <script src="/js/jquery.mask.js"></script>
         <script src="/library/jquery-ui-1.12.1/jquery-ui.min.js"></script>
         <script std="<?=STD?>" src="/js/indi.js"></script>
         <script src="/library/select2/select2.min.js"></script>
