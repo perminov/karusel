@@ -299,7 +299,7 @@ class Event_Row extends Indi_Db_Table_Row {
     public function fixTypes(array $data) {
 
         // Foreach prop check
-        foreach ($data as $k => $v) if (!in($k, 'clientPhone')){
+        foreach ($data as $k => $v) if (!in($k, 'clientPhone,clientPhone2')){
 
             // If prop's value is a string, containing integer value - force value type to be integer, not string
             if (preg_match(Indi::rex('int11'), $v)) $data[$k] = (int) $v;
