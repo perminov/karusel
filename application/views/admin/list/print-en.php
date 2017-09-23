@@ -25,7 +25,7 @@
 <div style="text-align: justify;">
     1.1. Under the present contract the Contractor undertakes to provide the Customer with services for organizing and conducting a variety of festive events (organization of birthdays, holidays) in the territory of&nbsp;<strong>the children&#39;s entertainment center &quot;Kangaroo&quot; Nizhny Novgorod, <?=$this->row->foreign('districtId')->address?>, phone <?=$this->row->foreign('districtId')->phone?></strong>,&nbsp;hereinafter referred to as an event.&nbsp;<br />
     1.2. Terms of the Event are determined by the Application specified in clause 5 of this agreement.
-</div>
+</div><br />
 
 <div style="text-align: center;"><strong>2. The amount of the contract and the procedure for settlements</strong></div>
 <div style="text-align: justify;">
