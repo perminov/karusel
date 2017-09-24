@@ -53,7 +53,7 @@ class Event_Row extends Indi_Db_Table_Row {
         if (func_num_args()) return $busyA;
 
         // Else if current `date` is a totally busy date - set mismatch message
-        else if (in($this->date, $busyA)) $this->mflush('date', 'Эта дата полностью занята');
+        else if (in($this->date, $busyA)) $this->mflush('date', I_EVENT_ERR_DATE_BUSY);
     }
 
     public function busyTimes($data = array()) {
@@ -74,7 +74,7 @@ class Event_Row extends Indi_Db_Table_Row {
         if (func_num_args()) return $busyTimeIdA;
 
         // Else if current `timeId` is a totally busy time - set mismatch message
-        if (in($this->timeId, $busyTimeIdA)) $this->mflush('timeId', 'Это время недоступно');
+        if (in($this->timeId, $busyTimeIdA)) $this->mflush('timeId', I_EVENT_ERR_TIME_BUSY);
     }
 
     public function busyAnimators($data = array()) {
@@ -153,7 +153,7 @@ class Event_Row extends Indi_Db_Table_Row {
         if (func_num_args()) return $busyA;
 
         // If one or more of selected animators are busy - flush error message
-        else if (count($busyA)) $this->mflush('animatorId', 'Уже занятые аниматоры: '
+        else if (count($busyA)) $this->mflush('animatorId', I_EVENT_ERR_ANIMATORS_BUSY
             . $this->foreign('animatorId')->select($busyA)->column('title', ', '));
     }
 

@@ -4,8 +4,8 @@ Ext.define('Indi.lib.controller.Events', {
         _btn$Confirm: function(response, row, success) {
             var me = this, uid = Indi.user.uid.split('-');
             Ext.MessageBox.show({
-                title: 'Подтверждение мероприятия',
-                msg: 'Укажите менеджера, заключившего договор с клиентом и размер предоплаты',
+                title: Indi.lang.I_EVENT_CONFIRM_TITLE,
+                msg: Indi.lang.I_EVENT_CONFIRM_MSG,
                 buttons: Ext.MessageBox.OK,
                 icon: Ext.MessageBox.INFO,
                 form: {
@@ -14,18 +14,19 @@ Ext.define('Indi.lib.controller.Events', {
                     items: [{
                         allowBlank: false,
                         xtype: 'combo.auto',
-                        fieldLabel: 'Менеджер',
+                        fieldLabel: Indi.lang.I_EVENT_CONFIRM_MANAGER,
                         name: 'manageManagerId',
-                        value: uid[0] == '15' ? uid[1] : ''
+                        value: uid[0] == '15' ? uid[1] : '',
+                        minWidth: 250
                     }, {
                         xtype: 'numberfield',
                         name: 'managePrepay',
                         allowBlank: false,
-                        fieldLabel: 'Предоплата',
+                        fieldLabel: Indi.lang.I_EVENT_CONFIRM_PREPAYMENT,
                         cls: 'i-field',
                         minValue: 0,
                         value: 500,
-                        afterSubTpl: '<span class="i-field-number-after" style="margin-left: 58px;">руб</span>',
+                        afterSubTpl: '<span class="i-field-number-after" style="margin-left: 58px;">' + Indi.lang.I_CY + '</span>',
                         width: 160
                     }],
                     listeners: {

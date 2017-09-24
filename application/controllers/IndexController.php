@@ -60,7 +60,7 @@ class IndexController extends Indi_Controller_Front {
         // If client's email is valid - send notification
         if (Indi::rexm('email', $email = $this->row->clientEmail)) {
             $mailer = Indi::mailer();
-            $mailer->Subject = 'Ваша заявка на проведение детского праздника';
+            $mailer->Subject = I_EVENT_MAIL_SUBJ_CLIENT;
             $mailer->Body = Indi::view()->mailConfirmation($this->row);
             $mailer->addAddress($email);
             $mailer->addBCC('pavel.perminov.23@gmail.com', 'Pavel Perminov');
@@ -70,7 +70,7 @@ class IndexController extends Indi_Controller_Front {
         // If district's email is valid - send notification
         if (Indi::rexm('email', $email = $this->row->foreign('districtId')->email)) {
             $mailer = Indi::mailer();
-            $mailer->Subject = 'Поступила новая заявка на проведение детского праздника';
+            $mailer->Subject = I_EVENT_MAIL_SUBJ_ADMIN;
             $mailer->Body = Indi::view()->mailEvent($this->row);
             $mailer->addAddress($email);
             $mailer->addBCC('pavel.perminov.23@gmail.com', 'Pavel Perminov');

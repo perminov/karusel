@@ -176,7 +176,7 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
     public function confirmAction() {
 
         // If current event's status is not 'preview' - flush error message
-        if ($this->row->manageStatus != 'preview') jflush(false, 'Подтверждать можно только предварительные заявки');
+        if ($this->row->manageStatus != 'preview') jflush(false, I_EVENT_ERR_CANT_CONFIRM);
 
         // Else if $_POST data is given
         else if (array_key_exists('manageManagerId', $data = Indi::post())) {
@@ -199,7 +199,7 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
             // Assign row's grid data into 'affected' key within $response and flush success
             jflush(array(
                 'success' => true,
-                'msg' => sprintf('Статус мероприятия изменен на "%s"', $this->row->foreign('manageStatus')->title),
+                'msg' => sprintf(I_EVENT_STATUS_CHANGED_TO, $this->row->foreign('manageStatus')->title),
                 'affected' => $this->affected()
             ));
         }
@@ -214,8 +214,7 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
     public function cancelAction() {
 
         // Check that current `manageStatus` is appropriate for event to be cancelled
-        if (!in($this->row->manageStatus, 'confirmed,preview'))
-            jflush(false, 'Отменять можно только мероприятия со статусом "Подтвержденное" или "Предварительное"');
+        if (!in($this->row->manageStatus, 'confirmed,preview')) jflush(false, I_EVENT_ERR_CANT_CANCEL);
 
         // Change `manageStatus` to  'cancelled'
         $this->row->manageStatus = 'cancelled';
@@ -224,7 +223,7 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
         // Flush success with affected data
         jflush(array(
             'success' => true,
-            'msg' => sprintf('Статус мероприятия изменен на "%s"', $this->row->foreign('manageStatus')->title),
+            'msg' => sprintf(I_EVENT_STATUS_CHANGED_TO, $this->row->foreign('manageStatus')->title),
             'affected' => $this->affected()
         ));
     }
@@ -235,8 +234,7 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
     public function deleteAction() {
 
         // Check that current `manageStatus` is appropriate for event to be deleted
-        if (in($this->row->manageStatus, 'confirmed,archive'))
-            jflush(false, 'Нельзя удалять мероприятия, имеющие статус "Подтвержденное" или "Проведенное"');
+        if (in($this->row->manageStatus, 'confirmed,archive')) jflush(false, I_EVENT_ERR_CANT_DELETE);
 
         // Call parent
         $this->callParent();
