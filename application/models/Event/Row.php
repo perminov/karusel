@@ -190,6 +190,9 @@ class Event_Row extends Indi_Db_Table_Row {
         if ($this->isModified('birthChildBirthDate')) $this->birthChildAge
             = $this->zero('birthChildBirthDate') ? 0 : date('Y') - $this->date('birthChildBirthDate', 'Y');
 
+        // Check is there a problem with this event
+        $this->problem();
+
         // Set price
         $this->price();
     }
@@ -288,6 +291,44 @@ class Event_Row extends Indi_Db_Table_Row {
      */
     public function setClientAgreementNumber() {
         $this->clientAgreementNumber = $this->clientAgmtIdx ? $this->foreign('districtId')->code . $this->clientAgmtIdx : '';
+    }
+
+    /**
+     * Set `problem` flag to in case if this is a confirmed event, but:
+     * 1. No program chosen
+     * 2. No animators chosen
+     * 3. No subprogram chosen (in case if program has subprograms)
+     * 4. Qty of chosen animators is not equal to qty required by chosen program/subprogram
+     */
+    public function problem() {
+
+        // Set no problem, by default
+        $p = false;
+
+        // If event is confirmed
+        if ($this->manageStatus == 'confirmed') {
+
+            // If no program yet chosen - set $e to `true`, else
+            if (!$this->programId) $p = true; else {
+
+                // If no animators yet assigned
+                if (!$this->animatorId) $p = true;
+
+                // If event's program has subprograms
+                else if ($this->foreign('programId')->subprogramsCount > 0) {
+
+                    // If no subprogram yet specified - set exclaim
+                    if (!$this->subprogramId) $p = true;
+
+                    // Else
+                    else if ($this->foreign('subprogramId')->animatorsCount
+                        > count(ar($this->animatorId))) $p = true;
+                }
+            }
+        }
+
+        // Set `problem` flag
+        $this->problem = $p ? 'y' : 'n';
     }
 
     /**
