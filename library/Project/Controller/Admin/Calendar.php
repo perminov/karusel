@@ -251,8 +251,14 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
         // Get primary color prop
         $prop = $this->colors['field'];
 
-        // Return
-        return $r->requestBy == 'client' && $r->$prop == 'preview' ? $r->requestBy : $r->$prop;
+        // Return 'client'
+        if ($r->requestBy == 'client' && $r->$prop == 'preview') return $r->requestBy;
+
+        // Return 'problem'
+        if ($r->problem == 'y' && $r->date >= date('Y-m-d')) return 'problem';
+
+        // Return primary color prop
+        return  $r->$prop;
     }
 
     /**
@@ -268,6 +274,9 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
 
         // Append one more color definition
         $info['colors']['client'] = '#F4D4FC';
+
+        // Append one more color definition
+        $info['colors']['problem'] = '#FF0000';
     }
 
     /**
@@ -276,12 +285,21 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
     public function adjustColorsCss($option, $color, &$css) {
 
         // No adjustment for non-client option
-        if ($option != 'client') return;
+        if (!in($option, 'client,problem')) return;
 
-        // Apply more detailed custom color definition
-        $css['background-color'] = '#F4D4FC';
-        $css['border-color'] = '#D77BED';
-        $css['color'] = '#C4088C';
+        // Apply more detailed custom color definition for 'client' option
+        if ($option == 'client') {
+            $css['background-color'] = '#F4D4FC';
+            $css['border-color'] = '#D77BED';
+            $css['color'] = '#C4088C';
+        }
+
+        // Apply more detailed custom color definition for 'problem' option
+        if ($option == 'problem') {
+            $css['background-color'] = 'rgba(255, 0, 0, 0.5)';
+            $css['border-color'] = '#ff0000';
+            $css['color'] = '#ff0000';
+        }
     }
 
     /**
