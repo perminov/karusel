@@ -24,22 +24,15 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
         parent::preDispatch();
     }
 
-    public function formActionIDate($data) {
+    /**
+     * Collect and flush info about inaccessible values, to prevent them from being selected
+     *
+     * @param $data
+     */
+    public function formActionIDuration($data) {
 
-        // Flush disabled dates
-        jflush(true, array('disabledDates' => $this->row->busyDates($data)));
-    }
-
-    public function formActionITimeId($data) {
-
-        // Flush busy time ids
-        jflush(true, array('disabledTimeIds' => $this->row->busyTimes($data)));
-    }
-
-    public function formActionIAnimatorId($data) {
-
-        // Flush busy time ids
-        jflush(true, array('disabled' => $this->row->busyAnimators($data), 'price' => $this->row->price($data)));
+        // Flush info about disabled options (dates and others)
+        jflush(true, array('disabled' => $this->row->disabled($data)));
     }
 
     /**

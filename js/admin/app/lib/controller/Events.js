@@ -80,6 +80,29 @@ Ext.define('Indi.lib.controller.Events', {
                     }, me, {single: true, delay: 500});
                 }});
             }
+        },
+        disabledOptions: function(c, bounds) {
+            var me = c, data = {}, v;
+            ['placeId','date','timeId','animatorId','duration'].forEach(function(prop){
+                data[prop] = c.sbl(prop).getSubmitValue();
+                if (prop == 'date' && !data[prop].length) data[prop] = '0000-00-00';
+            });
+            if (bounds) Ext.Object.merge(data, bounds);
+            Indi.load('/' + me.ti().section.alias + '/form' + (me.ti().row.id ? '/id/' + me.ti().row.id : '') + '/consider/duration/', {
+                params: data,
+                success: function(response) {
+                    var disabled = response.responseText.json().disabled, arg, format;
+                    for (var i in disabled) {
+                        if (i != 'date') c.sbl(i).setDisabledOptions(disabled[i]); else {
+                            format = c.sbl('date').format, arg = [];
+                            if (disabled[i].length) disabled[i].forEach(function(d, i){
+                                arg[i] = Ext.Date.format(new Date(d), format);
+                            }); else arg.push('0001-01-01');
+                            c.sbl(i).setDisabledDates(arg);
+                        }
+                    }
+                }
+            });
         }
     },
     actionsConfig: {
@@ -99,85 +122,54 @@ Ext.define('Indi.lib.controller.Events', {
             }
         },
         form: {
-            formItem$Date: function(item) {
-                var me = this;
-                return Ext.merge(item, {
-                    considerOn: [{
-                        name: 'placeId',
-                        required: true
-                    }, {
-                        name: 'duration',
-                        required: true
-                    }],
-                    listeners: {
-                        boundchange: function(c) {
-                            c.fireEvent('enablebysatellite', c, c.considerOnData());
-                        },
-                        enablebysatellite: function(c, d) {
-                            var bounds = c.getPicker().getBounds();
-                            Indi.load('/' + me.ti().section.alias + '/form' + (me.ti().row.id ? '/id/' + me.ti().row.id : '') + '/consider/date/', {
-                                params: Ext.merge(d, {
-                                    since: Ext.Date.format(bounds[0], 'Y-m-d'),
-                                    until: Ext.Date.format(bounds[1], 'Y-m-d')
-                                }),
-                                success: function(response) {
-                                    var dd = response.responseText.json().disabledDates;
-                                    if (!dd.length) dd.push('0001-01-01');
-                                    dd.forEach(function(d, i){
-                                        dd[i] = Ext.Date.format(new Date(d), c.format);
-                                    });
-                                    c.setDisabledDates(dd);
-                                }
-                            });
-                        }
+            formItem$PlaceId: {
+                listeners: {
+                    change: function(){
+                        this.ctx().disabledOptions(this);
                     }
-                });
+                }
             },
-            formItem$TimeId: function(item) {
-                var me = this;
-                return Ext.merge(item, {
-                    considerOn: [{
-                        name: 'date',
-                        required: true
-                    }, {
-                        name: 'placeId',
-                        required: true
-                    }, {
-                        name: 'duration',
-                        required: true
-                    }],
-                    listeners: {
-                        enablebysatellite: function(c, data) {
-                            Indi.load('/' + me.ti().section.alias + '/form' + (me.ti().row.id ? '/id/' + me.ti().row.id : '') + '/consider/timeId/', {
-                                params: data,
-                                success: function(response) {
-                                    var json = response.responseText.json();
-                                    if (Ext.isArray(json.disabledTimeIds))
-                                        c.setDisabledOptions(json.disabledTimeIds);
-                                }
-                            });
-                        }
+            formItem$Date: {
+                listeners: {
+                    blur: function() {
+                        this.ctx().disabledOptions(this);
+                    },
+                    boundchange: function(c, bounds) {
+                        this.ctx().disabledOptions(this, {
+                            since: Ext.Date.format(bounds[0], 'Y-m-d'),
+                            until: Ext.Date.format(bounds[1], 'Y-m-d')
+                        });
+                    },
+                    change: function(){
+                        this.ctx().disabledOptions(this);
                     }
-                });
+                }
+            },
+            formItem$Duration: {
+                listeners: {
+                    change: function(){
+                        this.ctx().disabledOptions(this);
+                    }
+                }
+            },
+            formItem$TimeId: {
+                listeners: {
+                    change: function(){
+                        this.ctx().disabledOptions(this);
+                    }
+                }
             },
             formItem$ProgramId: {
-                considerOn: [{
-                    name: 'timeId',
-                    required: true
-                }],
                 listeners: {
                     change: function(c) {
                         c.sbl('price').val(0);
                         if (c.hasZeroValue()) {
                             c.sbl('subprogramId').hide();
-                            //top.window.$('.feature-item-5').css('height', '669px');
                         } else if (c.prop('subprogramsCount')) {
                             c.sbl('subprogramId').show();
-                            //top.window.$('.feature-item-5').css('height', '714px');
                             c.sbl('animatorId').disable().clearValue();
                         } else {
                             c.sbl('subprogramId').hide();
-                            //top.window.$('.feature-item-5').css('height', '669px');
                         }
                     }
                 }
@@ -194,26 +186,11 @@ Ext.define('Indi.lib.controller.Events', {
             formItem$AnimatorId: function(item) {
                 var me = this;
                 return Ext.merge(item, {
-                    considerOn: [{
-                        name: 'timeId',
-                        required: true
-                    }, {
-                        name: 'programId',
-                        required: true
-                    }, {
-                        name: 'date',
-                        required: true
-                    }, {
-                        name: 'placeId',
-                        required: true
-                    }, {
-                        name: 'subprogramId'
-                    }, {
-                        name: 'duration',
-                        required: true
-                    }],
                     listeners: {
-                        enablebysatellite: function(c, d) {
+                        change: function(){
+                            this.ctx().disabledOptions(this);
+                        },
+                        enablebysatellite1: function(c, d) {
                             if (!c.sbl('programId').prop('subprogramsCount') || !c.sbl('subprogramId').hasZeroValue()) {
                                 Indi.load('/' + me.ti().section.alias + '/form' + (me.ti().row.id ? '/id/' + me.ti().row.id : '') + '/consider/animatorId/', {
                                     params: d,

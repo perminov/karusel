@@ -1,178 +1,204 @@
 <?php
 class Event_Row extends Indi_Db_Table_Row {
 
-    public function schedule($data = array()) {
-
-        // Check given data against validation rules
-        $this->mcheck(array(
-            'placeId' => array(
-                'req' => true,
-                'rex' => 'int11',
-                'key' => true
-            ),
-            array_key_exists('since', $data) ? 'since,until' : 'date' => array(
-                'req' => true,
-                'rex' => 'date'
-            ),
-            'duration' => array(
-                'rex' => 'int11'
-            )
-        ), $data);
-
-        // Create schedule
-        $schedule = array_key_exists('since', $data)
-            ? Indi::schedule($this->since, $this->until)
-            : Indi::schedule('month', $this->date);
-
-        // Get daily working hours
-        $daily = $this->daily();
-
-        // Set daily working hours and load existing events
-        $schedule->load('event', array(
-            '`placeId` = "' . $this->placeId . '"',
-            '`id` != "' . $this->id . '"',
-            '`manageStatus` != "cancelled"'
-        ))->daily($daily['since'], $daily['until']);
-
-        // Return $schedule
-        return $schedule;
-    }
-
-    public function busyDates($data = array()) {
-
-        // Get schedule
-        $schedule = $this->schedule($data);
-
-        // Get desired space frame
-        $frame = $this->duration . 'm';
-
-        // Get busy dates
-        $busyA = $schedule->busyDates($frame);
-
-        // If $data arg was given - just return busy dates
-        if (func_num_args()) return $busyA;
-
-        // Else if current `date` is a totally busy date - set mismatch message
-        else if (in($this->date, $busyA)) $this->mflush('date', I_EVENT_ERR_DATE_BUSY);
-    }
-
-    public function busyTimes($data = array()) {
-
-        // Get schedule
-        $schedule = $this->schedule($data);
-
-        // Get desired space frame
-        $frame = $this->duration . 'm';
-
-        // Get busy hours
-        $busyA = $schedule->busyHours($frame, $this->date, '30m');
-
-        // Get list of invalid values of timeId` prop
-        $busyTimeIdA = Indi::model('Time')->fetchAll('FIND_IN_SET(`title`, "' . im($busyA) . '")')->column('id');
-
-        // If $data arg was given - just return busy time ids
-        if (func_num_args()) return $busyTimeIdA;
-
-        // Else if current `timeId` is a totally busy time - set mismatch message
-        if (in($this->timeId, $busyTimeIdA)) $this->mflush('timeId', I_EVENT_ERR_TIME_BUSY);
-    }
-
-    public function busyAnimators($data = array()) {
-
-        // Check $data arg
-        $this->mcheck(array(
-            'placeId' => array(
-                'req' => true,
-                'rex' => 'int11',
-                'key' => 'Place'
-            ),
-            'date' => array(
-                'req' => true,
-                'rex' => 'date'
-            ),
-            'timeId' => array(
-                'req' => true,
-                'rex' => 'int11',
-                'key' => 'Time'
-            ),
-            'duration' => array(
-                'rex' => 'int11'
-            )
-        ), $data);
-
-        // General WHERE clause
-        $where = array(
-            '`manageStatus` != "cancelled"',
-            '`placeId` != "' . $this->placeId . '"',
-            '`id` != "' . $this->id . '"',
-        );
-
-        // Get daily hours
-        $daily = $this->daily();
-
-        // If $data arg is given
-        if (func_num_args()) {
-
-            // Append additional clause
-            $where[] = '`date` = "' . $this->date . '" AND `animatorId` != ""';
-
-            // Get animators, involved in events at date, specified by $data['date']
-            $animatorIdA = array_unique(ar($this->model()->fetchAll($where)->column('animatorId', true, true)));
-
-            // Remove additional clause
-            array_pop($where);
-
-        // Else use current value of `animatorId` prop
-        } else $animatorIdA = $this->zero('animatorId') ? array() : ar($this->animatorId);
-
-        // If `animatorId` prop not yet set
-        // Foreach animator, involved in events at date, specified by $data['date']
-        $busyA = array(); foreach ($animatorIdA as $animatorId) {
-
-            // Append animator-related clause
-            $where[] = 'FIND_IN_SET("' . $animatorId . '", `animatorId`)';
-
-            // Create schedule, set daily active hours and load animator's events
-            $schedule = Indi::schedule('week', $this->date)
-                ->load('event', $where, function($r){
-                    $r->spaceFrame = _2sec('1h');
-                })
-                ->daily($daily['since'], $daily['until']);
-
-            // Remove animator-related clause
-            array_pop($where);
-
-            // If animator is busy - push it's id to $busyAnimatorA array
-            if ($schedule->busy(
-                $this->date . ' ' . $this->foreign('timeId')->title . ':00',
-                _2sec('1h'), true, true
-            )) $busyA[] = $animatorId;
-        }
-
-        // If $data arg was given - just return busy time ids
-        if (func_num_args()) return $busyA;
-
-        // If one or more of selected animators are busy - flush error message
-        else if (count($busyA)) $this->mflush('animatorId', I_EVENT_ERR_ANIMATORS_BUSY
-            . $this->foreign('animatorId')->select($busyA)->column('title', ', '));
-    }
-
+    /**
+     * @return array|mixed
+     */
     public function validate() {
 
         // Skip custom validation if needed
         if ($this->noValidate) return $this->callParent();
 
-        // Check that event's date is not busy
-        $this->busyDates();
-
-        // Check that event's time is not busy
-        $this->busyTimes();
-
-        // If `programId` is non-zero - check that event's animators are not busy
-        if (!$this->zero('animatorId')) $this->busyAnimators();
+        // Check
+        foreach ($this->disabled() as $prop => $disabledA)
+            foreach ($disabledA as $disabledI)
+                if (in($disabledI, $this->$prop))
+                    $this->_mismatch[$prop] .= $disabledI;
 
         // Call parent
         return $this->callParent();
+    }
+
+    /**
+     * Setup fields, that are linked to space owners
+     *
+     * @return array
+     */
+    public function spaceOwners() {
+
+        // Return
+        return array(
+            'placeId' => array(
+                'rex' => 'int11'
+            ),
+            'animatorId' => array(
+                'rex' => 'int11list',
+                'pre' => function($r){
+                    $r->spaceFrame = _2sec('1h');
+                }
+            )
+        );
+    }
+
+    public function disabled($data = array()) {
+        mt();
+        // Declare space-coords fields
+        $spaceCoords = array(
+            'duration' => array('req' => true, 'rex' => 'int11'),
+            'date,since,until' => array('rex' => 'date'),
+            'timeId' => array('rex' => 'int11')
+        );
+
+        // Get space-owners fields
+        $spaceOwners = $this->spaceOwners();
+
+        // Validate both
+        $this->mcheck($spaceCoords + $spaceOwners, $data);
+
+        // Create schedule
+        $schedule = array_key_exists('since', $this->_temporary)
+            ? Indi::schedule($this->since, strtotime($this->until . ' +1 day'))
+            : Indi::schedule('month', $this->fieldIsZero('date') ? null : $this->date);
+
+        // Preload existing events, but do not fill schedule with them
+        $schedule->preload($this->_table, array(
+            '`id` != "' . $this->id . '"',
+            '`manageStatus` != "cancelled"'
+        ));
+
+        // Expand schedule's right bound
+        $schedule->frame($frame = $this->duration . 'm');
+
+        // Collect distinct values for each prop
+        $schedule->distinct(array_keys($spaceOwners));
+        // Get daily working hours
+        $daily = $this->daily(); $disabled = array('date' => array(), 'timeId' => array());
+
+        // Declare $both array
+        $both = array();
+
+        $_timeA = Indi::db()->query('SELECT `title`, `id` FROM `time`')->fetchAll(PDO::FETCH_KEY_PAIR);
+
+        //
+        $time = $this->foreign('timeId')->title;
+        mt();
+        // Foreach prop, representing event-participant
+        foreach ($spaceOwners as $prop => $ruleA) {
+
+            // Declare $prop-key within $disabled array, and initially set it to be an empty array
+            $disabled[$prop] = [];
+
+            // Get distinct values of current $prop from schedule's rowset,
+            // as they are values that do have a probability to be disabled
+            $distinct = $schedule->distinct($prop);
+            d($prop);
+            // For each $prop's distinct value
+            foreach ($distinct as $id) {
+
+                // Refill schedule
+                $schedule->refill($id, $prop, $daily, $ruleA['pre']);
+
+                // Collect info about disabled values per each busy date
+                // So for each busy date we will have the exact reasons of why it is busy
+                // Also, fulfil $both array with partially busy dates
+                foreach ($dates = $schedule->busyDates($frame, $both) as $date)
+                    $busy['date'][$prop][$date][] = $id;
+
+                // Get given date's busy hours for current prop's value
+                if ($both) foreach ($both as $date)
+                    foreach ($schedule->busyHours($frame, $date, '30m') as $Hi)
+                        $busy['time'][$prop][$date][$Hi][] = $id;
+            }
+
+            // If we have values, fully busy at at least one day
+            if ($busy['date'][$prop]) {
+
+                // Get array of possible values
+                $psblA[$prop] = $this->getComboData($prop)->column('id');
+
+                // For each date, that busy for some values,
+                foreach ($busy['date'][$prop] as $date => $busyA) {
+
+                    // Reset $d flag to `false`
+                    $d = false;
+
+                    // If there are no possible values remaining after
+                    // deduction of busy values - set $d flag to `true`
+                    if (!array_diff($psblA[$prop], $busyA)) $d = true;
+
+                    // Else if current value of $prop is given, but it's
+                    // in the list of busy values - also set $d flag to `true`
+                    else if (preg_match('~,(' . im($busyA, '|') . '),~', ',' . $this->$prop . ',')) $d = true;
+
+                    // If $d flag is `true` - append disabled date
+                    if ($d) $disabled['date'][$date] = true;
+
+                    // If
+                    if ($date == $this->date) $disabled[$prop] = $busyA;
+                }
+            }
+
+            // If we have values, fully busy at at least one day
+            if ($busy['time'][$prop]) {
+
+                // Get array of possible values, keeping in mind
+                // that some values might have already been excluded by date
+                if (!isset($psblA[$prop])) $psblA[$prop] = $this->getComboData($prop)->column('id');
+
+                // For each date, that busy for some values,
+                foreach ($busy['time'][$prop] as $date => $HiA) {
+
+                    //
+                    if ($busyA = $HiA[$time]) {
+
+                        // Reset $d flag to `false`
+                        $d = false;
+
+                        // If there are no possible values remaining after
+                        // deduction of busy values - set $d flag to `true`
+                        if (!array_diff($psblA[$prop], array_merge($busy['date'][$prop][$date] ?: [], $busyA))) $d = true;
+
+                        // Else if current value of $prop is given, but it's
+                        // in the list of busy values - also set $d flag to `true`
+                        else if (preg_match('~,(' . im($busyA, '|') . '),~', ',' . $this->$prop . ',')) $d = true;
+
+                        // If $d flag is `true` - append disabled date
+                        if ($d) $disabled['date'][$date] = true;
+
+                        // If
+                        if ($date == $this->date) $disabled[$prop] = array_merge($disabled[$prop] ?: [], $busyA);
+                    }
+
+                    //
+                    if ($date == $this->date) foreach ($HiA as $Hi => $busyA) {
+
+                        // Reset $d flag to `false`
+                        $d = false;
+
+                        // If there are no possible values remaining after
+                        // deduction of busy values - set $d flag to `true`
+                        if (!array_diff($psblA[$prop], array_merge($busy['date'][$prop][$date] ?: [], $busyA))) $d = true;
+
+                        // Else if current value of $prop is given, but it's
+                        // in the list of busy values - also set $d flag to `true`
+                        else if (preg_match('~,(' . im($busyA, '|') . '),~', ',' . $this->$prop . ',')) $d = true;
+
+                        // If $d flag is `true` - append disabled `timeId`
+                        if ($d && $timeId = $_timeA[$Hi]) $disabled['timeId'][$timeId] = true;
+                    }
+                }
+            }
+            d(mt());
+        }
+
+        // Use keys as values for date and timeId
+        foreach ($disabled as $prop => $data) {
+            if ($prop == 'date') $disabled[$prop] = array_keys($data);
+            if ($prop == 'timeId') $disabled[$prop] = array_keys($data);
+        }
+
+        // Return info about disabled values
+        return $disabled;
     }
 
     /**
@@ -207,6 +233,12 @@ class Event_Row extends Indi_Db_Table_Row {
             $this->foreign('districtId')->code, $this->foreign('placeId')->title);
     }
 
+    /**
+     * Calc price, depending on animators count, event's weekday & start time
+     *
+     * @param array $data
+     * @return float|string
+     */
     public function price($data = array()) {
 
         // Check
