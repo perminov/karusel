@@ -71,60 +71,66 @@ class Event_Row extends Indi_Db_Table_Row {
 
         // Collect distinct values for each prop
         $schedule->distinct(array_keys($spaceOwners));
+
         // Get daily working hours
         $daily = $this->daily(); $disabled = array('date' => array(), 'timeId' => array());
 
-        // Declare $both array
-        $both = array();
-
+        //
         $_timeA = Indi::db()->query('SELECT `title`, `id` FROM `time`')->fetchAll(PDO::FETCH_KEY_PAIR);
 
         //
         $time = $this->foreign('timeId')->title;
-        mt();
+
+        // Setup daily hours
+        $schedule->daily($daily['since'], $daily['until']);
+
+        // Backup schedule's spaces
+        $schedule->backup();
+
         // Foreach prop, representing event-participant
         foreach ($spaceOwners as $prop => $ruleA) {
 
             // Declare $prop-key within $disabled array, and initially set it to be an empty array
-            $disabled[$prop] = [];
+            $disabled[$prop] = $busy['date'] = $busy['time'] = $psblA = array();
 
             // Get distinct values of current $prop from schedule's rowset,
             // as they are values that do have a probability to be disabled
-            $distinct = $schedule->distinct($prop);
-            d($prop);
-            // For each $prop's distinct value
-            foreach ($distinct as $id) {
+            // So, for each $prop's distinct value
+            foreach ($schedule->distinct($prop) as $id => $idxA) {
+
+                // Reset $both array
+                $both = array();
 
                 // Refill schedule
-                $schedule->refill($id, $prop, $daily, $ruleA['pre']);
+                $schedule->refill($idxA, null, null, $ruleA['pre']);
 
                 // Collect info about disabled values per each busy date
                 // So for each busy date we will have the exact reasons of why it is busy
                 // Also, fulfil $both array with partially busy dates
                 foreach ($dates = $schedule->busyDates($frame, $both) as $date)
-                    $busy['date'][$prop][$date][] = $id;
+                    $busy['date'][$date][] = $id;
 
                 // Get given date's busy hours for current prop's value
                 if ($both) foreach ($both as $date)
-                    foreach ($schedule->busyHours($frame, $date, '30m') as $Hi)
-                        $busy['time'][$prop][$date][$Hi][] = $id;
+                    foreach ($schedule->busyHours($date, '30m', true) as $Hi)
+                        $busy['time'][$date][$Hi][] = $id;
             }
 
             // If we have values, fully busy at at least one day
-            if ($busy['date'][$prop]) {
+            if ($busy['date']) {
 
                 // Get array of possible values
-                $psblA[$prop] = $this->getComboData($prop)->column('id');
+                $psblA = $this->getComboData($prop)->column('id');
 
                 // For each date, that busy for some values,
-                foreach ($busy['date'][$prop] as $date => $busyA) {
+                foreach ($busy['date'] as $date => $busyA) {
 
                     // Reset $d flag to `false`
                     $d = false;
 
                     // If there are no possible values remaining after
                     // deduction of busy values - set $d flag to `true`
-                    if (!array_diff($psblA[$prop], $busyA)) $d = true;
+                    if (!array_diff($psblA, $busyA)) $d = true;
 
                     // Else if current value of $prop is given, but it's
                     // in the list of busy values - also set $d flag to `true`
@@ -139,14 +145,14 @@ class Event_Row extends Indi_Db_Table_Row {
             }
 
             // If we have values, fully busy at at least one day
-            if ($busy['time'][$prop]) {
+            if ($busy['time']) {
 
                 // Get array of possible values, keeping in mind
                 // that some values might have already been excluded by date
-                if (!isset($psblA[$prop])) $psblA[$prop] = $this->getComboData($prop)->column('id');
+                if (!$psblA) $psblA = $this->getComboData($prop)->column('id');
 
                 // For each date, that busy for some values,
-                foreach ($busy['time'][$prop] as $date => $HiA) {
+                foreach ($busy['time'] as $date => $HiA) {
 
                     //
                     if ($busyA = $HiA[$time]) {
@@ -156,7 +162,7 @@ class Event_Row extends Indi_Db_Table_Row {
 
                         // If there are no possible values remaining after
                         // deduction of busy values - set $d flag to `true`
-                        if (!array_diff($psblA[$prop], array_merge($busy['date'][$prop][$date] ?: [], $busyA))) $d = true;
+                        if (!array_diff($psblA, array_merge($busy['date'][$date] ?: [], $busyA))) $d = true;
 
                         // Else if current value of $prop is given, but it's
                         // in the list of busy values - also set $d flag to `true`
@@ -177,7 +183,7 @@ class Event_Row extends Indi_Db_Table_Row {
 
                         // If there are no possible values remaining after
                         // deduction of busy values - set $d flag to `true`
-                        if (!array_diff($psblA[$prop], array_merge($busy['date'][$prop][$date] ?: [], $busyA))) $d = true;
+                        if (!array_diff($psblA, array_merge($busy['date'][$date] ?: [], $busyA))) $d = true;
 
                         // Else if current value of $prop is given, but it's
                         // in the list of busy values - also set $d flag to `true`
@@ -188,7 +194,6 @@ class Event_Row extends Indi_Db_Table_Row {
                     }
                 }
             }
-            d(mt());
         }
 
         // Use keys as values for date and timeId
