@@ -41,7 +41,7 @@ class Event_Row extends Indi_Db_Table_Row {
     }
 
     public function disabled($data = array()) {
-        mt();
+
         // Declare space-coords fields
         $spaceCoords = array(
             'duration' => array('req' => true, 'rex' => 'int11'),
@@ -75,17 +75,11 @@ class Event_Row extends Indi_Db_Table_Row {
         // Get daily working hours
         $daily = $this->daily(); $disabled = array('date' => array(), 'timeId' => array());
 
-        //
-        $_timeA = Indi::db()->query('SELECT `title`, `id` FROM `time`')->fetchAll(PDO::FETCH_KEY_PAIR);
-
-        //
+        // Get time in 'H:i' format
         $time = $this->foreign('timeId')->title;
 
-        // Setup daily hours
-        $schedule->daily($daily['since'], $daily['until']);
-
-        // Backup schedule's spaces
-        $schedule->backup();
+        // Setup 'early' and 'late' spaces and backup
+        $schedule->daily($daily['since'], $daily['until'])->backup();
 
         // Foreach prop, representing event-participant
         foreach ($spaceOwners as $prop => $ruleA) {
@@ -139,7 +133,7 @@ class Event_Row extends Indi_Db_Table_Row {
                     // If $d flag is `true` - append disabled date
                     if ($d) $disabled['date'][$date] = true;
 
-                    // If
+                    // If iterated date is same as current date - append disabled value for $prop prop
                     if ($date == $this->date) $disabled[$prop] = $busyA;
                 }
             }
@@ -154,7 +148,7 @@ class Event_Row extends Indi_Db_Table_Row {
                 // For each date, that busy for some values,
                 foreach ($busy['time'] as $date => $HiA) {
 
-                    //
+                    // If there are non-empty array of disabled values for entry's time
                     if ($busyA = $HiA[$time]) {
 
                         // Reset $d flag to `false`
@@ -171,11 +165,11 @@ class Event_Row extends Indi_Db_Table_Row {
                         // If $d flag is `true` - append disabled date
                         if ($d) $disabled['date'][$date] = true;
 
-                        // If
+                        // If iterated date is same as current date - append disabled value for $prop prop
                         if ($date == $this->date) $disabled[$prop] = array_merge($disabled[$prop] ?: [], $busyA);
                     }
 
-                    //
+                    // If iterated date is same as current date - append disabled value for `timeId` prop
                     if ($date == $this->date) foreach ($HiA as $Hi => $busyA) {
 
                         // Reset $d flag to `false`
@@ -190,7 +184,7 @@ class Event_Row extends Indi_Db_Table_Row {
                         else if (preg_match('~,(' . im($busyA, '|') . '),~', ',' . $this->$prop . ',')) $d = true;
 
                         // If $d flag is `true` - append disabled `timeId`
-                        if ($d && $timeId = $_timeA[$Hi]) $disabled['timeId'][$timeId] = true;
+                        if ($d && $timeId = timeId($Hi)) $disabled['timeId'][$timeId] = true;
                     }
                 }
             }
