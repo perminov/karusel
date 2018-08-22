@@ -190,6 +190,13 @@ class Event_Row extends Indi_Db_Table_Row {
             }
         }
 
+        // Append disabled timeIds, for time that is before opening and after closing
+        if ($daily['since'] || $daily['until']) foreach (timeId() as $Hi => $timeId) {
+            $His = $Hi . ':00';
+            if ($daily['since'] && $His <  $daily['since']) $disabled['timeId'][$timeId] = true;
+            if ($daily['until'] && $His >= $daily['until']) $disabled['timeId'][$timeId] = true;
+        }
+
         // Use keys as values for date and timeId
         foreach ($disabled as $prop => $data) {
             if ($prop == 'date') $disabled[$prop] = array_keys($data);

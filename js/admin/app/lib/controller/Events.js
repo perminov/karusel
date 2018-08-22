@@ -82,7 +82,7 @@ Ext.define('Indi.lib.controller.Events', {
             }
         },
         disabledOptions: function(c, bounds) {
-            var me = c, data = {}, v;
+            var me = this, data = {}, v;
             ['placeId','date','timeId','animatorId','duration'].forEach(function(prop){
                 data[prop] = c.sbl(prop).getSubmitValue();
                 if (prop == 'date' && !data[prop].length) data[prop] = '0000-00-00';
@@ -145,12 +145,18 @@ Ext.define('Indi.lib.controller.Events', {
                     }
                 }
             },
-            formItem$Duration: {
-                listeners: {
-                    change: function(){
-                        this.ctx().disabledOptions(this);
+            formItem$Duration: function(item){
+                var me = this;
+                return Ext.merge(item, {
+                    listeners: {
+                        enablebysatellite: function(c, data) {
+                            me.disabledOptions(c);
+                        },
+                        change: function(){
+                            this.ctx().disabledOptions(this);
+                        }
                     }
-                }
+                });
             },
             formItem$TimeId: {
                 listeners: {
