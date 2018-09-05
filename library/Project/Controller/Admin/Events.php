@@ -25,17 +25,6 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
     }
 
     /**
-     * Collect and flush info about inaccessible values, to prevent them from being selected
-     *
-     * @param $data
-     */
-    public function formActionIDuration($data) {
-
-        // Flush info about disabled options (dates and others)
-        jflush(true, array('disabled' => $this->row->disabled($data)));
-    }
-
-    /**
      * Confirm event
      */
     public function confirmAction() {

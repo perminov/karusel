@@ -9,11 +9,17 @@ class Event_Row extends Indi_Db_Table_Row {
         // Skip custom validation if needed
         if ($this->noValidate) return $this->callParent();
 
-        // Check
-        foreach ($this->disabled() as $prop => $disabledA)
+        // Check space-fields
+        foreach ($this->disabled(false) as $prop => $disabledA)
             foreach ($disabledA as $disabledI)
                 if (in($disabledI, $this->$prop))
                     $this->_mismatch[$prop] .= $disabledI;
+
+        // If any mismatches detected - call parent
+        if ($this->_mismatch) return $this->callParent();
+
+        // Check placeId is not zero
+        $this->mcheck(array('placeId' => array('req' => true)), false);
 
         // Call parent
         return $this->callParent();
@@ -24,7 +30,7 @@ class Event_Row extends Indi_Db_Table_Row {
      *
      * @return array
      */
-    public function spaceOwners() {
+    protected function _spaceOwners() {
 
         // Return
         return array(
@@ -40,23 +46,30 @@ class Event_Row extends Indi_Db_Table_Row {
         );
     }
 
+    /**
+     * @param array $data
+     * @return array
+     */
     public function disabled($data = array()) {
 
-        // Declare space-coords fields
-        $spaceCoords = array(
-            'duration' => array('req' => true, 'rex' => 'int11'),
-            'date,since,until' => array('rex' => 'date'),
-            'timeId' => array('rex' => 'int11')
-        );
+        // Setup $strict flag indicating whether or not 'req'-rule
+        // should be added for each space-coord field's validation rules array.
+        $strict = !(is_array($data) || $data instanceof ArrayObject); if ($strict) $data = array();
+
+        // Get space-coord fields and their validation rules
+        $spaceCoords = $this->_spaceCoords($strict);
+
+        // Setup validation rules for $data['since'] and $data['until']
+        $schedBounds = $strict ? array() : array('since,until' => array('rex' => 'date'));
 
         // Get space-owners fields
-        $spaceOwners = $this->spaceOwners();
+        $spaceOwners = $this->_spaceOwners();
 
         // Validate both
-        $this->mcheck($spaceCoords + $spaceOwners, $data);
+        $this->mcheck($spaceCoords + $schedBounds + $spaceOwners, $data);
 
         // Create schedule
-        $schedule = array_key_exists('since', $this->_temporary)
+        $schedule = !$strict && array_key_exists('since', $this->_temporary)
             ? Indi::schedule($this->since, strtotime($this->until . ' +1 day'))
             : Indi::schedule('month', $this->fieldIsZero('date') ? null : $this->date);
 
@@ -67,7 +80,7 @@ class Event_Row extends Indi_Db_Table_Row {
         ));
 
         // Expand schedule's right bound
-        $schedule->frame($frame = $this->duration . 'm');
+        $schedule->frame($frame = $this->_spaceFrame());
 
         // Collect distinct values for each prop
         $schedule->distinct(array_keys($spaceOwners));
