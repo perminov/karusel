@@ -93,4 +93,15 @@ class Project_Controller_Admin_Events extends Project_Controller_Admin {
         // Call parent
         $this->callParent();
     }
+
+    /**
+     * Get price
+     *
+     * @param $data
+     */
+    public function formActionIPrice($data) {
+
+        // Flush price
+        jflush(true, array('price' => $this->row->price($data)));
+    }
 }

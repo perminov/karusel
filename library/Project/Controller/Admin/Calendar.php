@@ -314,4 +314,15 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
             ar('programId,animatorId,title,manageStatus')
         ));
     }
+
+    /**
+     * Get price
+     *
+     * @param $data
+     */
+    public function formActionIPrice($data) {
+
+        // Flush price
+        jflush(true, array('price' => $this->row->price($data)));
+    }
 }

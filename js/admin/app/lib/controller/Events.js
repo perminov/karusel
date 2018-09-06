@@ -82,25 +82,16 @@ Ext.define('Indi.lib.controller.Events', {
             }
         },
         disabledOptions: function(c, bounds) {
-            var me = this, data = {}, v;
-            ['placeId','date','timeId','animatorId','duration'].forEach(function(prop){
+            var me = this, data = {};
+            ['districtId', 'placeId','date','timeId','duration','animatorId'].forEach(function(prop){
                 data[prop] = c.sbl(prop).getSubmitValue();
-                if (prop == 'date' && !data[prop].length) data[prop] = '0000-00-00';
             });
             if (bounds) Ext.Object.merge(data, bounds);
             Indi.load('/' + me.ti().section.alias + '/form' + (me.ti().row.id ? '/id/' + me.ti().row.id : '') + '/consider/duration/', {
                 params: data,
                 success: function(response) {
-                    var disabled = response.responseText.json().disabled, arg, format;
-                    for (var i in disabled) {
-                        if (i != 'date') c.sbl(i).setDisabledOptions(disabled[i]); else {
-                            format = c.sbl('date').format, arg = [];
-                            if (disabled[i].length) disabled[i].forEach(function(d, i){
-                                arg[i] = Ext.Date.format(new Date(d), format);
-                            }); else arg.push('0001-01-01');
-                            c.sbl(i).setDisabledDates(arg);
-                        }
-                    }
+                    var dd = response.responseText.json().disabled;
+                    for (var i in dd) c.sbl(i).setDisabledOptions(dd[i]);
                 }
             });
         }
@@ -122,6 +113,13 @@ Ext.define('Indi.lib.controller.Events', {
             }
         },
         form: {
+            formItem$DistrictId: {
+                listeners: {
+                    change: function(){
+                        this.ctx().disabledOptions(this);
+                    }
+                }
+            },
             formItem$PlaceId: {
                 listeners: {
                     change: function(){
@@ -145,19 +143,6 @@ Ext.define('Indi.lib.controller.Events', {
                     }
                 }
             },
-            formItem$Duration: function(item){
-                var me = this;
-                return Ext.merge(item, {
-                    listeners: {
-                        enablebysatellite: function(c, data) {
-                            me.disabledOptions(c);
-                        },
-                        change: function(){
-                            this.ctx().disabledOptions(this);
-                        }
-                    }
-                });
-            },
             formItem$TimeId: {
                 listeners: {
                     change: function(){
@@ -165,17 +150,26 @@ Ext.define('Indi.lib.controller.Events', {
                     }
                 }
             },
+            formItem$Duration: function(item){
+                var me = this;
+                return Ext.merge(item, {
+                    listeners: {
+                        enablebysatellite: function() {
+                            me.disabledOptions(this);
+                        },
+                        change: function(){
+                            this.ctx().disabledOptions(this);
+                        }
+                    }
+                });
+            },
             formItem$ProgramId: {
                 listeners: {
                     change: function(c) {
-                        c.sbl('price').val(0);
-                        if (c.hasZeroValue()) {
+                        if (c.hasZeroValue() || !c.prop('subprogramsCount')) {
                             c.sbl('subprogramId').hide();
-                        } else if (c.prop('subprogramsCount')) {
-                            c.sbl('subprogramId').show();
-                            c.sbl('animatorId').disable().clearValue();
                         } else {
-                            c.sbl('subprogramId').hide();
+                            c.sbl('subprogramId').show();
                         }
                     }
                 }
@@ -183,38 +177,50 @@ Ext.define('Indi.lib.controller.Events', {
             formItem$ChildrenCount: {
                 considerOn: [{name: 'placeId'}],
                 listeners: {
-                    enablebysatellite: function(c, data) {
+                    enablebysatellite: function(c) {
                         if (c.sbl('placeId').prop('maxChildrenCount'))
                             c.maxValue = c.sbl('placeId').prop('maxChildrenCount');
                     }
                 }
             },
-            formItem$AnimatorId: function(item) {
-                var me = this;
-                return Ext.merge(item, {
+            formItem$Price: function(item) {
+                var me = this; return Ext.merge(item, {
+                    considerOn: [
+                        {name: 'districtId', enable: false},
+                        {name: 'placeId', enable: false},
+                        {name: 'programId', enable: false},
+                        {name: 'subprogramId', enable: false},
+                        {name: 'date', enable: false},
+                        {name: 'timeId', enable: false}
+                    ],
                     listeners: {
-                        change: function(){
-                            this.ctx().disabledOptions(this);
-                        },
-                        enablebysatellite1: function(c, d) {
-                            if (!c.sbl('programId').prop('subprogramsCount') || !c.sbl('subprogramId').hasZeroValue()) {
-                                Indi.load('/' + me.ti().section.alias + '/form' + (me.ti().row.id ? '/id/' + me.ti().row.id : '') + '/consider/animatorId/', {
-                                    params: d,
-                                    success: function(response) {
-                                        var json = response.responseText.json();
-                                        if (Ext.isObject(json)) {
-                                            c.setDisabledOptions(json.disabled);
-                                            c.maxSelected = !c.sbl('subprogramId').hasZeroValue()
-                                                ? c.sbl('subprogramId').prop('animatorsCount')
-                                                : 1;
-                                            if (c.sbl('price')) c.sbl('price').val(json.price);
-                                        }
-                                    }
-                                });
-                            } else c.disable();
+                        enablebysatellite: function(c, d){
+                            Indi.load('/' + me.ti().section.alias + '/form' + (me.ti().row.id ? '/id/' + me.ti().row.id : '') + '/consider/price/', {
+                                params: d,
+                                success: function(response) {
+                                    c.val(response.responseText.json().price);
+                                }
+                            });
                         }
                     }
                 });
+            },
+            formItem$AnimatorId: {
+                considerOn: [
+                    {name: 'programId', required: false},
+                    {name: 'subprogramId', required: false}
+                ],
+                listeners: {
+                    change: function(){
+                        this.ctx().disabledOptions(this);
+                    },
+                    enablebysatellite: function(c, d) {
+                        c.maxSelected = !c.sbl('subprogramId').hasZeroValue()
+                            ? c.sbl('subprogramId').prop('animatorsCount')
+                            : 1;
+                        c.isValid();
+                    }
+                }
             }
         },
         print: {

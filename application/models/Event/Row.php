@@ -9,6 +9,9 @@ class Event_Row extends Indi_Db_Table_Row {
         // Skip custom validation if needed
         if ($this->noValidate) return $this->callParent();
 
+        // Check placeId is not zero
+        $this->mcheck(array('placeId' => array('req' => true)));
+
         // Check space-fields
         foreach ($this->disabled(false) as $prop => $disabledA)
             foreach ($disabledA as $disabledI)
@@ -17,9 +20,6 @@ class Event_Row extends Indi_Db_Table_Row {
 
         // If any mismatches detected - call parent
         if ($this->_mismatch) return $this->callParent();
-
-        // Check placeId is not zero
-        $this->mcheck(array('placeId' => array('req' => true)), false);
 
         // Call parent
         return $this->callParent();
@@ -65,8 +65,14 @@ class Event_Row extends Indi_Db_Table_Row {
         // Get space-owners fields
         $spaceOwners = $this->_spaceOwners();
 
-        // Validate both
-        $this->mcheck($spaceCoords + $schedBounds + $spaceOwners, $data);
+        //
+        $spaceOwnerSatellites = array();
+        foreach (array_keys($spaceOwners) as $owner)
+            if ($sField = $this->field($owner)->foreign('satellite')->alias)
+                $spaceOwnerSatellites[$sField] = array('rex' => 'int11');
+
+        // Validate all involved fields
+        $this->mcheck($spaceCoords + $schedBounds + $spaceOwners + $spaceOwnerSatellites, $data);
 
         // Create schedule
         $schedule = !$strict && array_key_exists('since', $this->_temporary)
@@ -262,8 +268,8 @@ class Event_Row extends Indi_Db_Table_Row {
 
         // Check
         $this->mcheck(array(
-            'programId' => array('rex' => 'int11', 'key' => true),
-            'subprogramId' => array('rex' => 'int11', 'key' => true)
+            'districtId,placeId,programId,subprogramId,timeId' => array('rex' => 'int11', 'key' => true),
+            'date' => array('rex' => 'date')
         ), $data);
 
         // Animators qty
@@ -283,6 +289,7 @@ class Event_Row extends Indi_Db_Table_Row {
 
             // Apply discount
             $this->price *= 1 - $discount/100;
+            $this->price = (int) $this->price;
         }
 
         // Set `finalPrice`
