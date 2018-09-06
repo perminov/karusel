@@ -65,14 +65,14 @@ class Event_Row extends Indi_Db_Table_Row {
         // Get space-owners fields
         $spaceOwners = $this->_spaceOwners();
 
-        //
-        $spaceOwnerSatellites = array();
-        foreach (array_keys($spaceOwners) as $owner)
-            if ($sField = $this->field($owner)->foreign('satellite')->alias)
-                $spaceOwnerSatellites[$sField] = array('rex' => 'int11');
+        // Get rules for satellite-fields, e.g. fields that space-owner fields rely on
+        $ownerRelyOn = array();
+        foreach (array_keys($spaceOwners) as $owner) if ($sFieldR = $this->field($owner)->satellite())
+            if ($sra = $sFieldR->storeRelationAbility) $ownerRelyOn[$sFieldR->alias]
+                = array('rex' => $sra == 'many' ? 'int11list' : 'int11');
 
         // Validate all involved fields
-        $this->mcheck($spaceCoords + $schedBounds + $spaceOwners + $spaceOwnerSatellites, $data);
+        $this->mcheck($spaceCoords + $schedBounds + $spaceOwners + $ownerRelyOn, $data);
 
         // Create schedule
         $schedule = !$strict && array_key_exists('since', $this->_temporary)
