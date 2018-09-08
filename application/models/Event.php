@@ -25,4 +25,25 @@ class Event extends Indi_Db_Table {
      * @var string
      */
     protected $_rowClass = 'Event_Row';
+
+    /**
+     * Setup fields, that are linked to space owners
+     *
+     * @return array
+     */
+    protected function _spaceOwners() {
+
+        // Return
+        return array(
+            'placeId' => array(
+                'rex' => 'int11'
+            ),
+            'animatorId' => array(
+                'rex' => 'int11list',
+                'pre' => function($r){
+                    $r->spaceFrame = _2sec('1h');
+                }
+            )
+        );
+    }
 }

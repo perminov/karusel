@@ -26,27 +26,6 @@ class Event_Row extends Indi_Db_Table_Row {
     }
 
     /**
-     * Setup fields, that are linked to space owners
-     *
-     * @return array
-     */
-    protected function _spaceOwners() {
-
-        // Return
-        return array(
-            'placeId' => array(
-                'rex' => 'int11'
-            ),
-            'animatorId' => array(
-                'rex' => 'int11list',
-                'pre' => function($r){
-                    $r->spaceFrame = _2sec('1h');
-                }
-            )
-        );
-    }
-
-    /**
      * @param array $data
      * @return array
      */
@@ -56,20 +35,17 @@ class Event_Row extends Indi_Db_Table_Row {
         // should be added for each space-coord field's validation rules array.
         $strict = !(is_array($data) || $data instanceof ArrayObject); if ($strict) $data = array();
 
-        // Get space-coord fields and their validation rules
-        $spaceCoords = $this->_spaceCoords($strict);
+        // Get space-coord fields with their validation rules
+        $spaceCoords = $this->model()->spaceCoords(true, $strict);
+
+        // Get space-owners fields  with their validation rules
+        $spaceOwners = $this->model()->spaceOwners(true);
+
+        // Get satellite-fields (e.g. fields that space-owner fields rely on) with their validation rules
+        $ownerRelyOn = $this->model()->spaceOwnersRelyOn(true);
 
         // Setup validation rules for $data['since'] and $data['until']
         $schedBounds = $strict ? array() : array('since,until' => array('rex' => 'date'));
-
-        // Get space-owners fields
-        $spaceOwners = $this->_spaceOwners();
-
-        // Get rules for satellite-fields, e.g. fields that space-owner fields rely on
-        $ownerRelyOn = array();
-        foreach (array_keys($spaceOwners) as $owner) if ($sFieldR = $this->field($owner)->satellite())
-            if ($sra = $sFieldR->storeRelationAbility) $ownerRelyOn[$sFieldR->alias]
-                = array('rex' => $sra == 'many' ? 'int11list' : 'int11');
 
         // Validate all involved fields
         $this->mcheck($spaceCoords + $schedBounds + $spaceOwners + $ownerRelyOn, $data);
