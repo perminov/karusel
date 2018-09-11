@@ -80,20 +80,6 @@ Ext.define('Indi.lib.controller.Events', {
                     }, me, {single: true, delay: 500});
                 }});
             }
-        },
-        disabledOptions: function(c, bounds) {
-            var me = this, data = {};
-            ['districtId', 'placeId','date','timeId','duration','animatorId'].forEach(function(prop){
-                data[prop] = c.sbl(prop).getSubmitValue();
-            });
-            if (bounds) Ext.Object.merge(data, bounds);
-            Indi.load('/' + me.ti().section.alias + '/form' + (me.ti().row.id ? '/id/' + me.ti().row.id : '') + '/consider/duration/', {
-                params: data,
-                success: function(response) {
-                    var dd = response.responseText.json().disabled;
-                    for (var i in dd) c.sbl(i).setDisabledOptions(dd[i]);
-                }
-            });
         }
     },
     actionsConfig: {
@@ -113,56 +99,6 @@ Ext.define('Indi.lib.controller.Events', {
             }
         },
         form: {
-            formItem$DistrictId: {
-                listeners: {
-                    change: function(){
-                        this.ctx().disabledOptions(this);
-                    }
-                }
-            },
-            formItem$PlaceId: {
-                listeners: {
-                    change: function(){
-                        this.ctx().disabledOptions(this);
-                    }
-                }
-            },
-            formItem$Date: {
-                listeners: {
-                    blur: function() {
-                        this.ctx().disabledOptions(this);
-                    },
-                    boundchange: function(c, bounds) {
-                        this.ctx().disabledOptions(this, {
-                            since: Ext.Date.format(bounds[0], 'Y-m-d'),
-                            until: Ext.Date.format(bounds[1], 'Y-m-d')
-                        });
-                    },
-                    change: function(){
-                        this.ctx().disabledOptions(this);
-                    }
-                }
-            },
-            formItem$TimeId: {
-                listeners: {
-                    change: function(){
-                        this.ctx().disabledOptions(this);
-                    }
-                }
-            },
-            formItem$Duration: function(item){
-                var me = this;
-                return Ext.merge(item, {
-                    listeners: {
-                        enablebysatellite: function() {
-                            me.disabledOptions(this);
-                        },
-                        change: function(){
-                            this.ctx().disabledOptions(this);
-                        }
-                    }
-                });
-            },
             formItem$ProgramId: {
                 listeners: {
                     change: function(c) {
@@ -211,9 +147,6 @@ Ext.define('Indi.lib.controller.Events', {
                     {name: 'subprogramId', required: false}
                 ],
                 listeners: {
-                    change: function(){
-                        this.ctx().disabledOptions(this);
-                    },
                     enablebysatellite: function(c, d) {
                         c.maxSelected = !c.sbl('subprogramId').hasZeroValue()
                             ? c.sbl('subprogramId').prop('animatorsCount')
