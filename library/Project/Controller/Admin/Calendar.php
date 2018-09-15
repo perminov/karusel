@@ -152,24 +152,6 @@ class Project_Controller_Admin_Calendar extends Indi_Controller_Admin_Calendar {
         parent::preDispatch();
     }
 
-    public function formActionIDate($data) {
-
-        // Flush disabled dates
-        jflush(true, array('disabledDates' => $this->row->busyDates($data)));
-    }
-
-    public function formActionITimeId($data) {
-
-        // Flush busy time ids
-        jflush(true, array('disabledTimeIds' => $this->row->busyTimes($data)));
-    }
-
-    public function formActionIAnimatorId($data) {
-
-        // Flush busy time ids
-        jflush(true, array('disabled' => $this->row->busyAnimators($data), 'price' => $this->row->price($data)));
-    }
-
     /**
      * Confirm event
      */

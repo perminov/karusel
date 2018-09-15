@@ -8,7 +8,7 @@ class Project_View_Helper_SiteHeader {
         <?=Indi::view()->siteFavicon()?>
         <title><?=Indi::view()->siteMetatag('title')?></title>
         <meta name="description" content="<?=Indi::view()->siteMetatag('description')?>">
-        <meta name="keywords" content="<?=Indi::view()->siteMetatag('keyword')?>">
+        <meta name="keywords" content="<?=Indi::view()->siteMetatag('keywords')?>">
         <link rel="stylesheet" href="/library/jquery-ui-1.12.1/jquery-ui.min.css"/>
         <link rel="stylesheet" href="/library/select2/select2.min.css"/>
         <link rel="stylesheet" href="/css/iform.css"/>
