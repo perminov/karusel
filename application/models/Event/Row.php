@@ -13,7 +13,7 @@ class Event_Row extends Indi_Db_Table_Row {
         $this->mcheck(array('placeId' => array('req' => true)));
 
         // Check space-fields
-        foreach ($this->disabled(false) as $prop => $disabledA)
+        foreach ($this->spaceDisabledValues(false) as $prop => $disabledA)
             foreach ($disabledA as $disabledI)
                 if (in($disabledI, $this->$prop))
                     $this->_mismatch[$prop] .= $disabledI;
@@ -26,187 +26,12 @@ class Event_Row extends Indi_Db_Table_Row {
     }
 
     /**
-     * @param array $data
+     * WHERE clause to be used for event-entries preloading
+     *
      * @return array
      */
-    public function disabled($data = array()) {
-
-        // Setup $strict flag indicating whether or not 'req'-rule
-        // should be added for each space-coord field's validation rules array.
-        $strict = !(is_array($data) || $data instanceof ArrayObject); if ($strict) $data = array();
-
-        // Get space-coord fields with their validation rules
-        $spaceCoords = $this->model()->spaceCoords(true, $strict);
-
-        // Get space-owners fields  with their validation rules
-        $spaceOwners = $this->model()->spaceOwners(true);
-
-        // Get satellite-fields (e.g. fields that space-owner fields rely on) with their validation rules
-        $ownerRelyOn = $this->model()->spaceOwnersRelyOn(true);
-
-        // Setup validation rules for $data['since'] and $data['until']
-        $schedBounds = $strict ? array() : array('since,until' => array('rex' => 'date'));
-
-        // Validate all involved fields
-        $this->mcheck($spaceCoords + $schedBounds + $spaceOwners + $ownerRelyOn, $data);
-
-        // Create schedule
-        $schedule = !$strict && array_key_exists('since', $this->_temporary)
-            ? Indi::schedule($this->since, strtotime($this->until . ' +1 day'))
-            : Indi::schedule('month', $this->fieldIsZero('date') ? null : $this->date);
-
-        // Preload existing events, but do not fill schedule with them
-        $schedule->preload($this->_table, array(
-            '`id` != "' . $this->id . '"',
-            '`manageStatus` != "cancelled"'
-        ));
-
-        // Expand schedule's right bound
-        $schedule->frame($frame = $this->_spaceFrame());
-
-        // Collect distinct values for each prop
-        $schedule->distinct($spaceOwners);
-
-        // Get daily working hours
-        $daily = $this->daily(); $disabled = array('date' => array(), 'timeId' => array());
-
-        // Get time in 'H:i' format
-        $time = $this->foreign('timeId')->title;
-
-        // Setup 'early' and 'late' spaces and backup
-        $schedule->daily($daily['since'], $daily['until'])->backup();
-
-        // Foreach prop, representing event-participant
-        foreach ($spaceOwners as $prop => $ruleA) {
-
-            // Declare $prop-key within $disabled array, and initially set it to be an empty array
-            $disabled[$prop] = $busy['date'] = $busy['time'] = $psblA = array();
-
-            // Get distinct values of current $prop from schedule's rowset,
-            // as they are values that do have a probability to be disabled
-            // So, for each $prop's distinct value
-            foreach ($schedule->distinct($prop) as $id => $info) {
-
-                // Reset $both array
-                $both = array();
-
-                // Refill schedule
-                $schedule->refill($info['idxA'], null, null, $ruleA['pre']);
-
-                // Prepare $hours arg for busyDates call
-                if (!$ruleA['hours']) $hours = false; else $hours = array(
-                    'idsFn' => $ruleA['hours'],
-                    'owner' => $info['entry'],
-                    'event' => $this
-                );
-
-                // Collect info about disabled values per each busy date
-                // So for each busy date we will have the exact reasons of why it is busy
-                // Also, fulfil $both array with partially busy dates
-                foreach ($dates = $schedule->busyDates($frame, $both, $hours) as $date)
-                    $busy['date'][$date][] = $id;
-
-                // Get given date's busy hours for current prop's value
-                if ($both) foreach ($both as $date)
-                    foreach ($schedule->busyHours($date, '30m', true) as $Hi)
-                        $busy['time'][$date][$Hi][] = $id;
-            }
-
-            // If we have values, fully busy at at least one day
-            if ($busy['date']) {
-
-                // Get array of possible values
-                $psblA = $this->getComboData($prop)->column('id');
-
-                // For each date, that busy for some values,
-                foreach ($busy['date'] as $date => $busyA) {
-
-                    // Reset $d flag to `false`
-                    $d = false;
-
-                    // If there are no possible values remaining after
-                    // deduction of busy values - set $d flag to `true`
-                    if (!array_diff($psblA, $busyA)) $d = true;
-
-                    // Else if current value of $prop is given, but it's
-                    // in the list of busy values - also set $d flag to `true`
-                    else if (preg_match('~,(' . im($busyA, '|') . '),~', ',' . $this->$prop . ',')) $d = true;
-
-                    // If $d flag is `true` - append disabled date
-                    if ($d) $disabled['date'][$date] = true;
-
-                    // If iterated date is same as current date - append disabled value for $prop prop
-                    if ($date == $this->date) $disabled[$prop] = $busyA;
-                }
-            }
-
-            // If we have values, fully busy at at least one day
-            if ($busy['time']) {
-
-                // Get array of possible values, keeping in mind
-                // that some values might have already been excluded by date
-                if (!$psblA) $psblA = $this->getComboData($prop)->column('id');
-
-                // For each date, that busy for some values,
-                foreach ($busy['time'] as $date => $HiA) {
-
-                    // If there are non-empty array of disabled values for entry's time
-                    if ($busyA = $HiA[$time]) {
-
-                        // Reset $d flag to `false`
-                        $d = false;
-
-                        // If there are no possible values remaining after
-                        // deduction of busy values - set $d flag to `true`
-                        if (!array_diff($psblA, array_merge($busy['date'][$date] ?: [], $busyA))) $d = true;
-
-                        // Else if current value of $prop is given, but it's
-                        // in the list of busy values - also set $d flag to `true`
-                        else if (preg_match('~,(' . im($busyA, '|') . '),~', ',' . $this->$prop . ',')) $d = true;
-
-                        // If $d flag is `true` - append disabled date
-                        if ($d) $disabled['date'][$date] = true;
-
-                        // If iterated date is same as current date - append disabled value for $prop prop
-                        if ($date == $this->date) $disabled[$prop] = array_merge($disabled[$prop] ?: [], $busyA);
-                    }
-
-                    // If iterated date is same as current date - append disabled value for `timeId` prop
-                    if ($date == $this->date) foreach ($HiA as $Hi => $busyA) {
-
-                        // Reset $d flag to `false`
-                        $d = false;
-
-                        // If there are no possible values remaining after
-                        // deduction of busy values - set $d flag to `true`
-                        if (!array_diff($psblA, array_merge($busy['date'][$date] ?: [], $busyA))) $d = true;
-
-                        // Else if current value of $prop is given, but it's
-                        // in the list of busy values - also set $d flag to `true`
-                        else if (preg_match('~,(' . im($busyA, '|') . '),~', ',' . $this->$prop . ',')) $d = true;
-
-                        // If $d flag is `true` - append disabled `timeId`
-                        if ($d && $timeId = timeId($Hi)) $disabled['timeId'][$timeId] = true;
-                    }
-                }
-            }
-        }
-
-        // Append disabled timeIds, for time that is before opening and after closing
-        if ($daily['since'] || $daily['until']) foreach (timeId() as $Hi => $timeId) {
-            $His = $Hi . ':00';
-            if ($daily['since'] && $His <  $daily['since']) $disabled['timeId'][$timeId] = true;
-            if ($daily['until'] && $His >= $daily['until']) $disabled['timeId'][$timeId] = true;
-        }
-
-        // Use keys as values for date and timeId
-        foreach ($disabled as $prop => $data) {
-            if ($prop == 'date') $disabled[$prop] = array_keys($data);
-            if ($prop == 'timeId') $disabled[$prop] = array_keys($data);
-        }
-
-        // Return info about disabled values
-        return $disabled;
+    public function spacePreloadWHERE() {
+        return array('`manageStatus` != "cancelled"');
     }
 
     /**
