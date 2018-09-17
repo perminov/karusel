@@ -43,6 +43,7 @@ $(function(){
     $('[name="districtId"], [name="placeId"], [name="timeId"]').select22();
     $('[name="placeId"]').iwatch({
         on: [{name: 'districtId', required: true}],
+        odata: true,
         callback: function(c, data) {
             $.post('/index/form/odata/placeId/', {satellite: data.districtId}, function(json) {
                 c.odata(json);
@@ -51,8 +52,9 @@ $(function(){
     });
     $('[name="timeId"]').iwatch({
         on: [{name: 'placeId', required: true}],
+        odata: true,
         callback: function(c, data) {
-            $.post('/index/form/odata/timeId/', {satellite: data.placeId}, function(json) {
+            $.post('/index/form/odata/timeId/', {satellite: data.placeId || 0}, function(json) {
                 c.odata(json);
             });
         }

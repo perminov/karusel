@@ -1,29 +1,59 @@
 <?php
 class IndexController extends Indi_Controller_Front {
 
+    /**
+     * Apply special clauses for combo data filtering
+     */
     public function formAction() {
 
-        // Fix combo data filtering
-        $this->row->field('placeId')->filter = '`id` NOT IN (<?=Indi::admin()->id ? \'5,7\' : \'0\'?>)';
+        // If current visitor is logged as cms-user - return
+        if (Indi::admin()) return;
 
-        // Prepare json for timeId values
-        $this->row->view('timeId-options', str_replace('"', '&quot;',
-            json_encode($this->row->getComboData('timeId')->column('id,title'))));
+        // Else hide 'Rent' options
+        $this->row->field('placeId')->filter = 'NOT FIND_IN_SET(`id`, "5,7")';
     }
 
-    public function formActionIDate($data) {
+    /**
+     * Setup combo-data fitration for timeId field, so options, explicitly
+     * mentioned within place's publicTimeIds-prop - will be displayed only
+     */
+    public function formActionOdataTimeId() {
 
-        // Flush disabled dates
-        jflush(true, array('disabledDates' => $this->row->busyDates($data)));
+        // Check satellite value, assign it as a value of `placeId` prop and pull foreign data
+        $this->row->mcheck(array(
+            'placeId' => array(
+                'rex' => 'int11'
+            )
+        ), array('placeId' => Indi::post('satellite')));
+
+        // If `publicTimeIds` defined - setup timeId-field's combo data filtration
+        if ($timeIds = $this->row->foreign('placeId')->publicTimeIds)
+            $this->row->field('timeId')->filter = 'FIND_IN_SET(`id`, "' . $timeIds . '")';
     }
 
-    public function formActionITimeId($data) {
+    /**
+     * Collect and flush info about inaccessible values, to prevent them from being selected
+     *
+     * @param $data
+     */
+    public function formActionIDuration($data) {
 
         // Convert date format
-        if ($data['date']) $data['date'] = date('Y-m-d', strtotime($data['date']));
+        if ($data['date'] && !Indi::rexm('date', $data['date']))
+            $data['date'] = date('Y-m-d', strtotime($data['date']));
 
-        // Flush busy time ids
-        jflush(true, array('disabledTimeIds' => $this->row->busyTimes($data)));
+        // Check satellite value, assign it as a value of `placeId` prop and pull foreign data
+        $this->row->mcheck(array(
+            'placeId' => array('rex' => 'int11'),
+            'date' => array('rex' => 'date')
+        ), $data);
+
+        // If `publicTimeIds` defined - setup timeId-field's combo data filtration
+        if ($timeIds = $this->row->foreign('placeId')->publicTimeIds)
+            $this->row->field('timeId')->filter = 'FIND_IN_SET(`id`, "' . $timeIds . '")';
+
+        // Call parent
+        $this->callParent();
     }
 
     public function saveAction() {
