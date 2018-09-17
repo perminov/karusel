@@ -65,7 +65,7 @@ class Event_Row extends Indi_Db_Table_Row {
         $schedule->frame($frame = $this->_spaceFrame());
 
         // Collect distinct values for each prop
-        $schedule->distinct(array_keys($spaceOwners));
+        $schedule->distinct($spaceOwners);
 
         // Get daily working hours
         $daily = $this->daily(); $disabled = array('date' => array(), 'timeId' => array());
@@ -85,18 +85,25 @@ class Event_Row extends Indi_Db_Table_Row {
             // Get distinct values of current $prop from schedule's rowset,
             // as they are values that do have a probability to be disabled
             // So, for each $prop's distinct value
-            foreach ($schedule->distinct($prop) as $id => $idxA) {
+            foreach ($schedule->distinct($prop) as $id => $info) {
 
                 // Reset $both array
                 $both = array();
 
                 // Refill schedule
-                $schedule->refill($idxA, null, null, $ruleA['pre']);
+                $schedule->refill($info['idxA'], null, null, $ruleA['pre']);
+
+                // Prepare $hours arg for busyDates call
+                if (!$ruleA['hours']) $hours = false; else $hours = array(
+                    'idsFn' => $ruleA['hours'],
+                    'owner' => $info['entry'],
+                    'event' => $this
+                );
 
                 // Collect info about disabled values per each busy date
                 // So for each busy date we will have the exact reasons of why it is busy
                 // Also, fulfil $both array with partially busy dates
-                foreach ($dates = $schedule->busyDates($frame, $both) as $date)
+                foreach ($dates = $schedule->busyDates($frame, $both, $hours) as $date)
                     $busy['date'][$date][] = $id;
 
                 // Get given date's busy hours for current prop's value
