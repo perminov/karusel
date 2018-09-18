@@ -16,10 +16,7 @@ class Event_Row extends Indi_Db_Table_Row {
         foreach ($this->spaceDisabledValues(false) as $prop => $disabledA)
             foreach ($disabledA as $disabledI)
                 if (in($disabledI, $this->$prop))
-                    $this->_mismatch[$prop] .= $disabledI;
-
-        // If any mismatches detected - call parent
-        if ($this->_mismatch) return $this->callParent();
+                    $this->_mismatch[$prop] = I_COMBO_MISMATCH_DISABLED_VALUE;
 
         // Call parent
         return $this->callParent();

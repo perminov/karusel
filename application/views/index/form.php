@@ -17,7 +17,7 @@
 </tr>
 <tr>
     <td>Дата:</td>
-    <td><input name="date"/></td>
+    <td><input name="date" autocomplete="off"/></td>
 </tr>
 <tr>
     <td>Время:</td><td><select name="timeId">
