@@ -45,7 +45,7 @@ $(function(){
         on: [{name: 'districtId', required: true}],
         odata: true,
         callback: function(c, data) {
-            $.post('/index/form/odata/placeId/', {satellite: data.districtId}, function(json) {
+            $.post('/index/form/odata/placeId/', {consider: JSON.stringify(data)}, function(json) {
                 c.odata(json);
             });
         }
@@ -54,7 +54,7 @@ $(function(){
         on: [{name: 'placeId', required: true}],
         odata: true,
         callback: function(c, data) {
-            $.post('/index/form/odata/timeId/', {satellite: data.placeId || 0}, function(json) {
+            $.post('/index/form/odata/timeId/', {consider: JSON.stringify(data)}, function(json) {
                 c.odata(json);
             });
         }

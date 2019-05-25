@@ -24,7 +24,7 @@ class IndexController extends Indi_Controller_Front {
             'placeId' => array(
                 'rex' => 'int11'
             )
-        ), array('placeId' => Indi::post('satellite')));
+        ), json_decode(Indi::post()->consider, true));
 
         // If `publicTimeIds` defined - setup timeId-field's combo data filtration
         if ($timeIds = $this->row->foreign('placeId')->publicTimeIds)

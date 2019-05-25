@@ -37,15 +37,18 @@ class Event extends Indi_Db_Table {
         return array(
             'placeId' => array(
                 'rex' => 'int11',
-                'hours' => function ($owner, $event, $date) {
-                    if (Indi::uri('module') == 'admin' || !$owner->publicTimeIds) return false;
-                    return array('time' => $owner->publicTimeIds, 'span' => $owner->duration * 60);
-                },
+                'hours' => [
+                    'time' => function ($owner, $event, $date) {
+                        if (Indi::uri('module') == 'admin' || !$owner->publicTimeIds) return false;
+                        return array('time' => $owner->publicTimeIds, 'span' => $owner->duration * 60);
+                    },
+                    'only' => true
+                ]
             ),
             'animatorId' => array(
                 'rex' => 'int11list',
                 'pre' => function($r){
-                    $r->spaceFrame = _2sec('1h');
+                    $r->spaceFrame = _2sec('30m');
                 }
             )
         );

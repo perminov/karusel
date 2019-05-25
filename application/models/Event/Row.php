@@ -12,11 +12,11 @@ class Event_Row extends Indi_Db_Table_Row {
         // Check placeId is not zero
         $this->mcheck(array('placeId' => array('req' => true)));
 
+        // Get space auto-fields
+        $auto = $this->model()->space('fields.auto');
+
         // Check space-fields
-        foreach ($this->spaceDisabledValues(false) as $prop => $disabledA)
-            foreach ($disabledA as $disabledI)
-                if (in($disabledI, $this->$prop))
-                    $this->_mismatch[$prop] = I_COMBO_MISMATCH_DISABLED_VALUE;
+        $this->spaceMismatches($auto);
 
         // Call parent
         return $this->callParent();
@@ -28,7 +28,16 @@ class Event_Row extends Indi_Db_Table_Row {
      * @return array
      */
     public function spacePreloadWHERE() {
-        return array('`manageStatus` != "cancelled"');
+
+        // Basic clause
+        $where = array('`manageStatus` != "cancelled"');
+
+        // Special clause, that is used for cases when this entry is nested under `userGroup`
+        // entry, that is, in it's turn, is in the process of new schedule plan validation
+        if ($this->_system['preloadExclude']) $where []= '`id` NOT IN (' . im($this->_system['preloadExclude']) . ')';
+
+        // Return
+        return $where;
     }
 
     /**
